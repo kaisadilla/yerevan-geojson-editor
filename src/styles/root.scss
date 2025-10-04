@@ -1,0 +1,28 @@
+@import "../../node_modules/@substrate-system/css-normalize/dist/index.min.css";
+
+@import "vars";
+@import "mantine";
+
+:root {
+  font-family: var(--font-segoe);
+}
+
+button,
+[role=button] {
+  cursor: pointer;
+}
+
+button {
+  background: unset;
+  border: unset;
+  text-align: unset;
+  padding: 0;
+}
+
+.lucide {
+  --size: 15pt;
+
+  stroke-width: 1px;
+  width: var(--size);
+  height: var(--size);
+}

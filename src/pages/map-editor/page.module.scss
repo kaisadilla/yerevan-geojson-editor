@@ -1,0 +1,61 @@
+.page {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  
+  .documentPanelGroup {
+    [role=separator] {
+      position: relative;
+      width: 1px;
+      border-right: 1px solid var(--color-frame);
+
+      > div {
+        z-index: 100000;
+        position: absolute;
+        left: -5px;
+
+        width: 11px;
+        height: 100%;
+
+        &::after {
+          content: "";
+          position: absolute;
+          width: 1px;
+          height: 100%;
+          left: 5px;
+          transition: 0.15s;
+        }
+
+        &:hover {
+          &::after {
+            left: 3px;
+            width: 5px;
+            background-color: var(--color-primary);
+          }
+        }
+      }
+    }
+  }
+
+  .appToolbar {
+    border-top: 1px solid var(--color-primary-l1);
+    height: 48px;
+  }
+
+  .featuresPanel {
+    height: 100%;
+    overflow: hidden;
+
+    .featuresFrame {
+      height: 100%;
+      overflow: hidden;
+    }
+  }
+
+  .mapFrame {
+    width: 100%;
+    height: 100%;
+  }
+}

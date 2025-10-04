@@ -1,0 +1,37 @@
+:root {
+  --color-primary-l5: #e6f5ef;
+  --color-primary-l4: #b3e2cf;
+  --color-primary-l3: #80cfb0;
+  --color-primary-l2: #B99BD8;
+  --color-primary-l1: #9169BA;
+  --color-primary: #72459F;
+  --color-primary-d1: #5D2D8D;
+  --color-primary-d2: #451973;
+  --color-primary-d3: #005f3a;
+  --color-primary-d4: #004f30;
+  --color-primary-d5: #003f26;
+
+  --color-secondary-l5: #eee;
+  --color-secondary-l4: #dfdfdf;
+  --color-secondary-l3: #ccc;
+  --color-secondary-l2: #aaa;
+  --color-secondary-l1: #888;
+  --color-secondary: #777;
+  --color-secondary-d1: #666;
+  --color-secondary-d2: #555;
+  --color-secondary-d3: #444;
+  --color-secondary-d4: #333;
+
+  --color-success: #28a745;
+  --color-success-d1: #218838;
+  --color-success-d2: #144d20;
+  --color-danger: #dc3545;
+  --color-danger-d1: #c82333;
+  --color-danger-d2: #7c141e;
+
+  --color-bg: var(--color-secondary-l5);
+  --color-frame: var(--color-secondary-l4);
+
+  --font-consolas: Consolas, 'Courier New', Courier, monospace;
+  --font-segoe: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}

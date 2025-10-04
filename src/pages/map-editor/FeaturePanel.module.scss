@@ -1,0 +1,141 @@
+.panel {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  &:not(:hover) .hoverOnly {
+    display: none;
+  }
+
+  p {
+    font-size: 9pt;
+  }
+
+  > .header {
+    padding: 12px 6px;
+
+    p {
+      font-weight: 600;
+      font-size: 14pt;
+    }
+  }
+
+  > .treeContainer {
+    flex: 1;
+  }
+
+  > .ribbon {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+    padding: 4px;
+    border-bottom: 1px solid var(--color-frame);
+  }
+}
+
+.element {
+  --hierarchy-bar-color: var(--color-secondary-l4);
+  --col-bg: white;
+
+  position: relative;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  width: 100%;
+  height: 28px;
+  padding: 4px 8px 4px 0;
+  gap: 4px;
+
+  background-color: var(--col-bg);
+
+  &:hover {
+    --col-bg: var(--color-secondary-l5);
+  }
+
+  > .hierarchy {
+    display: flex;
+    align-items: center;
+
+    flex-shrink: 0;
+
+    .bar {
+      width: calc(100% - 2px);
+      height: 2px;
+      background-color: var(--hierarchy-bar-color);
+    }
+  }
+
+  > .collapseIcon {
+    @include center-content;
+
+    &:hover {
+      color: var(--color-primary);
+      
+      > :global(.icon) {
+        font-size: 22pt;
+      }
+    }
+
+    > :global(.icon) {
+      @include center-content;
+
+      width: 16px;
+      height: 16px;
+      font-size: 16pt;
+      padding-top: 2px;
+    }
+  }
+
+  > .collapseIcon,
+  > .collapseGap {
+    width: 12px;
+    flex-shrink: 0;
+  }
+
+  .name {
+    flex: 1;
+  }
+
+  .ribbon {
+    position: absolute;
+    right: 8px;
+    display: flex;
+    background-color: var(--col-bg);
+    padding-left: 4px;
+
+    > button {
+      @include center-content;
+      color: var(--color-secondary);
+
+      :global(.lucide) {
+        --size: 12.5pt;
+        stroke-width: 1.25px;
+      }
+
+      &:hover {
+        color: var(--color-primary);
+
+        :global(.lucide) {
+          stroke-width: 1.75px;
+        }
+      }
+    }
+  }
+}
+
+.element.folder {
+  .name p {
+    font-weight: 600;
+  }
+}
+
+.folderContent {
+  &[data-visible=false] {
+    display: none;
+  }
+}
