@@ -9,18 +9,18 @@ import { gjEditorActions, type LElement, type LFeature, type LGroup } from 'stat
 import type { RootState } from 'state/store';
 import { $cl } from 'utils';
 import MaterialSymbol from '../../components/MaterialSymbol';
-import styles from './FeaturePanel.module.scss';
+import styles from './ElementPanel.module.scss';
 
 type ElementType = GeoJsonObject["type"] | "FeatureCollection";
 type DropTarget = 'before' | 'inside' | 'after'
 
 const HIERARCHY_INDENT_WIDTH = 16
 
-export interface FeaturePanelProps {
+export interface ElementPanelProps {
   
 }
 
-function FeaturePanel (props: FeaturePanelProps) {
+function ElementPanel (props: ElementPanelProps) {
   const doc = useSelector((state: RootState) => state.gjEditor);
 
   return (
@@ -219,8 +219,8 @@ function _Element ({
     if (target === null) return;
 
     dispatch(gjEditorActions.moveElement({
-      elementId: source.data.id,
-      targetId: element.properties.id as string,
+      elementId: source.data.id as string,
+      targetId: element.properties.id,
       position: target,
     }))
   }
@@ -272,4 +272,4 @@ function _Ribbon () {
   );
 }
 
-export default FeaturePanel;
+export default ElementPanel;

@@ -1,5 +1,5 @@
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import FeaturePanel from "./FeaturePanel";
+import ElementPanel from "./ElementPanel";
 import Map from "./Map";
 import styles from "./page.module.scss";
 
@@ -18,7 +18,7 @@ function MapEditorPage (props: MapEditorPageProps) {
       >
         <Panel className={styles.featuresPanel} defaultSize={11} minSize={8}>
           <div className={styles.featuresFrame}>
-            <FeaturePanel />
+            <ElementPanel />
           </div>
         </Panel>
         <PanelResizeHandle><div /></PanelResizeHandle>
