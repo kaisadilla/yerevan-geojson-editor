@@ -22,13 +22,13 @@ function MapEditorPage (props: MapEditorPageProps) {
           </div>
         </Panel>
         <PanelResizeHandle><div /></PanelResizeHandle>
-        <Panel className={styles.mapPanel}>
+        <Panel className={styles.mapPanel} minSize={20}>
           <div className={styles.mapFrame}>
             <Map />
           </div>
         </Panel>
         <PanelResizeHandle><div /></PanelResizeHandle>
-        <Panel className={styles.detailsPanel} defaultSize={20}>
+        <Panel className={styles.detailsPanel} defaultSize={20} minSize={5}>
           <div className={styles.detailsFrame}>
             DETAILS
           </div>

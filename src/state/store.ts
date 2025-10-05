@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { geoJsonDocReducer } from "./geojsonDocSlice";
+import { gjEditorReducer } from "./geojsonDocSlice";
 
 export const store = configureStore({
   reducer: {
-    geojsonDoc: geoJsonDocReducer,
+    gjEditor: gjEditorReducer,
   },
 });
 

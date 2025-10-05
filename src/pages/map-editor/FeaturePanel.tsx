@@ -1,13 +1,18 @@
+import type { BaseEventPayload, DropTargetLocalizedData, ElementDragType } from "@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types";
+import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Text, Tooltip } from '@mantine/core';
-import Logger from 'Logger';
-import { Circle, Eye, EyeOff, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import type { GeoJsonDocFeature } from 'state/geojsonDocSlice';
+import type { GeoJsonObject } from 'geojson';
+import { Circle, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { gjEditorActions, type LElement, type LFeature, type LGroup } from 'state/geojsonDocSlice';
 import type { RootState } from 'state/store';
 import { $cl } from 'utils';
 import MaterialSymbol from '../../components/MaterialSymbol';
 import styles from './FeaturePanel.module.scss';
+
+type ElementType = GeoJsonObject["type"] | "FeatureCollection";
+type DropTarget = 'above' | 'in' | 'below'
 
 const HIERARCHY_INDENT_WIDTH = 16
 
@@ -16,7 +21,7 @@ export interface FeaturePanelProps {
 }
 
 function FeaturePanel (props: FeaturePanelProps) {
-  const doc = useSelector((state: RootState) => state.geojsonDoc);
+  const doc = useSelector((state: RootState) => state.gjEditor);
 
   return (
     <div className={styles.panel}>
@@ -25,79 +30,181 @@ function FeaturePanel (props: FeaturePanelProps) {
       </div>
       <_Ribbon />
       <div className={styles.treeContainer}>
-        {false && <_Group
-          depth={0}
-          name="Root folder"
-        />}
-        <_Tree features={doc.content.features} group="" />
+        <_Element element={doc.content} depth={-1} />
       </div>
     </div>
   );
 }
 
-interface _TreeProps {
-  features: GeoJsonDocFeature[];
-  group: string;
+interface _ElementProps {
+  element: LFeature | LGroup;
+  depth: number;
 }
 
-function _Tree ({
-  features,
-  group,
-}: _TreeProps) {
-  const path = group.split("\\");
-  const depth = group === "" ? -1 : path.length - 1;
-  const groupName = path[depth];
+function _Element ({
+  element,
+  depth,
+}: _ElementProps) {
+  const ref = useRef<HTMLDivElement>(null);
 
-  // Features contained directly in this group.
-  const feats = [] as GeoJsonDocFeature[];
-  // Features contained in groups nested inside this one.
-  const subgroups = {} as Record<string, GeoJsonDocFeature[]>;
+  const [expanded, setExpanded] = useState(true);
+  const [isDragged, setDragged] = useState(false);
+  const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
 
-  for (const feat of features) {
-    const fGroup = feat.properties?.group ?? "";
+  const ctx = useSelector((state: RootState) => state.gjEditor);
+  const dispatch = useDispatch();
 
-    if (fGroup === group) {
-      feats.push(feat);
-      continue;
+  // Drag & Drop
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const cleanupDrag = draggable({
+      element: el,
+      onDragStart: () => setDragged(true),
+      onDrop: () => setDragged(false),
+      getInitialData: () => ({
+        id: element.properties.id,
+        name: element.properties.name,
+        type: element.type,
+      }),
+    });
+
+    const cleanupDrop = dropTargetForElements({
+      element: el,
+      getData: () => ({
+        id: element.properties.id,
+        name: element.properties.name,
+        type: element.type,
+      }),
+      onDragEnter: handleDrag,
+      onDrag: handleDrag,
+      onDragLeave: () => setDropTarget(null),
+      onDrop: handleDrop,
+    });
+
+    return () => {
+      cleanupDrag();
+      cleanupDrop();
     }
+  }, [element, dispatch, dropTarget]);
 
-    if (group !== "" && fGroup.startsWith(group + "\\") === false) {
-      Logger.warn(
-        `Feature in group '${fGroup}' should not be part of the collection given
-        to the tree representing '${group}'.`
-      );
-      continue;
-    }
+  let children = null as LElement[] | null;
+  let type: ElementType = 'FeatureCollection';
 
-    const subgroupKey = fGroup.split("\\")[depth + 1];
-
-    if (!subgroups[subgroupKey]) subgroups[subgroupKey] = [];
-    subgroups[subgroupKey].push(feat);
+  if (element.type === 'FeatureCollection') {
+    children = element.features;
+  }
+  else {
+    type = element.geometry.type;
   }
 
-  const $elements = (<>
-    {feats.map((f, i) => <_Feature
-      key={i}
-      name={f.properties.name}
-      depth={depth + 1}
-    />)}
-    {Object.keys(subgroups).map((sg, i) => <_Tree
-      key={i}
-      features={subgroups[sg]}
-      group={subgroups[sg][0].properties.group ?? ""}
-    />)}
-  </>);
+  const hierarchyIndent = HIERARCHY_INDENT_WIDTH * depth;
 
-  return (
-    <div className={styles.featureTree}>
-      {depth === -1 && $elements}
-      {depth !== -1 && <_Group
-        name={groupName}
-        depth={depth}
-        children={$elements}
+  return (<>
+    {depth >= 0 && <div
+      ref={ref}
+      className={$cl(styles.element)}
+      role='button'
+      onClick={handleClick}
+      data-selected={ctx.selectedId === element.properties.id}
+      data-dragged={isDragged}
+      data-drop-target={dropTarget}
+    >
+      {(dropTarget === 'above' || dropTarget === 'below') && <div
+        className={styles.dropTarget}
+        style={{
+          width: `calc(100% - ${hierarchyIndent})`,
+          left: hierarchyIndent,
+          top: dropTarget === 'above' ? -2 : undefined,
+          bottom: dropTarget === 'below' ? -2 : undefined,
+        }}
       />}
-    </div>
-  );
+
+      <div
+        className={styles.hierarchy}
+        style={{width: hierarchyIndent}}
+      >
+        <div className={styles.bar} />
+      </div>
+
+      <div className={styles.collapseContainer}>
+        {children !== null && <button
+          className={styles.collapseButton}
+          onClick={() => setExpanded(prev => !prev)}
+        >
+          {expanded && <MaterialSymbol icon="arrow_drop_down" />}
+          {expanded === false && <MaterialSymbol icon="arrow_right" />}
+        </button>}
+      </div>
+
+      <div className={styles.type}>
+        {type === 'FeatureCollection' && <Folder />}
+        {type === 'Point' && <MapPin />}
+        {type === 'LineString' && <Waypoints />}
+        {type === 'Polygon' && <Pentagon />}
+      </div>
+
+      <div className={styles.name}>
+        <Text lineClamp={1}>{element.properties.name}</Text>
+      </div>
+    </div>}
+    {children !== null && isDragged === false && <div
+      className={styles.folderContent}
+      data-visible={expanded}
+      data-drop-target={dropTarget}
+    >
+      {children.map((c, i) => <_Element
+        key={c.properties.id}
+        element={c}
+        depth={depth + 1}
+      />)}
+    </div>}
+  </>)
+
+  function handleClick () {
+    if (ctx.selectedId === element.properties.id) return;
+
+    dispatch(gjEditorActions.setSelected(element.properties.id));
+  }
+  
+  function handleDrag ({
+    source,
+    location
+  }: BaseEventPayload<ElementDragType> & DropTargetLocalizedData) {
+    if (source.data.id === element.properties.id) return;
+    if (ref.current === null) return;
+
+    const rect = ref.current.getBoundingClientRect();
+    const y = location.current.input.clientY;
+    const ratio = (y - rect.top) / rect.height;
+
+    if (element.type === 'FeatureCollection') {
+      if (ratio < 0.33) setDropTarget('above');
+      else if (ratio < 0.67) setDropTarget('in');
+      else setDropTarget('below');
+    }
+    else {
+      if (ratio < 0.5) setDropTarget('above');
+      else setDropTarget('below');
+    }
+  };
+
+  function handleDrop ({
+    source
+  }: BaseEventPayload<ElementDragType> & DropTargetLocalizedData) {
+    const target = dropTarget;
+    setDropTarget(null);
+
+    if (source.data.id === element.properties.id) return;
+    if (target === null) return;
+
+    dispatch(gjEditorActions.moveFeature({
+      elementId: element.properties.id,
+      targetId: source.data.id as string,
+      position: target,
+    }))
+  }
 }
 
 function _Ribbon () {
@@ -141,87 +248,5 @@ function _Ribbon () {
     </div>
   );
 }
-
-interface _FeatureProps {
-  depth: number;
-  name: string;
-}
-
-function _Feature ({
-  depth,
-  name,
-}: _FeatureProps) {
-  const [visible, setVisible] = useState(true);
-
-  return (
-    <div className={$cl(styles.element, styles.feature)} role='button'>
-      <_HierarchyBar depth={depth} />
-      <div className={styles.collapseGap} />
-      <div className={styles.name}>
-        <Text lineClamp={1}>{name}</Text>
-      </div>
-      <div className={$cl(styles.ribbon, styles.hoverOnly)}>
-        <button onClick={() => setVisible(prev => !prev)}>
-          {visible && <Eye />}
-          {visible === false && <EyeOff />}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-interface _GroupProps {
-  depth: number;
-  name: string;
-  children: React.ReactNode;
-}
-
-function _Group ({
-  depth,
-  name,
-  children,
-}: _GroupProps) {
-  const [expanded, setExpanded] = useState(true);
-
-  return (
-    <>
-      <div className={$cl(styles.element, styles.folder)} role='button'>
-        <_HierarchyBar depth={depth} />
-        <button
-          className={styles.collapseIcon}
-          onClick={() => setExpanded(prev => !prev)}
-        >
-          {expanded && <MaterialSymbol icon="arrow_drop_down" />}
-          {expanded === false && <MaterialSymbol icon="arrow_right" />}
-        </button>
-        <div className={styles.name}>
-          <Text lineClamp={1}>{name}</Text>
-        </div>
-      </div>
-      <div className={styles.folderContent} data-visible={expanded}>
-        {children}
-      </div>
-    </>
-  );
-}
-
-interface _HierarchyBarProps {
-  depth: number;
-}
-
-function _HierarchyBar ({
-  depth,
-}: _HierarchyBarProps) {
-  return (
-    <div
-      className={styles.hierarchy}
-      style={{width: HIERARCHY_INDENT_WIDTH * depth}}
-    >
-      <div className={styles.bar} />
-    </div>
-  );
-}
-
-
 
 export default FeaturePanel;
