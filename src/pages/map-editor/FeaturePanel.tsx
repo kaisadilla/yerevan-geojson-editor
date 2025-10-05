@@ -12,7 +12,7 @@ import MaterialSymbol from '../../components/MaterialSymbol';
 import styles from './FeaturePanel.module.scss';
 
 type ElementType = GeoJsonObject["type"] | "FeatureCollection";
-type DropTarget = 'above' | 'in' | 'below'
+type DropTarget = 'before' | 'inside' | 'after'
 
 const HIERARCHY_INDENT_WIDTH = 16
 
@@ -119,13 +119,13 @@ function _Element ({
       data-drop-target={dropTarget}
       data-valid-drop-target={validDropTarget}
     >
-      {validDropTarget && (dropTarget === 'above' || dropTarget === 'below') && <div
+      {validDropTarget && (dropTarget === 'before' || dropTarget === 'after') && <div
         className={styles.dropTarget}
         style={{
           width: `calc(100% - ${hierarchyIndent})`,
           left: hierarchyIndent,
-          top: dropTarget === 'above' ? -2 : undefined,
-          bottom: dropTarget === 'below' ? -2 : undefined,
+          top: dropTarget === 'before' ? -2 : undefined,
+          bottom: dropTarget === 'after' ? -2 : undefined,
         }}
       />}
 
@@ -197,13 +197,14 @@ function _Element ({
     const ratio = (y - rect.top) / rect.height;
 
     if (element.type === 'FeatureCollection') {
-      if (ratio < 0.33) setDropTarget('above');
-      else if (ratio < 0.67) setDropTarget('in');
-      else setDropTarget('below');
+      if (ratio < 0.33) setDropTarget('before');
+      else if (ratio < 0.67) setDropTarget('inside');
+      else if (expanded) setDropTarget('inside');
+      else setDropTarget('after');
     }
     else {
-      if (ratio < 0.5) setDropTarget('above');
-      else setDropTarget('below');
+      if (ratio < 0.5) setDropTarget('before');
+      else setDropTarget('after');
     }
   };
 
@@ -217,15 +218,15 @@ function _Element ({
     if (source.data.id === element.properties.id) return;
     if (target === null) return;
 
-    dispatch(gjEditorActions.moveFeature({
-      elementId: element.properties.id,
-      targetId: source.data.id as string,
+    dispatch(gjEditorActions.moveElement({
+      elementId: source.data.id,
+      targetId: element.properties.id as string,
       position: target,
     }))
   }
 
   function handleToggleVisibility () {
-    
+
   }
 }
 

@@ -61,19 +61,18 @@
 
   &[data-selected=true] {
     --col-bg: var(--color-primary-l2);
+    --hierarchy-bar-color: var(--color-primary-l1);
   }
 
-  &[data-drop-target=in] {
+  &[data-drop-target=inside] {
     --col-bg: var(--color-primary);
+    --hierarchy-bar-color: var(--color-primary-d2);
     border: 1px solid var(--color-primary-d2);
-  }
-
-  &[data-dragged=true] {
-    --col-bg: var(--color-secondary-d2);
   }
 
   &[data-valid-drop-target=false] {
     --col-bg: var(--color-secondary-l4);
+    --hierarchy-bar-color: var(--color-secondary-l2);
     color: var(--color-secondary-l1);
   }
 
@@ -145,7 +144,7 @@
     position: absolute;
     right: 8px;
     display: flex;
-    background-color: var(--col-bg);
+    background-color: var(--col-bg); // if --col-bg is transparent, then this is white.
     padding-left: 4px;
 
     > button {
