@@ -72,6 +72,11 @@
     --col-bg: var(--color-secondary-d2);
   }
 
+  &[data-valid-drop-target=false] {
+    --col-bg: var(--color-secondary-l4);
+    color: var(--color-secondary-l1);
+  }
+
   > .dropTarget {
     position: absolute;
     z-index: 10;

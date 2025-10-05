@@ -8,6 +8,7 @@ import type { Feature, GeoJsonProperties, Geometry } from "geojson";
 export type LGeoJsonProperties = GeoJsonProperties & {
   name: string;
   id: string;
+  hidden: boolean;
 };
 
 /**
@@ -40,7 +41,8 @@ const initialState: GjEditorState = {
     type: 'FeatureCollection',
     properties: {
       name: "Root",
-      id: "w1"
+      id: "w1",
+      hidden: false,
     },
     features: [
       {
@@ -51,7 +53,8 @@ const initialState: GjEditorState = {
         },
         properties: {
           name: "Lonely dot",
-          id: "a"
+          id: "a",
+          hidden: false,
         }
       },
       {
@@ -65,7 +68,8 @@ const initialState: GjEditorState = {
         },
         properties: {
           name: "Straight line",
-          id: "b"
+          id: "b",
+          hidden: false,
         }
       },
       {
@@ -73,6 +77,7 @@ const initialState: GjEditorState = {
         properties: {
           name: "Some group",
           id: "w2",
+          hidden: false,
         },
         features: [
           {
@@ -83,7 +88,8 @@ const initialState: GjEditorState = {
             },
             properties: {
               name: "Dot inside a group",
-              id: "c"
+              id: "c",
+              hidden: false,
             }
           },
           {
@@ -91,6 +97,7 @@ const initialState: GjEditorState = {
             properties: {
               name: "Inner group",
               id: "w3",
+              hidden: false,
             },
             features: [
               {
@@ -101,7 +108,8 @@ const initialState: GjEditorState = {
                 },
                 properties: {
                   name: "Nested dot",
-                  id: "d"
+                  id: "d",
+                  hidden: false,
                 }
               }
             ]

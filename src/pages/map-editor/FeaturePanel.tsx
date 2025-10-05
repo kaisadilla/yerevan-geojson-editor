@@ -2,7 +2,7 @@ import type { BaseEventPayload, DropTargetLocalizedData, ElementDragType } from 
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Text, Tooltip } from '@mantine/core';
 import type { GeoJsonObject } from 'geojson';
-import { Circle, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
+import { Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { gjEditorActions, type LElement, type LFeature, type LGroup } from 'state/geojsonDocSlice';
@@ -39,17 +39,21 @@ function FeaturePanel (props: FeaturePanelProps) {
 interface _ElementProps {
   element: LFeature | LGroup;
   depth: number;
+  validDropTarget?: boolean;
 }
 
 function _Element ({
   element,
   depth,
+  validDropTarget = true,
 }: _ElementProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   const [expanded, setExpanded] = useState(true);
   const [isDragged, setDragged] = useState(false);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
+
+  validDropTarget = validDropTarget && isDragged === false;
 
   const ctx = useSelector((state: RootState) => state.gjEditor);
   const dispatch = useDispatch();
@@ -104,14 +108,18 @@ function _Element ({
   return (<>
     {depth >= 0 && <div
       ref={ref}
-      className={$cl(styles.element)}
+      className={$cl(
+        styles.element,
+        type === 'FeatureCollection' && styles.folder
+      )}
       role='button'
       onClick={handleClick}
       data-selected={ctx.selectedId === element.properties.id}
       data-dragged={isDragged}
       data-drop-target={dropTarget}
+      data-valid-drop-target={validDropTarget}
     >
-      {(dropTarget === 'above' || dropTarget === 'below') && <div
+      {validDropTarget && (dropTarget === 'above' || dropTarget === 'below') && <div
         className={styles.dropTarget}
         style={{
           width: `calc(100% - ${hierarchyIndent})`,
@@ -148,8 +156,15 @@ function _Element ({
       <div className={styles.name}>
         <Text lineClamp={1}>{element.properties.name}</Text>
       </div>
+
+      <div className={$cl(styles.ribbon, styles.hoverOnly)}>
+        <button onClick={handleToggleVisibility}>
+          {element.properties.hidden === false && <Eye />}
+          {element.properties.hidden && <EyeOff />}
+        </button>
+      </div>
     </div>}
-    {children !== null && isDragged === false && <div
+    {children !== null && <div
       className={styles.folderContent}
       data-visible={expanded}
       data-drop-target={dropTarget}
@@ -158,6 +173,7 @@ function _Element ({
         key={c.properties.id}
         element={c}
         depth={depth + 1}
+        validDropTarget={validDropTarget}
       />)}
     </div>}
   </>)
@@ -172,6 +188,7 @@ function _Element ({
     source,
     location
   }: BaseEventPayload<ElementDragType> & DropTargetLocalizedData) {
+    if (validDropTarget === false) return;
     if (source.data.id === element.properties.id) return;
     if (ref.current === null) return;
 
@@ -196,6 +213,7 @@ function _Element ({
     const target = dropTarget;
     setDropTarget(null);
 
+    if (validDropTarget === false) return;
     if (source.data.id === element.properties.id) return;
     if (target === null) return;
 
@@ -204,6 +222,10 @@ function _Element ({
       targetId: source.data.id as string,
       position: target,
     }))
+  }
+
+  function handleToggleVisibility () {
+    
   }
 }
 
