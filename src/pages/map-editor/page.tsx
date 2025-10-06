@@ -1,4 +1,5 @@
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import EditRibbon from "./EditRibbon";
 import ElementPanel from "./ElementPanel";
 import Map from "./Map";
 import styles from "./page.module.scss";
@@ -23,6 +24,9 @@ function MapEditorPage (props: MapEditorPageProps) {
         </Panel>
         <PanelResizeHandle><div /></PanelResizeHandle>
         <Panel className={styles.mapPanel} minSize={20}>
+          <div className={styles.editRibbon}>
+            <EditRibbon />
+          </div>
           <div className={styles.mapFrame}>
             <Map />
           </div>

@@ -1,5 +1,6 @@
 import { MantineProvider, Popover, Text, Tooltip } from '@mantine/core';
 import { StrictMode } from 'react';
+// @ts-ignore TODO: Check why importing from react-dom/client is marked as error.
 import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { BrowserRouter } from 'react-router';

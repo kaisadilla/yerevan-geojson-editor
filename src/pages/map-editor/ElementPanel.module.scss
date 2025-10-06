@@ -59,6 +59,10 @@
     --col-bg: var(--color-secondary-l5);
   }
 
+  &[data-hidden=true] {
+    color: var(--color-secondary-l2);
+  }
+
   &[data-selected=true] {
     --col-bg: var(--color-primary-l2);
     --hierarchy-bar-color: var(--color-primary-l1);

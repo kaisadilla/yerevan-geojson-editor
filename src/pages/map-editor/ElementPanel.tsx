@@ -1,17 +1,15 @@
 import type { BaseEventPayload, DropTargetLocalizedData, ElementDragType } from "@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Text, Tooltip } from '@mantine/core';
-import type { GeoJsonObject } from 'geojson';
 import { Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { gjEditorActions, type LElement, type LFeature, type LGroup } from 'state/geojsonDocSlice';
+import { gjEditorActions, type LElement, type LElementType, type LFeature, type LGroup } from 'state/geojsonDocSlice';
 import type { RootState } from 'state/store';
 import { $cl } from 'utils';
 import MaterialSymbol from '../../components/MaterialSymbol';
 import styles from './ElementPanel.module.scss';
 
-type ElementType = GeoJsonObject["type"] | "FeatureCollection";
 type DropTarget = 'before' | 'inside' | 'after'
 
 const HIERARCHY_INDENT_WIDTH = 16
@@ -39,12 +37,14 @@ function ElementPanel (props: ElementPanelProps) {
 interface _ElementProps {
   element: LFeature | LGroup;
   depth: number;
+  hidden?: boolean;
   validDropTarget?: boolean;
 }
 
 function _Element ({
   element,
   depth,
+  hidden = false,
   validDropTarget = true,
 }: _ElementProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -94,7 +94,7 @@ function _Element ({
   }, [element, dispatch, dropTarget]);
 
   let children = null as LElement[] | null;
-  let type: ElementType = 'FeatureCollection';
+  let type: LElementType = 'FeatureCollection';
 
   if (element.type === 'FeatureCollection') {
     children = element.features;
@@ -118,6 +118,7 @@ function _Element ({
       data-dragged={isDragged}
       data-drop-target={dropTarget}
       data-valid-drop-target={validDropTarget}
+      data-hidden={element.properties.hidden || hidden}
     >
       {validDropTarget && (dropTarget === 'before' || dropTarget === 'after') && <div
         className={styles.dropTarget}
@@ -157,7 +158,10 @@ function _Element ({
         <Text lineClamp={1}>{element.properties.name}</Text>
       </div>
 
-      <div className={$cl(styles.ribbon, styles.hoverOnly)}>
+      <div
+        className={$cl(styles.ribbon, styles.hoverOnly)}
+        onClick={e => e.stopPropagation()}
+      >
         <button onClick={handleToggleVisibility}>
           {element.properties.hidden === false && <Eye />}
           {element.properties.hidden && <EyeOff />}
@@ -173,6 +177,7 @@ function _Element ({
         key={c.properties.id}
         element={c}
         depth={depth + 1}
+        hidden={hidden || element.properties.hidden}
         validDropTarget={validDropTarget}
       />)}
     </div>}
@@ -222,11 +227,15 @@ function _Element ({
       elementId: source.data.id as string,
       targetId: element.properties.id,
       position: target,
-    }))
+    }));
   }
 
   function handleToggleVisibility () {
-
+    dispatch(gjEditorActions.setProperty({
+      elementId: element.properties.id,
+      key: 'hidden',
+      value: !element.properties.hidden,
+    }));
   }
 }
 
