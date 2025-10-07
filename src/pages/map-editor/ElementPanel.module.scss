@@ -38,8 +38,9 @@
 }
 
 .element {
-  --hierarchy-bar-color: var(--color-secondary-l4);
+  --col-hierarchy-bar: var(--color-secondary-l4);
   --col-bg: transparent;
+  --col-icon: var(--color-secondary-l1);
 
   position: relative;
 
@@ -65,18 +66,21 @@
 
   &[data-selected=true] {
     --col-bg: var(--color-primary-l2);
-    --hierarchy-bar-color: var(--color-primary-l1);
+    --col-hierarchy-bar: var(--color-primary-l1);
+    --col-icon: var(--color-primary);
   }
 
   &[data-drop-target=inside] {
     --col-bg: var(--color-primary);
-    --hierarchy-bar-color: var(--color-primary-d2);
+    --col-hierarchy-bar: var(--color-primary-d2);
+    --col-icon: var(--color-primary-d2);
     border: 1px solid var(--color-primary-d2);
   }
 
   &[data-valid-drop-target=false] {
     --col-bg: var(--color-secondary-l4);
-    --hierarchy-bar-color: var(--color-secondary-l2);
+    --col-hierarchy-bar: var(--color-secondary-l2);
+    --col-icon: var(--color-secondary-l2);
     color: var(--color-secondary-l1);
   }
 
@@ -100,7 +104,7 @@
     .bar {
       width: calc(100% - 2px);
       height: 2px;
-      background-color: var(--hierarchy-bar-color);
+      background-color: var(--col-hierarchy-bar);
     }
   }
 
@@ -133,10 +137,10 @@
   > .type {
     width: 16px;
     margin-right: 6px;
-    color: var(--color-secondary-d2);
+    color: var(--col-icon);
 
     :global(.lucide) {
-      //stroke-width: 1.5px;
+      stroke-width: 1.5px;
     }
   }
 

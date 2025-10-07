@@ -2,9 +2,10 @@ import type { BaseEventPayload, DropTargetLocalizedData, ElementDragType } from 
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Text, Tooltip } from '@mantine/core';
 import { Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
+import type { LElement, LElementType, LFeature, LGroup } from "models/MapDocument";
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { gjEditorActions, type LElement, type LElementType, type LFeature, type LGroup } from 'state/geojsonDocSlice';
+import { mapEditorDocActions } from 'state/mapEditor/docSlice';
 import type { RootState } from 'state/store';
 import { $cl } from 'utils';
 import MaterialSymbol from '../../components/MaterialSymbol';
@@ -19,7 +20,7 @@ export interface ElementPanelProps {
 }
 
 function ElementPanel (props: ElementPanelProps) {
-  const doc = useSelector((state: RootState) => state.gjEditor);
+  const doc = useSelector((state: RootState) => state.mapEditorDoc);
 
   return (
     <div className={styles.panel}>
@@ -55,7 +56,7 @@ function _Element ({
 
   validDropTarget = validDropTarget && isDragged === false;
 
-  const ctx = useSelector((state: RootState) => state.gjEditor);
+  const ctx = useSelector((state: RootState) => state.mapEditorDoc);
   const dispatch = useDispatch();
 
   // Drag & Drop
@@ -186,7 +187,7 @@ function _Element ({
   function handleClick () {
     if (ctx.selectedId === element.properties.id) return;
 
-    dispatch(gjEditorActions.setSelected(element.properties.id));
+    dispatch(mapEditorDocActions.setSelected(element.properties.id));
   }
   
   function handleDrag ({
@@ -223,7 +224,7 @@ function _Element ({
     if (source.data.id === element.properties.id) return;
     if (target === null) return;
 
-    dispatch(gjEditorActions.moveElement({
+    dispatch(mapEditorDocActions.moveElement({
       elementId: source.data.id as string,
       targetId: element.properties.id,
       position: target,
@@ -231,7 +232,7 @@ function _Element ({
   }
 
   function handleToggleVisibility () {
-    dispatch(gjEditorActions.setProperty({
+    dispatch(mapEditorDocActions.setProperty({
       elementId: element.properties.id,
       key: 'hidden',
       value: !element.properties.hidden,

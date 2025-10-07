@@ -1,5 +1,7 @@
 import type { GeoJsonObject } from 'geojson';
-import { useGjEditorState, type LPoint, type LPolygon } from 'state/geojsonDocSlice';
+import type { LPoint, LPolygon } from 'models/MapDocument';
+import { useGjEditorState } from 'state/mapEditor/docSlice';
+import EditPolygon from './features/EditPolygon';
 import MapPoint from './features/MapPoint';
 import MapPolygon from './features/MapPolygon';
 
@@ -15,16 +17,26 @@ function LeafletElementMap (props: LeafletElementMapProps) {
   const points = getFeaturesOfType('Point') as LPoint[];
   const polygons = getFeaturesOfType('Polygon') as LPolygon[];
 
+  const selected = ctx.getSelectedElement();
+
   return (
     <>
       {points.map(p => <MapPoint
-        key={p.properties.id}
+        key={p.properties.id + "_" + ctx.selectedId}
         point={p}
       />)}
       {polygons.map(p => <MapPolygon
-        key={p.properties.id}
+        key={p.properties.id + "_" + ctx.selectedId}
         polygon={p}
       />)}
+      {selected
+        && selected.type === 'Feature'
+        && selected.geometry.type === 'Polygon'
+        && <EditPolygon
+          key={ctx.selectedId}
+          polygon={selected as LPolygon}
+        />
+      }
     </>
   );
 

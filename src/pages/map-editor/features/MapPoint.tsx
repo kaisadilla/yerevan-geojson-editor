@@ -1,5 +1,5 @@
+import type { LPoint } from 'models/MapDocument';
 import { Marker } from 'react-leaflet';
-import type { LPoint } from 'state/geojsonDocSlice';
 
 export interface MapPointProps {
   point: LPoint;

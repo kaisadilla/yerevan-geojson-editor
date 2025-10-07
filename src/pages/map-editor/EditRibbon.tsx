@@ -3,9 +3,12 @@ import { Tooltip } from "@mantine/core";
 import { IntersectSquareIcon, PolygonIcon, SubtractSquareIcon, UniteSquareIcon } from "@phosphor-icons/react";
 import ToggleButton from "components/ToggleButton";
 import { Eraser, Goal, Move, Pencil, Scissors } from 'lucide-react';
+import type { LElementType } from "models/MapDocument";
 import type React from "react";
 import { useDispatch } from "react-redux";
-import { gjEditorActions, useGjEditorState, type GjEditorTool, type LElementType } from "state/geojsonDocSlice";
+import { useGjEditorState } from "state/mapEditor/docSlice";
+import { mapEditorUiActions, type MapEditorTool } from "state/mapEditor/uiSlice";
+import useMapEditorUi from "state/mapEditor/useUi";
 import styles from './EditRibbon.module.scss';
 
 export interface EditRibbonProps {
@@ -40,7 +43,6 @@ function _Polygon (props: _PolygonProps) {
   return (
     <div className={styles.toolset}>
       <div className={styles.title}>Polygon</div>
-      
       <_Toggle label="Draw vertices" tool='draw_vertices'>
         <Pencil />
       </_Toggle>
@@ -82,7 +84,7 @@ function _Polygon (props: _PolygonProps) {
 
 interface _ToggleProps {
   label: string;
-  tool: GjEditorTool;
+  tool: MapEditorTool;
   children: React.ReactElement;
 }
 
@@ -91,13 +93,14 @@ function _Toggle ({
   tool,
   children,
 }: _ToggleProps) {
-  const ctx = useGjEditorState();
+  const doc = useGjEditorState();
+  const ui = useMapEditorUi();
   const dispatch = useDispatch();
 
   return (
     <Tooltip.Floating label={label} position='bottom' offset={30}>
       <ToggleButton
-        active={ctx.tool === tool}
+        active={ui.tool === tool}
         onChange={v => setTool(tool, v)}
       >
         {children}
@@ -105,8 +108,8 @@ function _Toggle ({
     </Tooltip.Floating>
   );
 
-  function setTool (tool: GjEditorTool, value: boolean) {
-    dispatch(gjEditorActions.setTool(value ? tool : null));
+  function setTool (tool: MapEditorTool, value: boolean) {
+    dispatch(mapEditorUiActions.setTool(value ? tool : null));
   }
 }
 

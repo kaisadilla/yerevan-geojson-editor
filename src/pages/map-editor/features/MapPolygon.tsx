@@ -1,5 +1,8 @@
+import Convert from "Convert";
+import type { LPolygon } from "models/MapDocument";
 import { Polygon } from "react-leaflet";
-import type { LPolygon } from "state/geojsonDocSlice";
+import { useDispatch } from "react-redux";
+import { mapEditorDocActions } from "state/mapEditor/docSlice";
 
 export interface MapPolygonProps {
   polygon: LPolygon;
@@ -8,16 +11,16 @@ export interface MapPolygonProps {
 function MapPolygon ({
   polygon,
 }: MapPolygonProps) {
+  const dispatch = useDispatch();
 
   return (
     <Polygon
-      positions={polygon.geometry.coordinates.map(
-        shape => shape.map(
-          poly => [poly[1], poly[0]]
-        )
-      )}
+      positions={Convert.geoJson.polygon.leafletPositions(polygon)}
       weight={2}
       color='var(--color-primary-d1)'
+      eventHandlers={{
+        click: () => dispatch(mapEditorDocActions.setSelected(polygon.properties.id))
+      }}
     />
   );
 }

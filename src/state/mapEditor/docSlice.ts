@@ -1,79 +1,22 @@
 import { createSlice, type PayloadAction, type WritableDraft } from "@reduxjs/toolkit";
-import type { Feature, GeoJsonObject, GeoJsonProperties, Geometry, Point, Polygon } from "geojson";
 import Logger from "Logger";
+import type { LElement, LFeature, LGroup, LMemoryDocument } from "models/MapDocument";
 import { useSelector } from "react-redux";
-import type { RootState } from "./store";
+import type { RootState } from "../store";
 
-/**
- * Represents a set of properties in a GeoJson element that contains properties
- * specific to Leaflys.
- */
-export type LGeoJsonProperties = GeoJsonProperties & {
-  name: string;
-  id: string;
-  hidden: boolean;
-};
-
-/**
- * Represents a Feature that contains Leaflys properties.
- */
-export type LFeature = Feature<Geometry, LGeoJsonProperties>;
-export type LPoint = Feature<Point, LGeoJsonProperties>;
-export type LPolygon = Feature<Polygon, LGeoJsonProperties>;
-
-/**
- * Represents a FeatureCollection that can also contain nested FeatureCollections.
- * This is not valid GeoJson.
- */
-export type LGroup = {
-  type: 'FeatureCollection';
-  features: LElement[];
-  properties: LGeoJsonProperties;
-}
-
-/**
- * Represents either a GeoJson feature or a Leaflys group.
- */
-export type LElement = LFeature | LGroup;
-
-export type LElementType = GeoJsonObject["type"] | "FeatureCollection";
-
-export type GjEditorDocumentTool = 'new-point'
-  | 'new-line'
-  | 'new-polygon'
-  | 'new-square'
-  | 'new_circle'
-  ;
-
-export type GjEditorPolygonTool = 'draw_vertices'
-  | 'move_vertices'
-  | 'cut'
-  | 'delete_vertices'
-  | 'union'
-  | 'difference'
-  | 'intersect'
-  | 'set_origin'
-  | 'move_shape'
-  ;
-
-export type GjEditorTool = GjEditorDocumentTool | GjEditorPolygonTool;
-
-interface GjEditorState {
-  content: LGroup;
+interface MapEditorDocState {
+  content: LMemoryDocument;
   selectedId: string | null;
-  /**
-   * The editing tool currently in use, or `null` if no tool is selected.
-   */
-  tool: GjEditorTool | null;
 }
 
-const initialState: GjEditorState = {
+const initialState: MapEditorDocState = {
   content: {
     type: 'FeatureCollection',
     properties: {
       name: "Root",
       id: "w1",
       hidden: false,
+      activeColor: "#ff9500",
     },
     features: [
       {
@@ -205,6 +148,26 @@ const initialState: GjEditorState = {
               [12.985839843750002, 47.517200697839414],
               [12.0849609375, 47.724544549099676],
               [10.920410156250002, 47.47266286861342]
+            ],
+            [
+              [12.139892578125002, 50.958426723359935],
+              [11.447753906250002, 51.15178610143037],
+              [11.392822265625, 51.37178037591739],
+              [10.656738281250002, 51.6521108615692],
+              [10.601806640625002, 51.998410382390325],
+              [11.008300781250002, 52.10650519075632],
+              [10.920410156250002, 52.44261787120725],
+              [10.78857421875, 52.8226825580693],
+              [11.634521484375, 53.04781795911469],
+              [12.205810546875002, 52.86249745970948],
+              [12.304687500000002, 52.0862573323384],
+              [13.128662109375002, 51.890053935216926],
+              [13.139648437500002, 51.66574141105715],
+              [12.54638671875, 51.6180165487737],
+              [12.260742187500002, 51.549751017014195],
+              [12.205810546875002, 51.41291212935532],
+              [12.293701171875002, 51.089722918116315],
+              [12.139892578125002, 50.958426723359935]
             ]
           ]
         },
@@ -275,10 +238,9 @@ const initialState: GjEditorState = {
     ],
   },
   selectedId: null,
-  tool: null,
 }
 
-const gjEditorSlice = createSlice({
+const mapEditorDocSlice = createSlice({
   name: 'geoJsonDoc',
   initialState,
   reducers: {
@@ -342,17 +304,11 @@ const gjEditorSlice = createSlice({
     setSelected (state, action: PayloadAction<string | null>) {
       state.selectedId = action.payload;
     },
-
-    setTool (state, action: PayloadAction<GjEditorTool | null>) {
-      const tool = action.payload;
-
-      state.tool = tool;
-    }
   },
 });
 
-export const gjEditorReducer = gjEditorSlice.reducer;
-export const gjEditorActions = gjEditorSlice.actions;
+export const mapEditorDocReducer = mapEditorDocSlice.reducer;
+export const mapEditorDocActions = mapEditorDocSlice.actions;
 
 function locateFeatureGroup (
   group: WritableDraft<LGroup>, elementId: string
@@ -440,7 +396,7 @@ function insertElement (
 }
 
 export function useGjEditorState () {
-  const ctx = useSelector((state: RootState) => state.gjEditor);
+  const ctx = useSelector((state: RootState) => state.mapEditorDoc);
 
   return {
     ...ctx,
@@ -464,7 +420,7 @@ function getAllElements (group: LGroup) : LElement[] {
   return arr;
 }
 
-function getSelectedElement (ctx: GjEditorState) {
+function getSelectedElement (ctx: MapEditorDocState) {
   if (ctx.selectedId === null) return null;
 
   return getElement(ctx.content, ctx.selectedId, true);

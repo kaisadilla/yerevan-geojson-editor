@@ -5,6 +5,7 @@ import styles from './Map.module.scss';
 import "leaflet/dist/leaflet.css";
 import { useEffect } from 'react';
 import LeafletElementMap from './LeafletElementMap';
+import MapEventHandler from './MapEventHandler';
 
 export const DEFAULT_ZOOM = 2;
 export const DEFAULT_MAP_CENTER = [18, 40];
@@ -26,6 +27,7 @@ function Map (props: MapProps) {
         zoomSnap={1}
       >
         <_MapContent />
+        <MapEventHandler />
       </MapContainer>
     </div>
   );

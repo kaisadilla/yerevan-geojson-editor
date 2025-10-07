@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { gjEditorReducer } from "./geojsonDocSlice";
+import { mapEditorDocReducer } from "./mapEditor/docSlice";
+import { mapEditorMapReducer } from "./mapEditor/mapSlice";
+import { mapEditorUiReducer } from "./mapEditor/uiSlice";
 
 export const store = configureStore({
   reducer: {
-    gjEditor: gjEditorReducer,
+    mapEditorDoc: mapEditorDocReducer,
+    mapEditorUi: mapEditorUiReducer,
+    mapEditorMap: mapEditorMapReducer,
   },
 });
 
