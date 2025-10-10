@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { BrowserRouter } from 'react-router';
 
+import { KeyboardProvider } from 'context/useKeyboard.tsx';
 import App from './App.tsx';
 import { store } from './state/store.ts';
 
@@ -41,9 +42,13 @@ createRoot(document.getElementById('root')!).render(
     >
     <BrowserRouter>
 
-      <Provider store={store}>
-        <App />
-      </Provider>
+      <KeyboardProvider>
+        
+        <Provider store={store}>
+          <App />
+        </Provider>
+        
+      </KeyboardProvider>
 
     </BrowserRouter>
     </MantineProvider>

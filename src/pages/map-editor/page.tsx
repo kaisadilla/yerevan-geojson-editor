@@ -1,4 +1,6 @@
+import { useEffect, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import useMapEditorSettings from "state/mapEditor/useSettings";
 import EditRibbon from "./EditRibbon";
 import ElementPanel from "./ElementPanel";
 import Map from "./Map";
@@ -9,9 +11,18 @@ export interface MapEditorPageProps {
 }
 
 function MapEditorPage (props: MapEditorPageProps) {
+  const settings = useMapEditorSettings();
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    console.log(ref.current.style);
+    ref.current.style.setProperty('--col-gj-active', settings.colors.active);
+  }, [settings]);
 
   return (
-    <div className={styles.page}>
+    <div ref={ref} className={styles.page}>
       <PanelGroup
         className={styles.documentPanelGroup}
         direction='horizontal'

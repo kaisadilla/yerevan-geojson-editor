@@ -36,13 +36,6 @@ export type LElementType = GeoJsonObject['type'] | 'FeatureCollection';
 
 export type LMemoryDocument = LGroup & {
   properties: {
-    activeColor: string;
+    
   };
 };
-
-/**
- * GeoJson's coordinate format: an array representing longitude then latitude.
- * Note: GeoJson also allows for a third number representing altitude, but
- * currently this app does not support that.
- */
-export type LngLat = [number, number];

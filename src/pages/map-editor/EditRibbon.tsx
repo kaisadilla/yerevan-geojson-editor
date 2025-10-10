@@ -5,6 +5,7 @@ import ToggleButton from "components/ToggleButton";
 import { Eraser, Goal, Move, Pencil, Scissors } from 'lucide-react';
 import type { LElementType } from "models/MapDocument";
 import type React from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useGjEditorState } from "state/mapEditor/docSlice";
 import { mapEditorUiActions, type MapEditorTool } from "state/mapEditor/uiSlice";
@@ -40,6 +41,17 @@ interface _PolygonProps {
 }
 
 function _Polygon (props: _PolygonProps) {
+  const ui = useMapEditorUi();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    }
+  }, [handleKeyDown]);
+
   return (
     <div className={styles.toolset}>
       <div className={styles.title}>Polygon</div>
@@ -80,6 +92,25 @@ function _Polygon (props: _PolygonProps) {
       </_Toggle>
     </div>
   );
+
+  function handleKeyDown (evt: KeyboardEvent) {
+    const tool: MapEditorTool | null = (() => {
+      if (evt.key === '1') return 'draw_vertices';
+      else if (evt.key === '2') return 'move_vertices';
+      else if (evt.key === '3') return 'cut';
+      else if (evt.key === '4') return 'delete_vertices';
+      else if (evt.key === '5') return 'union';
+      else if (evt.key === '6') return 'difference';
+      else if (evt.key === '7') return 'intersect';
+      else if (evt.key === '8') return 'set_origin';
+      else if (evt.key === '9') return 'move_shape';
+      return null;
+    })();
+
+    if (tool) {
+      dispatch(mapEditorUiActions.setTool(tool === ui.tool ? null : tool));
+    }
+  }
 }
 
 interface _ToggleProps {

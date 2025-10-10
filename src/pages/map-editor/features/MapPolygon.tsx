@@ -1,4 +1,4 @@
-import Convert from "Convert";
+import GLT from "GLT";
 import type { LPolygon } from "models/MapDocument";
 import { Polygon } from "react-leaflet";
 import { useDispatch } from "react-redux";
@@ -15,7 +15,7 @@ function MapPolygon ({
 
   return (
     <Polygon
-      positions={Convert.geoJson.polygon.leafletPositions(polygon)}
+      positions={GLT.gj.polygon.leafletPositions(polygon)}
       weight={2}
       color='var(--color-primary-d1)'
       eventHandlers={{

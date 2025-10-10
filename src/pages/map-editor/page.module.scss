@@ -1,4 +1,8 @@
 .page {
+  --col-gj-active: black; // This is set programatically in page.tsx
+  --col-gj-active-d1: color-mix(in srgb, var(--col-gj-active) 80%, black);
+  --col-gj-active-l1: color-mix(in srgb, var(--col-gj-active) 50%, white);
+
   width: 100vw;
   height: 100vh;
 

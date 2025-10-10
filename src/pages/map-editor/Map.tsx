@@ -1,11 +1,12 @@
 
-import { LayerGroup, LayersControl, MapContainer, TileLayer, useMap } from 'react-leaflet';
+import { LayerGroup, LayersControl, MapContainer, TileLayer, useMap, ZoomControl } from 'react-leaflet';
 import styles from './Map.module.scss';
 
 import "leaflet/dist/leaflet.css";
 import { useEffect } from 'react';
 import LeafletElementMap from './LeafletElementMap';
 import MapEventHandler from './MapEventHandler';
+import { MapEventEmitters } from './MapEvents';
 
 export const DEFAULT_ZOOM = 2;
 export const DEFAULT_MAP_CENTER = [18, 40];
@@ -17,20 +18,40 @@ export interface MapProps {
 
 function Map (props: MapProps) {
   return (
-    <div className={styles.map}>
+    <div
+      className={styles.map}
+      onMouseDown={handleMouseDown}
+    >
       <MapContainer
         className={styles.lMapContainer}
-        center={DEFAULT_MAP_CENTER} // TODO: Check why this is marked as error.
+        // @ts-ignore - react-leaflet has wrong prop interface
+        center={DEFAULT_MAP_CENTER}
         zoom={DEFAULT_ZOOM}
+        zoomControl={false}
         zoomDelta={1}
         wheelPxPerZoomLevel={80}
         zoomSnap={1}
+        keyboard={false}
       >
         <_MapContent />
         <MapEventHandler />
+        
+        <ZoomControl position="bottomright" />  
       </MapContainer>
     </div>
   );
+
+  function handleMouseDown (evt: React.MouseEvent) {
+    if (evt.button === 2) {
+      MapEventEmitters.rightClickDown(evt);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+  }
+
+  function handleMouseUp (evt: MouseEvent) {
+    document.removeEventListener('mouseup', handleMouseUp);
+    MapEventEmitters.rightClickUp(evt);
+  }
 }
 
 interface _MapContentProps {

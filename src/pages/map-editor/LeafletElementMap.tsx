@@ -1,7 +1,7 @@
 import type { GeoJsonObject } from 'geojson';
 import type { LPoint, LPolygon } from 'models/MapDocument';
 import { useGjEditorState } from 'state/mapEditor/docSlice';
-import EditPolygon from './features/EditPolygon';
+import ActiveFeature from './features/ActiveFeature';
 import MapPoint from './features/MapPoint';
 import MapPolygon from './features/MapPolygon';
 
@@ -29,14 +29,9 @@ function LeafletElementMap (props: LeafletElementMapProps) {
         key={p.properties.id + "_" + ctx.selectedId}
         polygon={p}
       />)}
-      {selected
-        && selected.type === 'Feature'
-        && selected.geometry.type === 'Polygon'
-        && <EditPolygon
-          key={ctx.selectedId}
-          polygon={selected as LPolygon}
-        />
-      }
+      
+
+      {selected && selected.type === 'Feature' && <ActiveFeature feature={selected} />}
     </>
   );
 

@@ -1,19 +1,18 @@
 import type { LeafletMouseEvent } from "leaflet";
 import { useMapEvents } from "react-leaflet";
-import { useDispatch } from "react-redux";
-import { mapEditorMapActions } from "state/mapEditor/mapSlice";
-import useMapEditorUi from "state/mapEditor/useUi";
+import { MapEventEmitters } from "./MapEvents";
 
 export default function MapEventHandler () {
-  const ctx = useMapEditorUi();
-  const dispatch = useDispatch();
-
   useMapEvents({
+    click (evt: LeafletMouseEvent) {
+      MapEventEmitters.leftClick(evt);
+    },
+    contextmenu (evt: LeafletMouseEvent) {
+      evt.originalEvent.preventDefault();
+    },
     mousemove (evt: LeafletMouseEvent) {
-      dispatch(
-        mapEditorMapActions.setHoveredCoords([evt.latlng.lng, evt.latlng.lat])
-      );
-    }
+      MapEventEmitters.mouseMove(evt);
+    },
   })
 
   return null;

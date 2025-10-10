@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction, type WritableDraft } from "@reduxjs/toolkit";
+import type { Geometry } from "geojson";
 import Logger from "Logger";
 import type { LElement, LFeature, LGroup, LMemoryDocument } from "models/MapDocument";
 import { useSelector } from "react-redux";
@@ -16,7 +17,6 @@ const initialState: MapEditorDocState = {
       name: "Root",
       id: "w1",
       hidden: false,
-      activeColor: "#ff9500",
     },
     features: [
       {
@@ -167,9 +167,9 @@ const initialState: MapEditorDocState = {
               [12.260742187500002, 51.549751017014195],
               [12.205810546875002, 51.41291212935532],
               [12.293701171875002, 51.089722918116315],
-              [12.139892578125002, 50.958426723359935]
-            ]
-          ]
+              [12.139892578125002, 50.958426723359935],
+            ],
+          ],
         },
         properties: {
           name: "Germany",
@@ -225,9 +225,9 @@ const initialState: MapEditorDocState = {
               [14.23828125, 52.8823912222619],
               [14.370117187500002, 53.553362785528094],
               [14.040527343750002, 53.72271667491848],
-              [14.150390625000002, 53.93021986394]
-            ]
-          ]
+              [14.150390625000002, 53.93021986394],
+            ],
+          ],
         },
         properties: {
           name: "Poland",
@@ -246,19 +246,6 @@ const mapEditorDocSlice = createSlice({
   reducers: {
     addFeature (state, action: PayloadAction<LFeature>) {
       state.content.features.push(action.payload);
-    },
-
-    setProperty (state, action: PayloadAction<{
-      elementId: string,
-      key: string,
-      value: any,
-    }>) {
-      const { elementId, key, value } = action.payload;
-
-      const el = getElement(state.content, elementId, true);
-      if (!el) return;
-
-      el.properties[key] = value;
     },
 
     moveElement (state, action: PayloadAction<{
@@ -299,6 +286,32 @@ const mapEditorDocSlice = createSlice({
       else {
         insertElement(targetGroup, originEl, targetId, position);
       }
+    },
+
+    setProperty (state, action: PayloadAction<{
+      elementId: string,
+      key: string,
+      value: any,
+    }>) {
+      const { elementId, key, value } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+
+      el.properties[key] = value;
+    },
+
+    updateGeometry (state, action: PayloadAction<{
+      elementId: string,
+      geometry: Geometry,
+    }>) {
+      const { elementId, geometry } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+      if (el.type === 'FeatureCollection') return;
+
+      el.geometry = geometry;
     },
     
     setSelected (state, action: PayloadAction<string | null>) {

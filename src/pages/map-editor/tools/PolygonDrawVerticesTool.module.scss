@@ -1,0 +1,28 @@
+.editPointer {
+  border-radius: 50%;
+  margin: -8px 0 0 -8px;
+  width: 12px;
+  height: 12px;
+  outline: 0;
+  transition: opacity ease 0.35s;
+  
+  background-color: #fff;
+  border: 1px solid #cf7900;
+  //border: 1px solid var(--col-gj-active);
+  border: 1px solid var(--col-gj-active-d1);
+}
+
+.editTooltip {
+  background-color: rgba(#fff, 0.6);
+  border: 1px solid rgba(#fff, 0.7);
+  width: 120px;
+  white-space: pre-wrap;
+  display: block;
+
+  &::before {
+    width: 0;
+    height: 0;
+    top: -1px;
+    border-bottom-color: rgba(white, 0.75);
+  }
+}

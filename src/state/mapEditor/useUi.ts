@@ -6,5 +6,5 @@ export default function useMapEditorUi () {
 
   return {
     ...ui,
-  }
+  };
 }
