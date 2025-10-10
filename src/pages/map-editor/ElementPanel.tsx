@@ -1,7 +1,7 @@
 import type { BaseEventPayload, DropTargetLocalizedData, ElementDragType } from "@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Text, Tooltip } from '@mantine/core';
-import { Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
+import { Boxes, Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
 import type { LElement, LElementType, LFeature, LGroup } from "models/MapDocument";
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -276,6 +276,12 @@ function _Ribbon () {
       <Tooltip.Floating label="Group">
         <button>
           <FolderPlus />
+        </button>
+      </Tooltip.Floating>
+
+      <Tooltip.Floating label="Geometry collection">
+        <button>
+          <Boxes />
         </button>
       </Tooltip.Floating>
     </div>

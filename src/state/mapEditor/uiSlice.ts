@@ -5,10 +5,12 @@ interface MapEditorUiState {
    * The editing tool currently in use, or `null` if no tool is selected.
    */
   tool: MapEditorTool | null;
+  isSettingsPanelExpanded: boolean;
 }
 
 const initialState: MapEditorUiState = {
   tool: null,
+  isSettingsPanelExpanded: false,
 }
 
 const mapEditorUiSlice = createSlice({
@@ -19,6 +21,11 @@ const mapEditorUiSlice = createSlice({
       const tool = action.payload;
 
       state.tool = tool;
+    },
+    setSettingsPanelExpanded (state, action: PayloadAction<boolean>) {
+      const value = action.payload;
+
+      state.isSettingsPanelExpanded = value;
     },
   },
 });

@@ -1,0 +1,59 @@
+import { Tooltip } from '@mantine/core';
+import { CaretDoubleDownIcon, CaretDoubleUpIcon } from '@phosphor-icons/react';
+import Button from 'components/Button';
+import { useDispatch } from 'react-redux';
+import { mapEditorUiActions } from 'state/mapEditor/uiSlice';
+import useMapEditorUi from 'state/mapEditor/useUi';
+import { $cl } from 'utils';
+import styles from './BasePanel.module.scss';
+
+export interface PanelProps {
+  name: string;
+  className?: string;
+  children: React.ReactNode;
+}
+
+function BasePanel ({
+  name,
+  className,
+  children,
+}: PanelProps) {
+  const ui = useMapEditorUi();
+  const dispatch = useDispatch();
+
+  if (ui.isSettingsPanelExpanded === false) return (
+    <div className={styles.panel}>
+      <Tooltip.Floating label={`Expand settings for ${name}.`}>
+        <Button onClick={handleExpand}>
+          <CaretDoubleDownIcon size={24} weight='thin' />
+        </Button>
+      </Tooltip.Floating>
+    </div>
+  )
+
+  return (
+    <div className={styles.panel} data-expanded={true}>
+      <div className={styles.header}>
+        <Tooltip.Floating label="Collapse">
+          <Button onClick={handleCollapse}>
+            <CaretDoubleUpIcon size={24} weight='thin' />
+          </Button>
+        </Tooltip.Floating>
+        <h3>{name}</h3>
+      </div>
+      <div className={$cl(styles.content, className)}>
+        {children}
+      </div>
+    </div>
+  );
+
+  function handleExpand () {
+    dispatch(mapEditorUiActions.setSettingsPanelExpanded(true));
+  }
+
+  function handleCollapse () {
+    dispatch(mapEditorUiActions.setSettingsPanelExpanded(false));
+  }
+}
+
+export default BasePanel;

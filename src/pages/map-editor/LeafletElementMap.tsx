@@ -30,8 +30,10 @@ function LeafletElementMap (props: LeafletElementMapProps) {
         polygon={p}
       />)}
       
-
-      {selected && selected.type === 'Feature' && <ActiveFeature feature={selected} />}
+      {selected
+        && selected.type === 'Feature'
+        && selected.properties.hidden === false // TODO: Check if parent group is hidden.
+        && <ActiveFeature feature={selected} />}
     </>
   );
 

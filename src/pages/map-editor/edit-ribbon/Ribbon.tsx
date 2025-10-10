@@ -1,6 +1,6 @@
 /// <reference types="vite-plugin-svgr/client" />
-import { Tooltip } from "@mantine/core";
 import { IntersectSquareIcon, PolygonIcon, SubtractSquareIcon, UniteSquareIcon } from "@phosphor-icons/react";
+import DescriptiveTooltip from "components/DescriptiveTooltip";
 import ToggleButton from "components/ToggleButton";
 import { Eraser, Goal, Move, Pencil, Scissors } from 'lucide-react';
 import type { LElementType } from "models/MapDocument";
@@ -10,7 +10,7 @@ import { useDispatch } from "react-redux";
 import { useGjEditorState } from "state/mapEditor/docSlice";
 import { mapEditorUiActions, type MapEditorTool } from "state/mapEditor/uiSlice";
 import useMapEditorUi from "state/mapEditor/useUi";
-import styles from './EditRibbon.module.scss';
+import styles from './Ribbon.module.scss';
 
 export interface EditRibbonProps {
   
@@ -55,39 +55,84 @@ function _Polygon (props: _PolygonProps) {
   return (
     <div className={styles.toolset}>
       <div className={styles.title}>Polygon</div>
-      <_Toggle label="Draw vertices" tool='draw_vertices'>
+      <_Toggle
+        tool='draw_vertices'
+        shortcut="1"
+        label="Draw vertices"
+        description="Add new vertices to this polygon."
+      >
         <Pencil />
       </_Toggle>
 
-      <_Toggle label="Move vertices" tool='move_vertices'>
+      <_Toggle
+        tool='move_vertices'
+        shortcut="2"
+        label="Move vertices"
+        description="Move the vertices that make up this polygon, and add new vertices between them."
+      >
         <PolygonIcon width={24} height={24} weight='thin' />
       </_Toggle>
 
-      <_Toggle label="Cut shape" tool='cut'>
+      <_Toggle
+        tool='cut'
+        shortcut="3"
+        label="Cut shape"
+        description="Draw a new shape that will be cut from this one."
+      >
         <Scissors />
       </_Toggle>
 
-      <_Toggle label="Delete vertices" tool='delete_vertices'>
+      <_Toggle
+        tool='delete_vertices'
+        shortcut="4"
+        label="Delete vertices"
+        description="Remove individual vertices, or entire sections of the shape."
+      >
         <Eraser />
       </_Toggle>
 
-      <_Toggle label="Add other polygon" tool='union'>
+      <_Toggle
+        tool='union'
+        shortcut="5"
+        label="Add other polygon"
+        description="Choose other polygons to add their area to this one."
+      >
         <UniteSquareIcon width={24} height={24} weight='thin' />
       </_Toggle>
 
-      <_Toggle label="Subtract other polygon" tool='difference'>
+      <_Toggle
+        tool='difference'
+        shortcut="6"
+        label="Subtract other polygon"
+        description="Choose other polygons to remove their area from this one."
+      >
         <SubtractSquareIcon width={24} height={24} weight='thin' />
       </_Toggle>
 
-      <_Toggle label="Keep intersection with other polygon" tool='intersect'>
+      <_Toggle
+        tool='intersect'
+        shortcut="7"
+        label="Keep intersection with other polygon"
+        description="Choose another polygon to remove all area in this polygon that isn't shared with the one chosen."
+      >
         <IntersectSquareIcon width={24} height={24} weight='thin' />
       </_Toggle>
 
-      <_Toggle label="Set first vertex" tool='set_origin'>
+      <_Toggle
+        tool='set_origin'
+        shortcut="8"
+        label="Set first vertex"
+        description="Choose which vertex becomes the first vertex of the shape."
+      >
         <Goal />
       </_Toggle>
 
-      <_Toggle label="Move polygon" tool='move_shape'>
+      <_Toggle
+        tool='move_shape'
+        shortcut="9"
+        label="Move polygon"
+        description="Move the polygon itself around the map."
+      >
         <Move />
       </_Toggle>
     </div>
@@ -114,14 +159,18 @@ function _Polygon (props: _PolygonProps) {
 }
 
 interface _ToggleProps {
-  label: string;
   tool: MapEditorTool;
+  label: string;
+  description?: string;
+  shortcut?: string;
   children: React.ReactElement;
 }
 
 function _Toggle ({
-  label,
   tool,
+  label,
+  description,
+  shortcut,
   children,
 }: _ToggleProps) {
   const doc = useGjEditorState();
@@ -129,14 +178,20 @@ function _Toggle ({
   const dispatch = useDispatch();
 
   return (
-    <Tooltip.Floating label={label} position='bottom' offset={30}>
+    <DescriptiveTooltip
+      label={label}
+      description={description}
+      shortcut={shortcut}
+      position='bottom'
+      offset={16}
+    >
       <ToggleButton
         active={ui.tool === tool}
         onChange={v => setTool(tool, v)}
       >
         {children}
       </ToggleButton>
-    </Tooltip.Floating>
+    </DescriptiveTooltip>
   );
 
   function setTool (tool: MapEditorTool, value: boolean) {

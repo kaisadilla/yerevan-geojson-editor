@@ -1,0 +1,60 @@
+.tooltip {
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  max-width: 300px;
+
+  > .header {
+    width: 100%;
+    padding: 8px 16px;
+
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+
+    &[data-desc=true] {
+      border-bottom: 1px solid var(--color-primary-l1);
+    }
+
+    h3 {
+      font-weight: 600;
+      font-size: 10pt;
+    }
+
+    > .shortcut {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      align-items: center;
+      padding: 0 8px;
+
+      background-color: var(--color-secondary-l5);
+      border: 1px solid var(--color-secondary-l2);
+
+      font-family: var(--font-consolas);
+      color: var(--color-secondary-d3);
+
+      > span {
+        font-size: 8pt;
+      }
+    }
+  }
+
+  > .description {
+    width: 100%;
+    padding: 8px 16px;
+
+    .textRoot {
+      width: 100%;
+
+      font-size: 9pt;
+      font-style: italic;
+      color: var(--color-secondary-d2);
+
+      white-space: normal;
+      word-break: keep-all !important;
+      hyphens: none;
+    }
+  }
+}

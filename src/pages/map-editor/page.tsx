@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import useMapEditorSettings from "state/mapEditor/useSettings";
-import EditRibbon from "./EditRibbon";
+import EditRibbon from "./edit-ribbon/Ribbon";
+import SettingsPanel from "./edit-ribbon/SettingsPanel";
+import EditorRibbon from "./EditorRibbon";
 import ElementPanel from "./ElementPanel";
 import Map from "./Map";
 import styles from "./page.module.scss";
@@ -40,6 +42,7 @@ function MapEditorPage (props: MapEditorPageProps) {
           </div>
           <div className={styles.mapFrame}>
             <Map />
+            <SettingsPanel />
           </div>
         </Panel>
         <PanelResizeHandle><div /></PanelResizeHandle>
@@ -50,7 +53,7 @@ function MapEditorPage (props: MapEditorPageProps) {
         </Panel>
       </PanelGroup>
       <div className={styles.appToolbar}>
-        MAP EDITOR | new - open - save - import - export | undo - redo - properties
+        <EditorRibbon />
       </div>
     </div>
   );

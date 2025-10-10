@@ -1,0 +1,40 @@
+.panel {
+  $margin: 6px;
+
+  user-select: none;
+
+  position: absolute;
+  top: $margin;
+  left: $margin;
+  z-index: 1000;
+
+  background-color: white;
+  border: 1px solid var(--color-frame);
+
+  display: flex;
+  flex-direction: column;
+
+  &[data-expanded=true] {
+    width: 350px;
+    height: 200px;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--color-frame);
+
+    > h3 {
+      font-size: 14pt;
+      font-weight: 300;
+      color: var(--color-primary-d1);
+    }
+  }
+
+  .content {
+    flex: 1;
+    padding: 8px;
+  }
+}

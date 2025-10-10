@@ -1,0 +1,21 @@
+.ribbon {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+
+  .toolButton {
+    height: 100%;
+    width: 180px;
+  }
+
+  .documentRibbon {
+    height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+}
