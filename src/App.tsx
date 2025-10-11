@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes } from 'react-router';
 import MapEditorPage from './pages/map-editor/page';
 
 // eslint-disable-next-line import/order
@@ -11,6 +11,7 @@ import './styles/root.scss';
 function App () {
   return (
     <Routes>
+      <Route path="/" element={<Navigate to="/e/" replace />} />
       <Route path="e" element={<MapEditorPage />} />
     </Routes>
   );
