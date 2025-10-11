@@ -16,7 +16,7 @@ const initialState: MapEditorDocState = {
     properties: {
       name: "Root",
       id: "w1",
-      hidden: false,
+      _leaflys_hidden: false,
     },
     features: [
       {
@@ -28,7 +28,8 @@ const initialState: MapEditorDocState = {
         properties: {
           name: "Lonely dot",
           id: "a",
-          hidden: false,
+          interesting: "yes",
+          _leaflys_hidden: false,
         }
       },
       {
@@ -43,7 +44,7 @@ const initialState: MapEditorDocState = {
         properties: {
           name: "Straight line",
           id: "b",
-          hidden: false,
+          _leaflys_hidden: false,
         }
       },
       {
@@ -51,7 +52,7 @@ const initialState: MapEditorDocState = {
         properties: {
           name: "Some group",
           id: "w2",
-          hidden: false,
+          _leaflys_hidden: false,
         },
         features: [
           {
@@ -63,7 +64,7 @@ const initialState: MapEditorDocState = {
             properties: {
               name: "Dot inside a group",
               id: "c",
-              hidden: false,
+              _leaflys_hidden: false,
             }
           },
           {
@@ -71,7 +72,7 @@ const initialState: MapEditorDocState = {
             properties: {
               name: "Inner group",
               id: "w3",
-              hidden: false,
+              _leaflys_hidden: false,
             },
             features: [
               {
@@ -83,7 +84,7 @@ const initialState: MapEditorDocState = {
                 properties: {
                   name: "Nested dot",
                   id: "d",
-                  hidden: false,
+                  _leaflys_hidden: false,
                 }
               }
             ]
@@ -102,7 +103,7 @@ const initialState: MapEditorDocState = {
         properties: {
           name: "Straight line",
           id: "xx3",
-          hidden: false,
+          _leaflys_hidden: false,
         }
       },
       {
@@ -174,7 +175,7 @@ const initialState: MapEditorDocState = {
         properties: {
           name: "Germany",
           id: "ger-many",
-          hidden: false,
+          _leaflys_hidden: false,
         },
       },
       {
@@ -232,7 +233,7 @@ const initialState: MapEditorDocState = {
         properties: {
           name: "Poland",
           id: "poulan",
-          hidden: false,
+          _leaflys_hidden: false,
         },
       },
     ],
@@ -299,6 +300,20 @@ const mapEditorDocSlice = createSlice({
       if (!el) return;
 
       el.properties[key] = value;
+    },
+
+    renameProperty (state, action: PayloadAction<{
+      elementId: string,
+      key: string,
+      newKey: string,
+    }>) {
+      const { elementId, key, newKey } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+
+      el.properties[newKey] = el.properties[key];
+      delete el.properties[key];
     },
 
     updateGeometry (state, action: PayloadAction<{

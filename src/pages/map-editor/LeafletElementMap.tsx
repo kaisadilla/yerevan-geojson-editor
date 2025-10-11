@@ -32,13 +32,13 @@ function LeafletElementMap (props: LeafletElementMapProps) {
       
       {selected
         && selected.type === 'Feature'
-        && selected.properties.hidden === false // TODO: Check if parent group is hidden.
+        && selected.properties._leaflys_hidden === false // TODO: Check if parent group is hidden.
         && <ActiveFeature feature={selected} />}
     </>
   );
 
   function getFeaturesOfType (type: GeoJsonObject['type']) {
-    return elements.filter(e => e.properties.hidden === false
+    return elements.filter(e => e.properties._leaflys_hidden === false
       && e.properties.id !== ctx.selectedId
       && e.type === 'Feature'
       && e.geometry.type === type

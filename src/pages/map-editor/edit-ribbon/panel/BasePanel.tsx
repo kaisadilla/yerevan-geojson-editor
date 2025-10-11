@@ -1,6 +1,7 @@
 import { Tooltip } from '@mantine/core';
 import { CaretDoubleDownIcon, CaretDoubleUpIcon } from '@phosphor-icons/react';
 import Button from 'components/Button';
+import type React from 'react';
 import { useDispatch } from 'react-redux';
 import { mapEditorUiActions } from 'state/mapEditor/uiSlice';
 import useMapEditorUi from 'state/mapEditor/useUi';
@@ -55,5 +56,22 @@ function BasePanel ({
     dispatch(mapEditorUiActions.setSettingsPanelExpanded(false));
   }
 }
+
+interface _RibbonProps {
+  children: React.ReactNode;
+}
+
+function _Ribbon ({
+  children,
+}: _RibbonProps) {
+
+  return (
+    <div className={styles.ribbon}>
+      {children}
+    </div>
+  );
+}
+
+BasePanel.Ribbon = _Ribbon;
 
 export default BasePanel;

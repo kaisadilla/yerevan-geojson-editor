@@ -7,8 +7,12 @@ import type { Feature, GeoJsonObject, GeoJsonProperties, Geometry, Point, Polygo
 export type LElementProperties = GeoJsonProperties & {
   name: string;
   id: string;
-  hidden: boolean;
+  _leaflys_hidden: boolean;
 };
+
+export const LEAFLYS_PROP_PREFIX = "_leaflys_";
+export const LEAFLYS_PROP_DUPLICATE_KEY_PREFIX = "_leaflys_dk_";
+export const LEAFLYS_PROP_INVALID_PREFIX_KEY_PREFIX = "_leaflys_ip_";
 
 /**
  * Represents a Feature that contains Leaflys properties.

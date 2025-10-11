@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import useMapEditorSettings from "state/mapEditor/useSettings";
+import Details from "./details-panel/Details";
 import EditRibbon from "./edit-ribbon/Ribbon";
 import SettingsPanel from "./edit-ribbon/SettingsPanel";
 import EditorRibbon from "./EditorRibbon";
@@ -48,7 +49,7 @@ function MapEditorPage (props: MapEditorPageProps) {
         <PanelResizeHandle><div /></PanelResizeHandle>
         <Panel className={styles.detailsPanel} defaultSize={20} minSize={5}>
           <div className={styles.detailsFrame}>
-            DETAILS
+            <Details />
           </div>
         </Panel>
       </PanelGroup>

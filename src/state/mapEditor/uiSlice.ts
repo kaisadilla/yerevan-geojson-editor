@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction, type WritableDraft } from "@reduxjs/toolkit";
 
 interface MapEditorUiState {
   /**
@@ -6,11 +6,23 @@ interface MapEditorUiState {
    */
   tool: MapEditorTool | null;
   isSettingsPanelExpanded: boolean;
+  toolSettings: {
+    snap: boolean;
+    snapDistance: number;
+    pencilStep: number;
+    vertexSize: number;
+  };
 }
 
 const initialState: MapEditorUiState = {
   tool: null,
   isSettingsPanelExpanded: false,
+  toolSettings: {
+    snap: false,
+    snapDistance: 20,
+    pencilStep: 10,
+    vertexSize: 12,
+  },
 }
 
 const mapEditorUiSlice = createSlice({
@@ -22,10 +34,22 @@ const mapEditorUiSlice = createSlice({
 
       state.tool = tool;
     },
+
     setSettingsPanelExpanded (state, action: PayloadAction<boolean>) {
       const value = action.payload;
 
       state.isSettingsPanelExpanded = value;
+    },
+
+    setToolSettings<K extends keyof MapEditorUiState['toolSettings']> (
+      state: WritableDraft<MapEditorUiState>, action: PayloadAction<{
+        key: K,
+        value: MapEditorUiState['toolSettings'][K],
+      }>
+    ) {
+      const { key, value } = action.payload;
+
+      state.toolSettings[key] = value;
     },
   },
 });

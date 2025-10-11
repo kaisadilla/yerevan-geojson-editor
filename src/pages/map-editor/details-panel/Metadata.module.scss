@@ -1,0 +1,28 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  
+  padding: 12px 16px;
+
+  border-top: 1px solid var(--color-frame);
+
+  .datum {
+    display: flex;
+    flex-direction: row;
+
+    font-size: 10pt;
+
+    .title {
+      color: var(--color-primary-d1);
+
+      width: 30%;
+      min-width: 60px;
+    }
+
+    .value {
+      font-style: italic;
+      color: var(--color-secondary-d2);
+    }
+  }
+}

@@ -8,6 +8,7 @@ import { Marker, Polygon, Polyline, Tooltip, useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { useGjEditorState } from "state/mapEditor/docSlice";
 import useMapEditorSettings from 'state/mapEditor/useSettings';
+import useMapEditorUi from 'state/mapEditor/useUi';
 import MapEvents from '../MapEvents';
 import styles from './PolygonDraw.module.scss';
 
@@ -23,18 +24,19 @@ function PolygonDraw ({
   shape,
   onAddVertex,
 }: PolygonDrawProps) {
+  const ui = useMapEditorUi();
   const settings = useMapEditorSettings();
 
   const lShape = shape.map(c => GLT.gj.coord.leaflet(c)); // latlng instead of lnglat.
 
   const firstVertex = L.divIcon({
     className: styles.firstVertex,
-    iconSize: [20, 20],
+    iconSize: [ui.toolSettings.vertexSize * (3 / 2), ui.toolSettings.vertexSize * (3 / 2)],
   });
 
   const vertex = L.divIcon({
     className: styles.vertex,
-    iconSize: [12, 12],
+    iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
   });
 
   return (<>
@@ -72,6 +74,7 @@ function _NextVertex ({
   onAddVertex,
 }: _NextVertexProps) {
   const doc = useGjEditorState();
+  const ui = useMapEditorUi();
   const settings = useMapEditorSettings();
   const keyboard = useKeyboard();
   const map = useMap();
@@ -82,7 +85,7 @@ function _NextVertex ({
 
   const vertex = L.divIcon({
     className: styles.nextVertex,
-    iconSize: [12, 12],
+    iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
   });
 
   useEffect(() => {
@@ -153,7 +156,7 @@ function _NextVertex ({
     );
     const pxCursor = map.latLngToLayerPoint(cursorPos);
 
-    if (MathExt.vec2distance(pxLast, pxCursor) > 10) {
+    if (MathExt.vec2distance(pxLast, pxCursor) > ui.toolSettings.pencilStep) {
       onAddVertex?.(hoveredCoords);
     }
   }

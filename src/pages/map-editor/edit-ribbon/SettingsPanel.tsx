@@ -1,5 +1,5 @@
 import useMapEditorUi from 'state/mapEditor/useUi';
-import DrawVerticesPanel from './polygon/DrawVerticesPanel';
+import DrawVerticesPanel from './panel/polygon/DrawVerticesPanel';
 
 export interface SettingsPanelProps {
   

@@ -1,6 +1,7 @@
 import type { BaseEventPayload, DropTargetLocalizedData, ElementDragType } from "@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
-import { Text, Tooltip } from '@mantine/core';
+import { Text } from '@mantine/core';
+import DescriptiveTooltip from "components/DescriptiveTooltip";
 import { Boxes, Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
 import type { LElement, LElementType, LFeature, LGroup } from "models/MapDocument";
 import { useEffect, useRef, useState } from 'react';
@@ -119,7 +120,7 @@ function _Element ({
       data-dragged={isDragged}
       data-drop-target={dropTarget}
       data-valid-drop-target={validDropTarget}
-      data-hidden={element.properties.hidden || hidden}
+      data-hidden={element.properties._leaflys_hidden || hidden}
     >
       {validDropTarget && (dropTarget === 'before' || dropTarget === 'after') && <div
         className={styles.dropTarget}
@@ -164,8 +165,8 @@ function _Element ({
         onClick={e => e.stopPropagation()}
       >
         <button onClick={handleToggleVisibility}>
-          {element.properties.hidden === false && <Eye />}
-          {element.properties.hidden && <EyeOff />}
+          {element.properties._leaflys_hidden === false && <Eye />}
+          {element.properties._leaflys_hidden && <EyeOff />}
         </button>
       </div>
     </div>}
@@ -178,7 +179,7 @@ function _Element ({
         key={c.properties.id}
         element={c}
         depth={depth + 1}
-        hidden={hidden || element.properties.hidden}
+        hidden={hidden || element.properties._leaflys_hidden}
         validDropTarget={validDropTarget}
       />)}
     </div>}
@@ -234,8 +235,8 @@ function _Element ({
   function handleToggleVisibility () {
     dispatch(mapEditorDocActions.setProperty({
       elementId: element.properties.id,
-      key: 'hidden',
-      value: !element.properties.hidden,
+      key: '_leaflys_hidden',
+      value: !element.properties._leaflys_hidden,
     }));
   }
 }
@@ -243,47 +244,62 @@ function _Element ({
 function _Ribbon () {
   return (
     <div className={styles.ribbon}>
-      <Tooltip.Floating label="Point">
-        <button>
-          <MapPin />
-        </button>
-      </Tooltip.Floating>
-
-      <Tooltip.Floating label="Line">
-        <button>
-          <Waypoints />
-        </button>
-      </Tooltip.Floating>
-
-      <Tooltip.Floating label="Polygon">
-        <button>
-          <Pentagon />
-        </button>
-      </Tooltip.Floating>
-
-      <Tooltip.Floating label="Square">
-        <button>
-          <Square />
-        </button>
-      </Tooltip.Floating>
-
-      <Tooltip.Floating label="Circle">
-        <button>
-          <Circle />
-        </button>
-      </Tooltip.Floating>
-
-      <Tooltip.Floating label="Group">
+      <DescriptiveTooltip
+        label="Group"
+        description="s"
+      >
         <button>
           <FolderPlus />
         </button>
-      </Tooltip.Floating>
+      </DescriptiveTooltip>
 
-      <Tooltip.Floating label="Geometry collection">
+      <DescriptiveTooltip
+        label="Point"
+      >
+        <button>
+          <MapPin />
+        </button>
+      </DescriptiveTooltip>
+
+      <DescriptiveTooltip
+        label="Line"
+      >
+        <button>
+          <Waypoints />
+        </button>
+      </DescriptiveTooltip>
+
+      <DescriptiveTooltip
+        label="Polygon"
+      >
+        <button>
+          <Pentagon />
+        </button>
+      </DescriptiveTooltip>
+
+      <DescriptiveTooltip
+        label="Square"
+      >
+        <button>
+          <Square />
+        </button>
+      </DescriptiveTooltip>
+
+      <DescriptiveTooltip
+        label="Circle"
+      >
+        <button>
+          <Circle />
+        </button>
+      </DescriptiveTooltip>
+
+      <DescriptiveTooltip
+        label="Geometry collection"
+      >
         <button>
           <Boxes />
         </button>
-      </Tooltip.Floating>
+      </DescriptiveTooltip>
     </div>
   );
 }

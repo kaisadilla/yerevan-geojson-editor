@@ -1,3 +1,7 @@
+:root {
+  --mantine-font-size-sm: 10pt;
+}
+
 .mantine-Tooltip-tooltip,
 .mantine-TooltipFloating-tooltip {
   background-color: white;
@@ -6,4 +10,43 @@
   color: var(--color-text);
   font-size: 10pt;
   z-index: 5000000 !important;
+}
+
+.mantine-TextInput-input {
+  --input-radius: 0;
+  --input-bd: transparent;
+
+  margin: 0;
+  transition: none;
+  font-size: 10pt;
+
+  &:focus {
+    background-color: var(--color-primary-l3);
+    border-color: var(--color-primary);
+  }
+
+  &[readonly] {
+    color: var(--color-secondary);
+
+    &:focus {
+      background-color: var(--color-secondary-l4);
+      border-color: var(--color-secondary);
+      
+      &::selection {
+        background-color: var(--color-secondary-l1);
+        color: white;
+      }
+    }
+  }
+}
+
+.mantine-Slider-root {
+  .mantine-Slider-track {
+    --slider-radius: 0;
+    height: 1px;
+  }
+
+  .mantine-Slider-thumb {
+  --slider-size: 48px;
+  }
 }

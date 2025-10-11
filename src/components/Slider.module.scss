@@ -1,0 +1,19 @@
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  padding: 2px 0;
+
+  .label {
+    display: flex;
+    flex-direction: row;
+    gap: 0.2em;
+
+    svg {
+      color: var(--color-primary);
+    }
+  }
+
+  :global(.mantine-Slider-root) {
+    flex: 1;
+  }
+}

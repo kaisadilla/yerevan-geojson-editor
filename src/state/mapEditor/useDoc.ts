@@ -11,6 +11,7 @@ export default function useMapEditorDoc () {
     getAllElements: (group: LGroup | null = null) => 
       getAllElements(group ?? doc.content),
     getSelectedElement: () => getSelectedElement(doc.content, doc.selectedId),
+    idExists: (elementId: string) => idExists(doc.content, elementId),
   }
 }
 
@@ -32,6 +33,16 @@ function getSelectedElement (document: LMemoryDocument, selectedId: string | nul
   if (selectedId === null) return null;
 
   return getElement(document, selectedId, true);
+}
+
+function idExists (group: LGroup, elementId: string) {
+  for (const el of group.features) {
+    if (el.properties.id === elementId) return true;
+
+    if (el.type === 'FeatureCollection') {
+      if (idExists(el, elementId)) return true;
+    }
+  }
 }
 
 // TODO: Remove

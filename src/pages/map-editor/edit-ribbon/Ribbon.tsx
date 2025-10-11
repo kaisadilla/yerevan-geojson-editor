@@ -29,6 +29,8 @@ function EditRibbon (props: EditRibbonProps) {
     type = el.geometry.type;
   }
 
+  if (el?.properties._leaflys_hidden) return <div className={styles.ribbon} />;
+
   return (
     <div className={styles.ribbon}>
       {type === 'Polygon' && <_Polygon />}
