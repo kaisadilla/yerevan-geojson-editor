@@ -246,7 +246,7 @@ function _Ribbon () {
     <div className={styles.ribbon}>
       <DescriptiveTooltip
         label="Group"
-        description="s"
+        description="A folder to group features together. This is a Leaflys-only feature: the document will be flattened when saved."
       >
         <button>
           <FolderPlus />
@@ -295,6 +295,7 @@ function _Ribbon () {
 
       <DescriptiveTooltip
         label="Geometry collection"
+        description="A GeoJson collection of features. Leaflys will automatically pick the correct collection type on save. As per GeoJson standard, the contents of a GeoJson collection are not independent and will not retain their individual properties."
       >
         <button>
           <Boxes />

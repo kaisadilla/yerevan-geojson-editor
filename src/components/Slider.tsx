@@ -1,5 +1,6 @@
-import { Input, Slider as MSlider, Tooltip, type SliderProps as MSliderProps } from '@mantine/core';
+import { Input, Slider as MSlider, type SliderProps as MSliderProps } from '@mantine/core';
 import { QuestionIcon } from '@phosphor-icons/react';
+import DescriptiveTooltip from './DescriptiveTooltip';
 import styles from './Slider.module.scss';
 
 export interface SliderProps extends MSliderProps {
@@ -22,11 +23,11 @@ function Slider ({
       }}
       label={<>
         {label}
-        {description && <Tooltip
-          label={description}
+        {description && <DescriptiveTooltip
+          description={description}
         >
           <QuestionIcon size={16} />
-        </Tooltip>}
+        </DescriptiveTooltip>}
       </>}
       labelProps={{
         className: styles.label,

@@ -2,8 +2,8 @@ import { Text, Tooltip, type TooltipProps } from '@mantine/core';
 import { Keyboard } from 'lucide-react';
 import styles from './DescriptiveTooltip.module.scss';
 
-export interface DescriptiveTooltipProps extends TooltipProps {
-  label: string;
+export interface DescriptiveTooltipProps extends Omit<TooltipProps, 'label'> {
+  label?: string;
   description?: string;
   shortcut?: string;
   children: React.ReactNode;
@@ -25,13 +25,13 @@ function DescriptiveTooltip ({
       }}
       label={
         <>
-          <div className={styles.header} data-desc={!!description}>
+          {label && <div className={styles.header} data-desc={!!description}>
             <h3>{label}</h3>
             {shortcut && <div className={styles.shortcut}>
               <Keyboard />
               <span>{shortcut}</span>
             </div>}
-          </div>
+          </div>}
           {description && <div className={styles.description}>
             <Text classNames={{ root: styles.textRoot }}>
               {description}
