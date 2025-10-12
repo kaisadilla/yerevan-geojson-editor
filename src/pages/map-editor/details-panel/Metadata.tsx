@@ -1,3 +1,4 @@
+import * as turf from '@turf/turf';
 import Fmt from "Fmt";
 import type { MapperElement, MapperPolygon } from "models/MapDocument";
 import styles from './Metadata.module.scss';
@@ -24,10 +25,12 @@ interface _PolygonProps {
 function _Polygon ({
   polygon
 }: _PolygonProps) {
-  const area = 3;// turf.area(polygon) / 1_000_000;
-  const vertices = 3;// polygon.geometry.coordinates.reduce(
-  //  (acc, cur) => acc += cur.length, 0
-  //);
+  const gj = turf.polygon([polygon.vertices]);
+
+  const area =  turf.area(gj) / 1_000_000;
+  const vertices = gj.geometry.coordinates.reduce(
+    (acc, cur) => acc += cur.length, 0
+  );
 
   return (
     <div className={styles.panel}>

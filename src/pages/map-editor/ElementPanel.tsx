@@ -7,6 +7,7 @@ import type { MapperElement } from "models/MapDocument";
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { MapEditorDocActions } from 'state/mapEditor/docSlice';
+import useMapEditorDoc from "state/mapEditor/useDoc";
 import type { RootState } from 'state/store';
 import { $cl } from 'utils';
 import MaterialSymbol from '../../components/MaterialSymbol';
@@ -39,14 +40,12 @@ function ElementPanel (props: ElementPanelProps) {
 interface _ElementProps {
   element: MapperElement;
   depth: number;
-  hidden?: boolean;
   validDropTarget?: boolean;
 }
 
 function _Element ({
   element,
   depth,
-  hidden = false,
   validDropTarget = true,
 }: _ElementProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -57,7 +56,7 @@ function _Element ({
 
   validDropTarget = validDropTarget && isDragged === false;
 
-  const ctx = useSelector((state: RootState) => state.mapEditorDoc);
+  const doc = useMapEditorDoc();
   const dispatch = useDispatch();
 
   // Drag & Drop
@@ -103,6 +102,7 @@ function _Element ({
   }
 
   const hierarchyIndent = HIERARCHY_INDENT_WIDTH * depth;
+  const isHidden = doc.isElementHidden(element.id) ?? false;
 
   return (<>
     {depth >= 0 && <div
@@ -113,11 +113,11 @@ function _Element ({
       )}
       role='button'
       onClick={handleClick}
-      data-selected={ctx.selectedId === element.id}
+      data-selected={doc.selectedId === element.id}
       data-dragged={isDragged}
       data-drop-target={dropTarget}
       data-valid-drop-target={validDropTarget}
-      data-hidden={element.isHidden || hidden} // TODO: Implement determining if group hides element.
+      data-hidden={isHidden}
     >
       {validDropTarget && (dropTarget === 'before' || dropTarget === 'after') && <div
         className={styles.dropTarget}
@@ -178,14 +178,13 @@ function _Element ({
         key={c.id}
         element={c}
         depth={depth + 1}
-        hidden={hidden || element.isHidden} // TODO: Hidden system.
         validDropTarget={validDropTarget}
       />)}
     </div>}
   </>)
 
   function handleClick () {
-    if (ctx.selectedId === element.id) return;
+    if (doc.selectedId === element.id) return;
 
     dispatch(MapEditorDocActions.setSelected(element.id));
   }

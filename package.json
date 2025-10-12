@@ -38,6 +38,7 @@
     "react-resizable-panels": "^3.0.6",
     "react-router": "^7.6.0",
     "sass": "^1.89.0",
+    "uuid": "^13.0.0",
     "vite-tsconfig-paths": "^5.1.4"
   },
   "devDependencies": {

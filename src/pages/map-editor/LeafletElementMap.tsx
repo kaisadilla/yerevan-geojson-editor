@@ -32,7 +32,7 @@ function LeafletElementMap (props: LeafletElementMapProps) {
       {selected
         && selected.type !== 'Group'
         && selected.type !== 'Collection'
-        && selected.isHidden === false // TODO: Check if parent group is hidden.
+        && doc.isElementHidden(selected.id) === false
         && <ActiveFeature feature={selected} />}
     </>
   );
@@ -40,7 +40,7 @@ function LeafletElementMap (props: LeafletElementMapProps) {
   function getFeaturesOfType (type: 'Point') : MapperPoint[];
   function getFeaturesOfType (type: 'Polygon') : MapperPolygon[];
   function getFeaturesOfType (type: MapperElementType) {
-    return elements.filter(e => e.isHidden === false // TODO: Parent hidden?
+    return elements.filter(e => doc.isElementHidden(e.id) === false
       && e.id !== doc.selectedId
       && e.type === type
     );

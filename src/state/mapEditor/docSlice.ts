@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Position } from "geojson";
 import Logger from "Logger";
 import type { MapperDocument, MapperElement, MapperGroup } from "models/MapDocument";
+import { v4 as uuid } from 'uuid';
 
 interface MapEditorDocState {
   content: MapperDocument;
@@ -22,7 +23,13 @@ function getSampleDocument () : MapperDocument {
     type: 'Point',
     id: 'f1',
     name: 'Lonely dot',
-    properties: [],
+    properties: [
+      {
+        id: "prop1",
+        name: "interesting",
+        value: "yes"
+      }
+    ],
     isHidden: false,
     position: [72.0, 0.5],
   });
@@ -68,7 +75,7 @@ function getSampleDocument () : MapperDocument {
   };
   someGroup.elements.push(innerGroup);
 
-  someGroup.elements.push({
+  innerGroup.elements.push({
     type: 'Point',
     id: 'f4',
     name: "Nested dot",
@@ -227,7 +234,7 @@ const mapEditorDocSlice = createSlice({
       const origin = getElement(state.content, elementId, true);
       const target = getElement(state.content, targetId, true);
       const originParent = getElementParent(state.content, elementId);
-      const targetParent = getElementParent(state.content, elementId);
+      const targetParent = getElementParent(state.content, targetId);
 
       if (origin === null || originParent === null) {
         Logger.error(`Can't find element with id '${elementId}'.`);
@@ -258,6 +265,18 @@ const mapEditorDocSlice = createSlice({
       else {
         insertElement(targetParent, origin, targetId, position);
       }
+    },
+
+    setElementName (state, action: PayloadAction<{
+      elementId: string,
+      name: string,
+    }>) {
+      const { elementId, name } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+
+      el.name = name;
     },
 
     setHidden (state, action: PayloadAction<{
@@ -291,9 +310,9 @@ const mapEditorDocSlice = createSlice({
     },
 
     setPropertyValue (state, action: PayloadAction<{
-      elementId: string,
-      propertyId: string,
-      value: string,
+      elementId: string;
+      propertyId: string;
+      value: string;
     }>) {
       const { elementId, propertyId, value } = action.payload;
 
@@ -306,6 +325,24 @@ const mapEditorDocSlice = createSlice({
           return;
         }
       }
+    },
+
+    addProperty (state, action: PayloadAction<{
+      elementId: string;
+      propertyId?: string;
+      name: string;
+      value: string;
+    }>) {
+      const { elementId, propertyId, name, value } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+
+      el.properties.push({
+        id: propertyId ?? uuid(),
+        name,
+        value,
+      });
     },
     
     updatePolygonVertices (state, action: PayloadAction<{
@@ -368,6 +405,30 @@ export function getElementParent (
 
     if (el.type === 'Group') {
       const found = getElementParent(el, elementId);
+      if (found !== null) return found;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Return whether the element with the id given is hidden, either by itself or
+ * by being in a group that is hidden altogether.
+ * @param group The group from which to start searching.
+ * @param elementId The id of the element to check.
+ * @param isParentHidden True if the group from which we are searching is hidden,
+ * either by itself or by its parent.
+ * @returns 
+ */
+export function isElementHidden (
+  group: MapperGroup, elementId: string, isParentHidden: boolean = false
+) : boolean | null {
+  for (const el of group.elements) {
+    if (el.id === elementId) return isParentHidden || el.isHidden;
+
+    if (el.type === 'Group') {
+      const found = isElementHidden(el, elementId, isParentHidden || el.isHidden);
       if (found !== null) return found;
     }
   }

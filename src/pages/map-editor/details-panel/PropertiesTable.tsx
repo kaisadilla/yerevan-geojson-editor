@@ -1,8 +1,9 @@
-import { TextInput, Tooltip } from '@mantine/core';
-import { LockSimpleIcon, WarningIcon } from '@phosphor-icons/react';
-import { type MapperElement } from 'models/MapDocument';
+import { Table, TextInput, Tooltip } from '@mantine/core';
+import { LockSimpleIcon, XCircleIcon } from '@phosphor-icons/react';
+import useUuid from 'hook/useUuid';
+import { LEAFLYS_PROP_PREFIX, type MapperElement, type MapperProperty } from 'models/MapDocument';
 import { useDispatch } from 'react-redux';
-import useMapEditorDoc from 'state/mapEditor/useDoc';
+import { MapEditorDocActions } from 'state/mapEditor/docSlice';
 import styles from './PropertiesTable.module.scss';
 
 export interface PropertiesTableProps {
@@ -12,127 +13,149 @@ export interface PropertiesTableProps {
 function PropertiesTable ({
   element,
 }: PropertiesTableProps) {
-  const doc = useMapEditorDoc();
   const dispatch = useDispatch();
+  const uuid = useUuid();
 
   return (
-    <table className={styles.table}>
-      <thead>
-        <tr>
-          <td>Key</td>
-          <td>Value</td>
-        </tr>
-      </thead>
-      <tbody>
-        {/*Object.keys(element.properties).map((key, i) => {
-          let displayKey = key;
-          let duplicate = displayKey.startsWith(LEAFLYS_PROP_DUPLICATE_KEY_PREFIX);
-          let error: string | undefined = undefined;
+    <Table
+      classNames={{
+        table: styles.table,
+        thead: styles.thead,
+        tbody: styles.tbody,
+        tr: styles.tr,
+        td: styles.td,
+      }}
+      striped
+      withTableBorder
+      withColumnBorders
+    >
+      <Table.Thead>
+        <Table.Tr>
+          <Table.Th>Key</Table.Th>
+          <Table.Th>Value</Table.Th>
+        </Table.Tr>
+      </Table.Thead>
 
-          // If the key is encoded as a duplicate of another key, retrieve the
-          // original key.
-          if (duplicate) {
-            const rx = new RegExp(`^${LEAFLYS_PROP_DUPLICATE_KEY_PREFIX}(.+?)\``);
-            const match = key.match(rx)
-            
-            displayKey = match ? match[1] : key;
-            error = "Duplicate key.";
-          }
-          // If the key is Leaflys metadata, ignore it.
-          else if (key.startsWith(LEAFLYS_PROP_PREFIX)) {
-            return null;
-          }
+      <Table.Tbody>
+        <_PropRow
+          name="id"
+          value={element.id}
+        />
 
+        <_PropRow
+          name="name"
+          value={element.name}
+          onChangeValue={handleChangeName}
+        />
+
+        {element.properties.map(prop => {
           return <_PropRow
-            key={i}
-            name={displayKey}
-            readOnlyKey={key === "name" || key === 'id'}
-            keyError={error}
-            value={element.properties[key]}
-            onChangeKey={v => handleChangeKey(key, v)}
-            onChangeValue={v => handleChangeValue(key, v)}
+            key={prop.id}
+            name={prop.name}
+            value={prop.value}
+            onChangeName={n => handleChangePropName(prop.id, n)}
+            onChangeValue={v => handleChangePropValue(prop.id, v)}
+            nameError={getNameError(prop)}
           />
-        })*/}
-        <tr>
-          <td>
-            <TextInput
-              key={Object.keys(element.properties).length}
-              classNames={{
-                root: styles.inputRoot,
-                input: styles.input,
-              }}
-              value={""}
-              size='xs'
-              data-key={true}
-              onChange={evt => handleNewField(evt.target.value)}
-            />
-          </td>
-          <td />
-        </tr>
-      </tbody>
-    </table>
-  );
+        })}
 
-  function handleChangeKey (old: string, newKey: string) {
-    //dispatch(MapEditorDocActions.renameProperty({
-    //  elementId: element.properties.id,
-    //  key: old,
-    //  newKey,
-    //}));
+        <_PropRow
+          key={uuid.peek()}
+          name=""
+          value=""
+          onChangeName={handleNewPropName}
+          onChangeValue={handleNewPropValue}
+        />
+      </Table.Tbody>
+    </Table>
+  )
+
+  function handleChangeName (name: string) {
+    dispatch(MapEditorDocActions.setElementName({
+      elementId: element.id,
+      name,
+    }));
   }
 
-  function handleChangeValue (key: string, value: string) {
-    // // When editing the element's id, we can't give it an id already in use.
-    // if (key === "id" && doc.idExists(value)) return;
-    // // When editing the element's id, we have to change anything that is
-    // // referencing that element's current id.
-    // if (key === "id" && doc.selectedId === element.properties.id) {
-    //   dispatch(MapEditorDocActions.setSelected(value));
-    // }
-// 
-    // dispatch(MapEditorDocActions.setProperty({
-    //   elementId: element.properties.id,
-    //   key,
-    //   value,
-    // }));
+  function handleChangePropName (id: string, name: string) {
+    dispatch(MapEditorDocActions.setPropertyName({
+      elementId: element.id,
+      propertyId: id,
+      name,
+    }));
   }
-  
-  function handleNewField (key: string) {
-    // // We don't allow using Leaflys' reserved prefix.
-    // if (key.startsWith(LEAFLYS_PROP_PREFIX)) return;
-// 
-    // key = getSafeKey(key);
-// 
-    // dispatch(MapEditorDocActions.setProperty({
-    //   elementId: element.properties.id,
-    //   key,
-    //   value: ""
-    // }));
+
+  function handleChangePropValue (id: string, value: string) {
+    dispatch(MapEditorDocActions.setPropertyValue({
+      elementId: element.id,
+      propertyId: id,
+      value,
+    }));
+  }
+
+  function handleNewPropName (name: string) {
+    dispatch(MapEditorDocActions.addProperty({
+      elementId: element.id,
+      propertyId: uuid.next(),
+      name,
+      value: "",
+    }));
+  }
+
+  function handleNewPropValue (value: string) {
+    dispatch(MapEditorDocActions.addProperty({
+      elementId: element.id,
+      propertyId: uuid.next(),
+      name: "",
+      value,
+    }));
+  }
+
+  function getNameError (prop: MapperProperty) : string | undefined {
+    let errors: string[] = [];
+
+    if (prop.name === "") {
+      errors.push("Property must have a name.")
+    }
+    else if (
+      prop.name === "id"
+      || prop.name === "name"
+      || element.properties.filter(p => p.name === prop.name).length > 1
+    ) {
+      errors.push("Duplicate name.");
+    }
+
+    if (prop.name.startsWith(LEAFLYS_PROP_PREFIX)) {
+      errors.push(
+        "'_leaflys_' is a prefix reserved for this app. Using it for " +
+        " user-defined properties will result in undefined behavior."
+      );
+    }
+
+    return errors.length === 0 ? undefined : errors.join("\n");
   }
 }
 
 interface _PropRowProps {
   name: string;
-  value?: string;
-  readOnlyKey?: boolean;
-  keyError?: string;
-  onChangeKey?: (value: string) => void;
+  value: string;
+  onChangeName?: (name: string) => void;
   onChangeValue?: (value: string) => void;
+  nameError?: string;
 }
 
 function _PropRow ({
   name,
   value,
-  readOnlyKey = false,
-  keyError,
-  onChangeKey,
+  onChangeName,
   onChangeValue,
+  nameError,
 }: _PropRowProps) {
   return (
-    <tr>
-      <td>
+    <Table.Tr>
+      <Table.Td>
         <div>
-          {readOnlyKey && <LockSimpleIcon
+          {onChangeName === undefined && <LockSimpleIcon
             className={styles.lockIcon}
             size={16}
             weight='thin'
@@ -144,23 +167,28 @@ function _PropRow ({
             }}
             value={name}
             size='xs'
-            readOnly={readOnlyKey}
-            data-key={true}
-            data-has-error={keyError !== undefined}
-            onChange={evt => onChangeKey?.(evt.target.value)}
+            readOnly={onChangeName === undefined}
+            data-name={true}
+            data-has-error={false}
+            onChange={evt => onChangeName?.(evt.target.value)}
           />
-          {keyError && <Tooltip
-            label={keyError}
+          {nameError && <Tooltip
+            label={nameError}
           >
-            <WarningIcon
+            <XCircleIcon
               className={styles.errorIcon}
               size={24}
-            />
+            />  
           </Tooltip>}
         </div>
-      </td>
-      <td>
+      </Table.Td>
+      <Table.Td>
         <div>
+          {onChangeValue === undefined && <LockSimpleIcon
+            className={styles.lockIcon}
+            size={16}
+            weight='thin'
+          />}
           <TextInput
             classNames={{
               root: styles.inputRoot,
@@ -168,11 +196,12 @@ function _PropRow ({
             }}
             value={value}
             size='xs'
+            readOnly={onChangeValue === undefined}
             onChange={evt => onChangeValue?.(evt.target.value)}
           />
         </div>
-      </td>
-    </tr>
+      </Table.Td>
+    </Table.Tr>
   );
 }
 

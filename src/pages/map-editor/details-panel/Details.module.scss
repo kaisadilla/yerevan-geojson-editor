@@ -13,6 +13,10 @@
       margin: 0;
       padding: 0.25em 0.5em;
       color: var(--color-primary-d1);
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
