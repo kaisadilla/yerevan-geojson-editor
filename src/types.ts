@@ -7,6 +7,15 @@ export type StateSetter<T> = React.Dispatch<React.SetStateAction<T>>;
 
 export type Except<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 export type Collection<T> = Record<string, T>;
+/**
+ * Defines a version of a type that is recursively immutable.
+ */
+export type Immutable<T> =
+  T extends (...args: any[]) => any
+    ? T
+    : T extends object
+      ? { readonly [K in keyof T]: Immutable<T[K]> }
+      : T;
 
 export type FixedArray<T, L extends number, A extends T[] = []> =
   A['length'] extends L ? A : FixedArray<T, L, [...A, T]>;

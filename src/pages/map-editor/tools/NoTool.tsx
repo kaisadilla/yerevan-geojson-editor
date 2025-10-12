@@ -1,23 +1,23 @@
 import GLT from 'GLT';
-import type { LFeature, LPolygon } from 'models/MapDocument';
+import type { MapperFeature, MapperPolygon } from 'models/MapDocument';
 import { Polygon } from 'react-leaflet';
 import useMapEditorSettings from 'state/mapEditor/useSettings';
 import styles from './NoTool.module.scss';
 
 export interface NoToolProps {
-  feature: LFeature;
+  feature: MapperFeature;
 }
 
 function NoTool ({
   feature,
 }: NoToolProps) {
-  if (feature.geometry.type === 'Polygon') return (
-    <_Polygon polygon={feature as LPolygon} />
+  if (feature.type === 'Polygon') return (
+    <_Polygon polygon={feature} />
   );
 }
 
 interface _PolygonProps {
-  polygon: LPolygon;
+  polygon: MapperPolygon;
 }
 
 function _Polygon ({
@@ -27,9 +27,12 @@ function _Polygon ({
 
   return (
     <Polygon
-      key={polygon.properties.id}
+      key={polygon.id}
       className={styles.polygon}
-      positions={GLT.gj.polygon.leafletPositions(polygon)}
+      positions={[
+        GLT.gj.coords.leaflet(polygon.vertices),
+        ...polygon.holes.map(h => GLT.gj.coords.leaflet(h)),
+      ]}
       weight={2}
       color={settings.colors.active}
     />

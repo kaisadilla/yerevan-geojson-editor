@@ -3,10 +3,10 @@ import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-d
 import { Text } from '@mantine/core';
 import DescriptiveTooltip from "components/DescriptiveTooltip";
 import { Boxes, Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
-import type { LElement, LElementType, LFeature, LGroup } from "models/MapDocument";
+import type { MapperElement } from "models/MapDocument";
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { mapEditorDocActions } from 'state/mapEditor/docSlice';
+import { MapEditorDocActions } from 'state/mapEditor/docSlice';
 import type { RootState } from 'state/store';
 import { $cl } from 'utils';
 import MaterialSymbol from '../../components/MaterialSymbol';
@@ -26,7 +26,7 @@ function ElementPanel (props: ElementPanelProps) {
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <Text lineClamp={1}>[Document Name]</Text>
+        <Text lineClamp={1}>{doc.content.name}</Text>
       </div>
       <_Ribbon />
       <div className={styles.treeContainer}>
@@ -37,7 +37,7 @@ function ElementPanel (props: ElementPanelProps) {
 }
 
 interface _ElementProps {
-  element: LFeature | LGroup;
+  element: MapperElement;
   depth: number;
   hidden?: boolean;
   validDropTarget?: boolean;
@@ -70,8 +70,8 @@ function _Element ({
       onDragStart: () => setDragged(true),
       onDrop: () => setDragged(false),
       getInitialData: () => ({
-        id: element.properties.id,
-        name: element.properties.name,
+        id: element.id,
+        name: element.name,
         type: element.type,
       }),
     });
@@ -79,8 +79,8 @@ function _Element ({
     const cleanupDrop = dropTargetForElements({
       element: el,
       getData: () => ({
-        id: element.properties.id,
-        name: element.properties.name,
+        id: element.id,
+        name: element.name,
         type: element.type,
       }),
       onDragEnter: handleDrag,
@@ -95,14 +95,11 @@ function _Element ({
     }
   }, [element, dispatch, dropTarget]);
 
-  let children = null as LElement[] | null;
-  let type: LElementType = 'FeatureCollection';
+  let children = null as MapperElement[] | null;
+  let type = element.type;
 
-  if (element.type === 'FeatureCollection') {
-    children = element.features;
-  }
-  else {
-    type = element.geometry.type;
+  if (element.type === 'Group') {
+    children = element.elements;
   }
 
   const hierarchyIndent = HIERARCHY_INDENT_WIDTH * depth;
@@ -112,15 +109,15 @@ function _Element ({
       ref={ref}
       className={$cl(
         styles.element,
-        type === 'FeatureCollection' && styles.folder
+        type === 'Group' && styles.folder
       )}
       role='button'
       onClick={handleClick}
-      data-selected={ctx.selectedId === element.properties.id}
+      data-selected={ctx.selectedId === element.id}
       data-dragged={isDragged}
       data-drop-target={dropTarget}
       data-valid-drop-target={validDropTarget}
-      data-hidden={element.properties._leaflys_hidden || hidden}
+      data-hidden={element.isHidden || hidden} // TODO: Implement determining if group hides element.
     >
       {validDropTarget && (dropTarget === 'before' || dropTarget === 'after') && <div
         className={styles.dropTarget}
@@ -150,14 +147,15 @@ function _Element ({
       </div>
 
       <div className={styles.type}>
-        {type === 'FeatureCollection' && <Folder />}
+        {type === 'Group' && <Folder />}
         {type === 'Point' && <MapPin />}
         {type === 'LineString' && <Waypoints />}
         {type === 'Polygon' && <Pentagon />}
+        {type === 'Collection' && <Boxes />}
       </div>
 
       <div className={styles.name}>
-        <Text lineClamp={1}>{element.properties.name}</Text>
+        <Text lineClamp={1}>{element.name}</Text>
       </div>
 
       <div
@@ -165,30 +163,31 @@ function _Element ({
         onClick={e => e.stopPropagation()}
       >
         <button onClick={handleToggleVisibility}>
-          {element.properties._leaflys_hidden === false && <Eye />}
-          {element.properties._leaflys_hidden && <EyeOff />}
+          {element.isHidden === false && <Eye />}
+          {element.isHidden && <EyeOff />}
         </button>
       </div>
     </div>}
+
     {children !== null && <div
       className={styles.folderContent}
       data-visible={expanded}
       data-drop-target={dropTarget}
     >
       {children.map((c, i) => <_Element
-        key={c.properties.id}
+        key={c.id}
         element={c}
         depth={depth + 1}
-        hidden={hidden || element.properties._leaflys_hidden}
+        hidden={hidden || element.isHidden} // TODO: Hidden system.
         validDropTarget={validDropTarget}
       />)}
     </div>}
   </>)
 
   function handleClick () {
-    if (ctx.selectedId === element.properties.id) return;
+    if (ctx.selectedId === element.id) return;
 
-    dispatch(mapEditorDocActions.setSelected(element.properties.id));
+    dispatch(MapEditorDocActions.setSelected(element.id));
   }
   
   function handleDrag ({
@@ -196,14 +195,14 @@ function _Element ({
     location
   }: BaseEventPayload<ElementDragType> & DropTargetLocalizedData) {
     if (validDropTarget === false) return;
-    if (source.data.id === element.properties.id) return;
+    if (source.data.id === element.id) return;
     if (ref.current === null) return;
 
     const rect = ref.current.getBoundingClientRect();
     const y = location.current.input.clientY;
     const ratio = (y - rect.top) / rect.height;
 
-    if (element.type === 'FeatureCollection') {
+    if (element.type === 'Group' || element.type === 'Collection') {
       if (ratio < 0.33) setDropTarget('before');
       else if (ratio < 0.67) setDropTarget('inside');
       else if (expanded) setDropTarget('inside');
@@ -222,21 +221,20 @@ function _Element ({
     setDropTarget(null);
 
     if (validDropTarget === false) return;
-    if (source.data.id === element.properties.id) return;
+    if (source.data.id === element.id) return;
     if (target === null) return;
 
-    dispatch(mapEditorDocActions.moveElement({
+    dispatch(MapEditorDocActions.moveElement({
       elementId: source.data.id as string,
-      targetId: element.properties.id,
+      targetId: element.id,
       position: target,
     }));
   }
 
   function handleToggleVisibility () {
-    dispatch(mapEditorDocActions.setProperty({
-      elementId: element.properties.id,
-      key: '_leaflys_hidden',
-      value: !element.properties._leaflys_hidden,
+    dispatch(MapEditorDocActions.setHidden({
+      elementId: element.id,
+      value: !element.isHidden,
     }));
   }
 }

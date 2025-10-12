@@ -24,7 +24,7 @@ function Details (props: DetailsProps) {
   return (
     <div className={styles.panel}>
       <div className={styles.header}>
-        <h2>{element.properties.name}</h2>
+        <h2>{element.name}</h2>
       </div>
 
       <Tabs

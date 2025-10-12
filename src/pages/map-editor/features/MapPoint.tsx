@@ -1,8 +1,9 @@
-import type { LPoint } from 'models/MapDocument';
+import GLT from 'GLT';
+import type { MapperPoint } from 'models/MapDocument';
 import { Marker } from 'react-leaflet';
 
 export interface MapPointProps {
-  point: LPoint;
+  point: MapperPoint;
 }
 
 function MapPoint ({
@@ -11,7 +12,7 @@ function MapPoint ({
 
   return (
     <Marker
-      position={point.geometry.coordinates}
+      position={GLT.gj.coord.leaflet(point.position)}
     />
   );
 }

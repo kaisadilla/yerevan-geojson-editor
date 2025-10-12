@@ -1,6 +1,5 @@
-import type { GeoJsonObject } from 'geojson';
-import type { LPoint, LPolygon } from 'models/MapDocument';
-import { useGjEditorState } from 'state/mapEditor/docSlice';
+import type { MapperElementType, MapperPoint, MapperPolygon } from 'models/MapDocument';
+import useMapEditorDoc from 'state/mapEditor/useDoc';
 import ActiveFeature from './features/ActiveFeature';
 import MapPoint from './features/MapPoint';
 import MapPolygon from './features/MapPolygon';
@@ -10,38 +9,40 @@ export interface LeafletElementMapProps {
 }
 
 function LeafletElementMap (props: LeafletElementMapProps) {
-  const ctx = useGjEditorState();
+  const doc = useMapEditorDoc();
 
-  const elements = ctx.getAllElements();
+  const elements = doc.getAllElements();
 
-  const points = getFeaturesOfType('Point') as LPoint[];
-  const polygons = getFeaturesOfType('Polygon') as LPolygon[];
+  const points = getFeaturesOfType('Point');
+  const polygons = getFeaturesOfType('Polygon');
 
-  const selected = ctx.getSelectedElement();
+  const selected = doc.getSelectedElement();
 
   return (
     <>
       {points.map(p => <MapPoint
-        key={p.properties.id + "_" + ctx.selectedId}
+        key={p.id + "_" + doc.selectedId}
         point={p}
       />)}
       {polygons.map(p => <MapPolygon
-        key={p.properties.id + "_" + ctx.selectedId}
+        key={p.id + "_" + doc.selectedId}
         polygon={p}
       />)}
       
       {selected
-        && selected.type === 'Feature'
-        && selected.properties._leaflys_hidden === false // TODO: Check if parent group is hidden.
+        && selected.type !== 'Group'
+        && selected.type !== 'Collection'
+        && selected.isHidden === false // TODO: Check if parent group is hidden.
         && <ActiveFeature feature={selected} />}
     </>
   );
 
-  function getFeaturesOfType (type: GeoJsonObject['type']) {
-    return elements.filter(e => e.properties._leaflys_hidden === false
-      && e.properties.id !== ctx.selectedId
-      && e.type === 'Feature'
-      && e.geometry.type === type
+  function getFeaturesOfType (type: 'Point') : MapperPoint[];
+  function getFeaturesOfType (type: 'Polygon') : MapperPolygon[];
+  function getFeaturesOfType (type: MapperElementType) {
+    return elements.filter(e => e.isHidden === false // TODO: Parent hidden?
+      && e.id !== doc.selectedId
+      && e.type === type
     );
   }
 }

@@ -3,12 +3,11 @@ import { IntersectSquareIcon, PolygonIcon, SubtractSquareIcon, UniteSquareIcon }
 import DescriptiveTooltip from "components/DescriptiveTooltip";
 import ToggleButton from "components/ToggleButton";
 import { Eraser, Goal, Move, Pencil, Scissors } from 'lucide-react';
-import type { LElementType } from "models/MapDocument";
 import type React from "react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useGjEditorState } from "state/mapEditor/docSlice";
 import { mapEditorUiActions, type MapEditorTool } from "state/mapEditor/uiSlice";
+import useMapEditorDoc from "state/mapEditor/useDoc";
 import useMapEditorUi from "state/mapEditor/useUi";
 import styles from './Ribbon.module.scss';
 
@@ -17,23 +16,14 @@ export interface EditRibbonProps {
 }
 
 function EditRibbon (props: EditRibbonProps) {
-  const ctx = useGjEditorState();
+  const doc = useMapEditorDoc();
 
-  const el = ctx.getSelectedElement();
-  let type: LElementType | null = null;
-
-  if (el?.type === 'FeatureCollection') {
-    type = 'FeatureCollection'
-  }
-  else if (el?.type === 'Feature') {
-    type = el.geometry.type;
-  }
-
-  if (el?.properties._leaflys_hidden) return <div className={styles.ribbon} />;
+  const el = doc.getSelectedElement();
+  if (!el || el.isHidden) return <div className={styles.ribbon} />;
 
   return (
     <div className={styles.ribbon}>
-      {type === 'Polygon' && <_Polygon />}
+      {el.type === 'Polygon' && <_Polygon />}
     </div>
   );
 }
@@ -175,7 +165,7 @@ function _Toggle ({
   shortcut,
   children,
 }: _ToggleProps) {
-  const doc = useGjEditorState();
+  const doc = useMapEditorDoc();
   const ui = useMapEditorUi();
   const dispatch = useDispatch();
 

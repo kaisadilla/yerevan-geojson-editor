@@ -1,11 +1,11 @@
 import GLT from "GLT";
-import type { LPolygon } from "models/MapDocument";
+import type { MapperPolygon } from "models/MapDocument";
 import { Polygon } from "react-leaflet";
 import { useDispatch } from "react-redux";
-import { mapEditorDocActions } from "state/mapEditor/docSlice";
+import { MapEditorDocActions } from "state/mapEditor/docSlice";
 
 export interface MapPolygonProps {
-  polygon: LPolygon;
+  polygon: MapperPolygon;
 }
 
 function MapPolygon ({
@@ -15,11 +15,14 @@ function MapPolygon ({
 
   return (
     <Polygon
-      positions={GLT.gj.polygon.leafletPositions(polygon)}
+      positions={[
+        GLT.gj.coords.leaflet(polygon.vertices),
+        ...polygon.holes.map(h => GLT.gj.coords.leaflet(h)),
+      ]}
       weight={2}
       color='var(--color-primary-d1)'
       eventHandlers={{
-        click: () => dispatch(mapEditorDocActions.setSelected(polygon.properties.id))
+        click: () => dispatch(MapEditorDocActions.setSelected(polygon.id))
       }}
     />
   );

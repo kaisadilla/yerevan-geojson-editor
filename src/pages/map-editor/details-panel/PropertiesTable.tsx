@@ -1,13 +1,12 @@
 import { TextInput, Tooltip } from '@mantine/core';
 import { LockSimpleIcon, WarningIcon } from '@phosphor-icons/react';
-import { LEAFLYS_PROP_DUPLICATE_KEY_PREFIX, LEAFLYS_PROP_PREFIX, type LElement } from 'models/MapDocument';
+import { type MapperElement } from 'models/MapDocument';
 import { useDispatch } from 'react-redux';
-import { mapEditorDocActions } from 'state/mapEditor/docSlice';
 import useMapEditorDoc from 'state/mapEditor/useDoc';
 import styles from './PropertiesTable.module.scss';
 
 export interface PropertiesTableProps {
-  element: LElement;
+  element: MapperElement;
 }
 
 function PropertiesTable ({
@@ -25,7 +24,7 @@ function PropertiesTable ({
         </tr>
       </thead>
       <tbody>
-        {Object.keys(element.properties).map((key, i) => {
+        {/*Object.keys(element.properties).map((key, i) => {
           let displayKey = key;
           let duplicate = displayKey.startsWith(LEAFLYS_PROP_DUPLICATE_KEY_PREFIX);
           let error: string | undefined = undefined;
@@ -53,53 +52,62 @@ function PropertiesTable ({
             onChangeKey={v => handleChangeKey(key, v)}
             onChangeValue={v => handleChangeValue(key, v)}
           />
-        })}
+        })*/}
+        <tr>
+          <td>
+            <TextInput
+              key={Object.keys(element.properties).length}
+              classNames={{
+                root: styles.inputRoot,
+                input: styles.input,
+              }}
+              value={""}
+              size='xs'
+              data-key={true}
+              onChange={evt => handleNewField(evt.target.value)}
+            />
+          </td>
+          <td />
+        </tr>
       </tbody>
     </table>
   );
 
   function handleChangeKey (old: string, newKey: string) {
-    if (!element) return;
-
-    // We don't allow using Leaflys' reserved prefix.
-    if (newKey.startsWith(LEAFLYS_PROP_PREFIX)) return;
-
-    // If the key already exists, we don't override it, as it's not intuitive.
-    // Instead, we turn it into a special key that encodes its intended name
-    // along with the fact that it's duplicate. This name will have the format
-    // "[prefix][key]`[number]".
-    if (element.properties[newKey] !== undefined) {
-      newKey = LEAFLYS_PROP_DUPLICATE_KEY_PREFIX + newKey;
-
-      let num = 0;
-      while (element.properties[newKey + "`" + num] !== undefined) num++;
-
-      newKey += "`" + num;
-    }
-
-    dispatch(mapEditorDocActions.renameProperty({
-      elementId: element.properties.id,
-      key: old,
-      newKey,
-    }));
+    //dispatch(MapEditorDocActions.renameProperty({
+    //  elementId: element.properties.id,
+    //  key: old,
+    //  newKey,
+    //}));
   }
 
   function handleChangeValue (key: string, value: string) {
-    if (!element) return;
-
-    // When editing the element's id, we can't give it an id already in use.
-    if (key === "id" && doc.idExists(value)) return;
-    // When editing the element's id, we have to change anything that is
-    // referencing that element's current id.
-    if (key === "id" && doc.selectedId === element.properties.id) {
-      dispatch(mapEditorDocActions.setSelected(value));
-    }
-
-    dispatch(mapEditorDocActions.setProperty({
-      elementId: element.properties.id,
-      key,
-      value,
-    }));
+    // // When editing the element's id, we can't give it an id already in use.
+    // if (key === "id" && doc.idExists(value)) return;
+    // // When editing the element's id, we have to change anything that is
+    // // referencing that element's current id.
+    // if (key === "id" && doc.selectedId === element.properties.id) {
+    //   dispatch(MapEditorDocActions.setSelected(value));
+    // }
+// 
+    // dispatch(MapEditorDocActions.setProperty({
+    //   elementId: element.properties.id,
+    //   key,
+    //   value,
+    // }));
+  }
+  
+  function handleNewField (key: string) {
+    // // We don't allow using Leaflys' reserved prefix.
+    // if (key.startsWith(LEAFLYS_PROP_PREFIX)) return;
+// 
+    // key = getSafeKey(key);
+// 
+    // dispatch(MapEditorDocActions.setProperty({
+    //   elementId: element.properties.id,
+    //   key,
+    //   value: ""
+    // }));
   }
 }
 

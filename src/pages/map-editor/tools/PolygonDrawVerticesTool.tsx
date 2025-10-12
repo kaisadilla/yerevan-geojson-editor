@@ -1,47 +1,44 @@
-import type { Polygon as PolygonGeometry, Position } from 'geojson';
+import type { Position } from 'geojson';
 import GLT from 'GLT';
-import type { LPolygon } from 'models/MapDocument';
+import type { MapperPolygon } from 'models/MapDocument';
 import { useDispatch } from 'react-redux';
-import { mapEditorDocActions } from 'state/mapEditor/docSlice';
+import { MapEditorDocActions } from 'state/mapEditor/docSlice';
 import { mapEditorUiActions } from 'state/mapEditor/uiSlice';
 import PolygonDraw from '../features/PolygonDraw';
 
 export interface PolygonDrawVerticesToolProps {
-  polygon: LPolygon;
+  polygon: MapperPolygon;
 }
 
 function PolygonDrawVerticesTool ({
   polygon,
 }: PolygonDrawVerticesToolProps) {
+  // TODO: Do not use redux for every single change.
+
   const dispatch = useDispatch();
 
   return (
     <PolygonDraw
-      shape={polygon.geometry.coordinates[0]}
+      vertices={polygon.vertices}
       onAddVertex={handleAddVertex}
     />
   );
 
   function handleAddVertex (coord: Position) {
-    if (GLT.gj.coord.isEqual(coord, polygon.geometry.coordinates[0][0])) {
+    if (GLT.gj.coord.isEqual(coord, polygon.vertices[0])) {
       dispatch(mapEditorUiActions.setTool(null));
       return;
     }
 
-    const geometry: PolygonGeometry = {
-      type: 'Polygon',
-      coordinates: [
-        [
-          ...polygon.geometry.coordinates[0].slice(0, -1),
-          coord,
-          polygon.geometry.coordinates[0][0]
-        ],
-      ],
-    };
+    const upd: Position[] = [
+      ...polygon.vertices.slice(0, -1),
+      coord,
+      polygon.vertices[0],
+    ];
     
-    dispatch(mapEditorDocActions.updateGeometry({
-      elementId: polygon.properties.id,
-      geometry,
+    dispatch(MapEditorDocActions.updatePolygonVertices({
+      elementId: polygon.id,
+      vertices: upd,
     }));
   }
 }

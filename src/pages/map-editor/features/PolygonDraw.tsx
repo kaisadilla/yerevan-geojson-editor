@@ -6,7 +6,7 @@ import MathExt from 'MathExt';
 import { useEffect, useState } from 'react';
 import { Marker, Polygon, Polyline, Tooltip, useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
-import { useGjEditorState } from "state/mapEditor/docSlice";
+import useMapEditorDoc from 'state/mapEditor/useDoc';
 import useMapEditorSettings from 'state/mapEditor/useSettings';
 import useMapEditorUi from 'state/mapEditor/useUi';
 import MapEvents from '../MapEvents';
@@ -16,12 +16,12 @@ export interface PolygonDrawProps {
   /**
    * A list of positions that make up the polygon.
    */
-  shape: Position[];
+  vertices: Position[];
   onAddVertex?: (coord: Position) => void;
 }
 
 function PolygonDraw ({
-  shape,
+  vertices: shape,
   onAddVertex,
 }: PolygonDrawProps) {
   const ui = useMapEditorUi();
@@ -73,7 +73,7 @@ function _NextVertex ({
   shape,
   onAddVertex,
 }: _NextVertexProps) {
-  const doc = useGjEditorState();
+  const doc = useMapEditorDoc();
   const ui = useMapEditorUi();
   const settings = useMapEditorSettings();
   const keyboard = useKeyboard();

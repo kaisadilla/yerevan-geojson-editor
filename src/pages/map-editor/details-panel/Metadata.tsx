@@ -1,36 +1,33 @@
-import * as turf from "@turf/turf";
 import Fmt from "Fmt";
-import type { LElement, LPolygon } from 'models/MapDocument';
+import type { MapperElement, MapperPolygon } from "models/MapDocument";
 import styles from './Metadata.module.scss';
 
 export interface MetadataProps {
-  element: LElement;
+  element: MapperElement;
 }
 
 function Metadata ({
   element,
 }: MetadataProps) {
 
-  if (element.type === 'Feature') {
-    if (element.geometry.type === 'Polygon') return (<_Polygon
-      polygon={element as LPolygon}
-    />);
-  }
+  if (element.type === 'Polygon') return (<_Polygon
+    polygon={element}
+  />);
 
   return null;
 }
 
 interface _PolygonProps {
-  polygon: LPolygon;
+  polygon: MapperPolygon;
 }
 
 function _Polygon ({
   polygon
 }: _PolygonProps) {
-  const area = turf.area(polygon) / 1_000_000;
-  const vertices = polygon.geometry.coordinates.reduce(
-    (acc, cur) => acc += cur.length, 0
-  );
+  const area = 3;// turf.area(polygon) / 1_000_000;
+  const vertices = 3;// polygon.geometry.coordinates.reduce(
+  //  (acc, cur) => acc += cur.length, 0
+  //);
 
   return (
     <div className={styles.panel}>

@@ -1,45 +1,98 @@
-import type { Feature, GeoJsonObject, GeoJsonProperties, Geometry, Point, Polygon } from "geojson";
+import type { Position } from "geojson";
 
 /**
- * Represents a set of properties in a GeoJson element that contains properties
- * specific to this app.
+ * An entry in a GeoJson property object. The name will act as the key. The id
+ * is not preserved between sessions.
  */
-export type LElementProperties = GeoJsonProperties & {
-  name: string;
+export interface MapperProperty {
   id: string;
-  _leaflys_hidden: boolean;
-};
-
-export const LEAFLYS_PROP_PREFIX = "_leaflys_";
-export const LEAFLYS_PROP_DUPLICATE_KEY_PREFIX = "_leaflys_dk_";
-export const LEAFLYS_PROP_INVALID_PREFIX_KEY_PREFIX = "_leaflys_ip_";
-
-/**
- * Represents a Feature that contains Leaflys properties.
- */
-export type LFeature = Feature<Geometry, LElementProperties>;
-export type LPoint = Feature<Point, LElementProperties>;
-export type LPolygon = Feature<Polygon, LElementProperties>;
-
-/**
- * Represents a FeatureCollection that can also contain nested
- * FeatureCollections. This is not valid GeoJson.
- */
-export type LGroup = {
-  type: 'FeatureCollection';
-  features: LElement[];
-  properties: LElementProperties;
+  name: string;
+  value: string;
 }
 
 /**
- * Represents either a GeoJson feature or a group.
+ * The prefix used for Leaflys-defined GeoJson properties.
  */
-export type LElement = LFeature | LGroup;
+export const LEAFLYS_PROP_PREFIX = "_leaflys_";
 
-export type LElementType = GeoJsonObject['type'] | 'FeatureCollection';
+interface BaseMapperElement {
+  /**
+   * An id that uniquely identifies this element. This id will be saved in
+   * GeoJson's property collection under the reserved key 'id'.
+   */
+  id: string;
+  /**
+   * The element's name. This name will be saved in GeoJson's property
+   * collection under the reserved key 'name'.
+   */
+  name: string;
+  /**
+   * A list of user-defined properties for GeoJson's property collection.
+   */
+  properties: MapperProperty[];
+  /**
+   * True when the element (and all of its children) are hidden in the editor.
+   */
+  isHidden: boolean;
+}
 
-export type LMemoryDocument = LGroup & {
-  properties: {
-    
-  };
-};
+/**
+ * Represents a folder in a Mapper document. Folders only exist in memory - the
+ * document gets flattened when saved to disk and hierarchy is preserved in
+ * GeoJson properties.
+ */
+export interface MapperGroup extends BaseMapperElement {
+  type: 'Group';
+  elements: MapperElement[];
+}
+
+export interface MapperPoint extends BaseMapperElement {
+  type: 'Point';
+  position: Position;
+}
+
+export interface MapperLine extends BaseMapperElement {
+  type: 'LineString';
+  positions: Position[];
+}
+
+export interface MapperPolygon extends BaseMapperElement {
+  type: 'Polygon';
+  vertices: Position[];
+  holes: Position[][];
+}
+
+/**
+ * Represents a GeoJson Collection. In GeoJson, a Collection is a group of
+ * geometries, and may or may not be restricted to one single Geometry type.
+ * In memory, there's only one type of Collection, which gets converted to the
+ * most appropriate GeoJson Collection type when the document is saved to disk.
+ */
+export interface MapperCollection extends BaseMapperElement {
+  type: 'Collection';
+  features: MapperFeature;
+}
+
+/**
+ * A MapperFeature is any MapperElement that represents to a GeoJson feature.
+ */
+export type MapperFeature = MapperPoint
+  | MapperLine
+  | MapperPolygon
+  | MapperCollection
+  ;
+
+/**
+ * A MapperElement is either a MapperFeature or a MapperGroup.
+ */
+export type MapperElement = MapperGroup | MapperFeature;
+
+/**
+ * A string identifying a type of MapperElement.
+ */
+export type MapperElementType = MapperElement['type'];
+
+/**
+ * The root of a Mapper document. It map's to GeoJson's root FeatureCollection.
+ */
+export type MapperDocument = MapperGroup;

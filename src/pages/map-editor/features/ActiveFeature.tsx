@@ -1,11 +1,11 @@
 
-import type { LFeature, LPolygon } from 'models/MapDocument';
+import type { MapperFeature } from 'models/MapDocument';
 import useMapEditorUi from 'state/mapEditor/useUi';
 import NoTool from '../tools/NoTool';
 import PolygonDrawVerticesTool from '../tools/PolygonDrawVerticesTool';
 
 export interface ActiveFeatureProps {
-  feature: LFeature;
+  feature: MapperFeature;
 }
 
 function ActiveFeature ({
@@ -13,10 +13,9 @@ function ActiveFeature ({
 }: ActiveFeatureProps) {
   const ui = useMapEditorUi();
 
-  if (feature.geometry.type === 'Polygon') {
-    const f = feature as LPolygon;
+  if (feature.type === 'Polygon') {
     if (ui.tool === 'draw_vertices') return (
-      <PolygonDrawVerticesTool polygon={f} />
+      <PolygonDrawVerticesTool polygon={feature} />
     )
   }
 
