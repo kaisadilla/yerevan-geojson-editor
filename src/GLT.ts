@@ -1,6 +1,5 @@
 import type { Position } from "geojson";
 import { LatLng } from "leaflet";
-import type { LPolygon } from "models/MapDocumentREMOVE";
 
 /**
  * An object that contains methods to easily communicate between GeoJson,
@@ -25,15 +24,6 @@ const GLT = {
       },
       leafletObj (coords: Position[]) : LatLng[] {
         return coords.map(c => new LatLng(c[1], c[0]));
-      },
-    },
-    polygon: {
-      leafletPositions (polygon: LPolygon) {
-        return polygon.geometry.coordinates.map(
-          shape => shape.map(
-            poly => [poly[1], poly[0]]
-          )
-        );
       },
     },
   },

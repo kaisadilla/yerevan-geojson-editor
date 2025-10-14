@@ -165,11 +165,12 @@ function _PropRow ({
               root: styles.inputRoot,
               input: styles.input,
             }}
+            placeholder='(Name)'
             value={name}
             size='xs'
             readOnly={onChangeName === undefined}
             data-name={true}
-            data-has-error={false}
+            data-has-error={nameError !== undefined}
             onChange={evt => onChangeName?.(evt.target.value)}
           />
           {nameError && <Tooltip
@@ -194,6 +195,7 @@ function _PropRow ({
               root: styles.inputRoot,
               input: styles.input,
             }}
+            placeholder='(Value)'
             value={value}
             size='xs'
             readOnly={onChangeValue === undefined}

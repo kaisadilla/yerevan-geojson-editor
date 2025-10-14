@@ -48,7 +48,7 @@
       &[data-name=true] {
         font-weight: 600;
       }
-      &:not([data-key=true]) {
+      &:not([data-name=true]) {
         color: var(--color-secondary-d3);
       }
     }

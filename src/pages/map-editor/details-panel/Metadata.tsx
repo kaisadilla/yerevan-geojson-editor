@@ -1,6 +1,10 @@
+import { useThrottledCallback } from '@mantine/hooks';
 import * as turf from '@turf/turf';
+import { useActiveElement } from 'context/useActiveElement';
 import Fmt from "Fmt";
+import type { Position } from 'geojson';
 import type { MapperElement, MapperPolygon } from "models/MapDocument";
+import { useEffect, useState } from 'react';
 import styles from './Metadata.module.scss';
 
 export interface MetadataProps {
@@ -25,22 +29,44 @@ interface _PolygonProps {
 function _Polygon ({
   polygon
 }: _PolygonProps) {
-  const gj = turf.polygon([polygon.vertices]);
+  const active = useActiveElement();
 
-  const area =  turf.area(gj) / 1_000_000;
-  const vertices = gj.geometry.coordinates.reduce(
-    (acc, cur) => acc += cur.length, 0
+  const [data, setData] = useState({
+    area: 0,
+    vertices: 0,
+  });
+
+  const updateMetrics = useThrottledCallback(
+    (vertices: Position[]) => {
+      const count = vertices.length;
+
+      let area = 0;
+      if (vertices.length > 2) {
+        const gj = turf.polygon([[...active.vertices, active.vertices[0]]]);
+        area = turf.area(gj) / 1_000_000;
+      }
+
+      setData({
+        area,
+        vertices: count,
+      });
+    },
+    75
   );
+
+  useEffect(() => {
+    updateMetrics(active.vertices);
+  }, [active.vertices, updateMetrics]);
 
   return (
     <div className={styles.panel}>
       <div className={styles.datum}>
         <div className={styles.title}>Area</div>
-        <div className={styles.value}>{Fmt.number(area)} km²</div>
+        <div className={styles.value}>{Fmt.number(data.area)} km²</div>
       </div>
       <div className={styles.datum}>
         <div className={styles.title}>Vertices</div>
-        <div className={styles.value}>{Fmt.number(vertices, 0)}</div>
+        <div className={styles.value}>{Fmt.number(data.vertices, 0)}</div>
       </div>
     </div>
   );

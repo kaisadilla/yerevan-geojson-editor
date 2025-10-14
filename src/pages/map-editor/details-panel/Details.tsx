@@ -1,4 +1,5 @@
 import { Tabs } from '@mantine/core';
+import { useActiveElement } from 'context/useActiveElement';
 import { useState } from 'react';
 import useMapEditorDoc from 'state/mapEditor/useDoc';
 import styles from './Details.module.scss';
@@ -14,10 +15,11 @@ export interface DetailsProps {
 
 function Details (props: DetailsProps) {
   const doc = useMapEditorDoc();
+  const active = useActiveElement();
 
   const [tab, setTab] = useState<TabId>('properties');
 
-  const element = doc.getSelectedElement();
+  const element = active.getElement();
 
   if (!element) return null;
 

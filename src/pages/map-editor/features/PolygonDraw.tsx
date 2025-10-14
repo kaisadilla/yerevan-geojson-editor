@@ -1,11 +1,10 @@
 import { useKeyboard } from 'context/useKeyboard';
 import type { Position } from 'geojson';
 import GLT from 'GLT';
-import type { LeafletMouseEvent } from "leaflet";
+import type { LatLngExpression, LeafletMouseEvent } from "leaflet";
 import MathExt from 'MathExt';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Marker, Polygon, Polyline, Tooltip, useMap } from 'react-leaflet';
-import { useDispatch } from 'react-redux';
 import useMapEditorDoc from 'state/mapEditor/useDoc';
 import useMapEditorSettings from 'state/mapEditor/useSettings';
 import useMapEditorUi from 'state/mapEditor/useUi';
@@ -27,7 +26,7 @@ function PolygonDraw ({
   const ui = useMapEditorUi();
   const settings = useMapEditorSettings();
 
-  const lShape = shape.map(c => GLT.gj.coord.leaflet(c)); // latlng instead of lnglat.
+  const latlngVertices = shape.map(c => GLT.gj.coord.leaflet(c));
 
   const firstVertex = L.divIcon({
     className: styles.firstVertex,
@@ -40,20 +39,16 @@ function PolygonDraw ({
   });
 
   return (<>
-    {lShape.slice(0, -1).map((p, i) => <Marker
-      key={i}
-      position={p}
-      icon={i === 0 ? firstVertex : vertex}
-    />)}
+    <_MarkerLayer latlngVertices={latlngVertices} />
     <Polygon
       className={styles.polygon}
-      positions={lShape}
+      positions={latlngVertices}
       weight={0}
       color={settings.colors.active}
     />
     <Polyline
-      positions={[lShape.slice(0, -1)]}
-      weight={2}
+      positions={[latlngVertices]}
+      weight={settings.lineWidth}
       color={settings.colors.active}
     />
     <_NextVertex
@@ -63,6 +58,49 @@ function PolygonDraw ({
   </>);
 }
 
+interface _MarkerLayerProps {
+  latlngVertices: LatLngExpression[];
+}
+
+function _MarkerLayer ({
+  latlngVertices: lShape,
+}: _MarkerLayerProps) {
+  const ui = useMapEditorUi();
+
+  const map = useMap();
+  const markers = useRef<L.Marker[]>([]);
+
+  const firstVertex = L.divIcon({
+    className: styles.firstVertex,
+    iconSize: [ui.toolSettings.vertexSize * (3 / 2), ui.toolSettings.vertexSize * (3 / 2)],
+  });
+
+  const vertex = L.divIcon({
+    className: styles.vertex,
+    iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
+  });
+
+  useEffect(() => {
+    if (markers.current.length >= lShape.length) return;
+
+    for (let i = markers.current.length; i < lShape.length; i++) {
+      const m = L.marker(lShape[i], {icon: i === 0 ? firstVertex : vertex}).addTo(map);
+      markers.current.push(m);
+    }
+
+  }, [lShape, map]);
+
+  useEffect(() => {
+    return () => {
+      for (const m of markers.current) {
+        map.removeLayer(m);
+      }
+      markers.current = [];
+    }
+  }, []);
+
+  return null;
+}
 
 interface _NextVertexProps {
   shape: Position[];
@@ -78,10 +116,10 @@ function _NextVertex ({
   const settings = useMapEditorSettings();
   const keyboard = useKeyboard();
   const map = useMap();
-  const dispatch = useDispatch();
 
   const [hoveredCoords, setHoveredCoords] = useState<Position | null>();
   const [drawingLine, setDrawingLine] = useState(false);
+  const lastVertex = useRef<Position>(shape[shape.length - 1]);
 
   const vertex = L.divIcon({
     className: styles.nextVertex,
@@ -106,7 +144,7 @@ function _NextVertex ({
     <>
     {hoveredCoords && <Polyline
       positions={[
-        GLT.gj.coord.leaflet(shape[shape.length - 2]),
+        GLT.gj.coord.leaflet(shape[shape.length - 1]),
         GLT.gj.coord.leaflet(hoveredCoords)
       ]}
       dashArray="7, 8, 1, 8"
@@ -152,12 +190,13 @@ function _NextVertex ({
     if (shape.length < 2) return;
 
     const pxLast = map.latLngToLayerPoint(
-      GLT.gj.coord.leaflet(shape[shape.length - 2])
+      GLT.gj.coord.leaflet(lastVertex.current)
     );
     const pxCursor = map.latLngToLayerPoint(cursorPos);
 
     if (MathExt.vec2distance(pxLast, pxCursor) > ui.toolSettings.pencilStep) {
       onAddVertex?.(hoveredCoords);
+      lastVertex.current = hoveredCoords;
     }
   }
 

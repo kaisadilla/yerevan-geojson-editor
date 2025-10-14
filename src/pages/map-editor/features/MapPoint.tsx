@@ -9,7 +9,6 @@ export interface MapPointProps {
 function MapPoint ({
   point,
 }: MapPointProps) {
-
   return (
     <Marker
       position={GLT.gj.coord.leaflet(point.position)}

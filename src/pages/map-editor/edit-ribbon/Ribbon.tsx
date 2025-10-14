@@ -2,6 +2,7 @@
 import { IntersectSquareIcon, PolygonIcon, SubtractSquareIcon, UniteSquareIcon } from "@phosphor-icons/react";
 import DescriptiveTooltip from "components/DescriptiveTooltip";
 import ToggleButton from "components/ToggleButton";
+import { useActiveElement } from "context/useActiveElement";
 import { Eraser, Goal, Move, Pencil, Scissors } from 'lucide-react';
 import type React from "react";
 import { useEffect } from "react";
@@ -17,8 +18,9 @@ export interface EditRibbonProps {
 
 function EditRibbon (props: EditRibbonProps) {
   const doc = useMapEditorDoc();
+  const active = useActiveElement();
 
-  const el = doc.getSelectedElement();
+  const el = active.getElement();
   if (!el || el.isHidden) return <div className={styles.ribbon} />;
 
   return (

@@ -58,16 +58,25 @@ function BasePanel ({
 }
 
 interface _RibbonProps {
+  label?: string;
+  containerClassName?: string;
   children: React.ReactNode;
 }
 
 function _Ribbon ({
+  label,
+  containerClassName,
   children,
 }: _RibbonProps) {
 
   return (
     <div className={styles.ribbon}>
-      {children}
+      {label && <h3>
+        {label}
+      </h3>}
+      <div className={$cl(styles.items, containerClassName)}>
+        {children}
+      </div>
     </div>
   );
 }

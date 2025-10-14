@@ -1,3 +1,4 @@
+import { useActiveElement } from 'context/useActiveElement';
 import GLT from 'GLT';
 import type { MapperFeature, MapperPolygon } from 'models/MapDocument';
 import { Polygon } from 'react-leaflet';
@@ -24,13 +25,14 @@ function _Polygon ({
   polygon,
 }: _PolygonProps) {
   const settings = useMapEditorSettings();
+  const active = useActiveElement();
 
   return (
     <Polygon
       key={polygon.id}
       className={styles.polygon}
       positions={[
-        GLT.gj.coords.leaflet(polygon.vertices),
+        GLT.gj.coords.leaflet(active.vertices),
         ...polygon.holes.map(h => GLT.gj.coords.leaflet(h)),
       ]}
       weight={2}

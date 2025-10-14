@@ -11,6 +11,7 @@ interface MapEditorUiState {
     snapDistance: number;
     pencilStep: number;
     vertexSize: number;
+    deleteVertexSize: number;
   };
 }
 
@@ -22,6 +23,7 @@ const initialState: MapEditorUiState = {
     snapDistance: 20,
     pencilStep: 10,
     vertexSize: 12,
+    deleteVertexSize: 20,
   },
 }
 

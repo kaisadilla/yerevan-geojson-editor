@@ -5,7 +5,6 @@
 .mantine-Tooltip-tooltip,
 .mantine-TooltipFloating-tooltip {
   background-color: white;
-  border-radius: 0;
   border: 1px solid var(--color-primary-d2);
   color: var(--color-text);
   font-size: 10pt;
@@ -13,7 +12,6 @@
 }
 
 .mantine-TextInput-input {
-  --input-radius: 0;
   --input-bd: transparent;
 
   margin: 0;

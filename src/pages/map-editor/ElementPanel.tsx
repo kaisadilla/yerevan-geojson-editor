@@ -2,6 +2,7 @@ import type { BaseEventPayload, DropTargetLocalizedData, ElementDragType } from 
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Text } from '@mantine/core';
 import DescriptiveTooltip from "components/DescriptiveTooltip";
+import { useActiveElement } from "context/useActiveElement";
 import { Boxes, Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
 import type { MapperElement } from "models/MapDocument";
 import { useEffect, useRef, useState } from 'react';
@@ -57,6 +58,7 @@ function _Element ({
   validDropTarget = validDropTarget && isDragged === false;
 
   const doc = useMapEditorDoc();
+  const active = useActiveElement();
   const dispatch = useDispatch();
 
   // Drag & Drop
@@ -113,7 +115,7 @@ function _Element ({
       )}
       role='button'
       onClick={handleClick}
-      data-selected={doc.selectedId === element.id}
+      data-selected={active.id === element.id}
       data-dragged={isDragged}
       data-drop-target={dropTarget}
       data-valid-drop-target={validDropTarget}
@@ -184,9 +186,9 @@ function _Element ({
   </>)
 
   function handleClick () {
-    if (doc.selectedId === element.id) return;
+    if (active.id === element.id) return;
 
-    dispatch(MapEditorDocActions.setSelected(element.id));
+    active.setElement(element.id, true);
   }
   
   function handleDrag ({

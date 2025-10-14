@@ -5,6 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from "react-redux";
 import { BrowserRouter } from 'react-router';
 
+import { ActiveElementProvider } from 'context/useActiveElement.tsx';
 import { KeyboardProvider } from 'context/useKeyboard.tsx';
 import App from './App.tsx';
 import { store } from './state/store.ts';
@@ -24,6 +25,7 @@ const mantineTheme = createTheme({
       "var(--color-primary-d2)",
     ]
   },
+  defaultRadius: 0,
   components: {
     TooltipFloating: Tooltip.Floating.extend({
       defaultProps: {
@@ -57,14 +59,18 @@ createRoot(document.getElementById('root')!).render(
       theme={mantineTheme}
     >
     <BrowserRouter>
+        
+      <Provider store={store}>
 
-      <KeyboardProvider>
+        <KeyboardProvider>
+        <ActiveElementProvider>
         
-        <Provider store={store}>
           <App />
-        </Provider>
         
-      </KeyboardProvider>
+        </ActiveElementProvider>
+        </KeyboardProvider>
+
+      </Provider>
 
     </BrowserRouter>
     </MantineProvider>

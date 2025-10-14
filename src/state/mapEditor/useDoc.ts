@@ -12,8 +12,8 @@ export default function useMapEditorDoc () {
     getAllElements: (group?: MapperGroup) =>
       getAllElements(group ?? doc.content),
 
-    getSelectedElement: () =>
-      getSelectedElement(doc.content, doc.selectedId),
+    getElement: (elementId: string) =>
+      getElement(doc.content, elementId, true),
 
     idExists: (elementId: string, recursive: boolean) =>
       idExists(doc.content, elementId, recursive),

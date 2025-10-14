@@ -6,7 +6,6 @@ import { v4 as uuid } from 'uuid';
 
 interface MapEditorDocState {
   content: MapperDocument;
-  selectedId: string | null;
 }
 
 function getSampleDocument () : MapperDocument {
@@ -127,7 +126,6 @@ function getSampleDocument () : MapperDocument {
       [13.051757812500002, 47.82790816919329],
       [12.985839843750002, 47.517200697839414],
       [12.0849609375, 47.724544549099676],
-      [10.920410156250002, 47.47266286861342]
     ],
     holes: [
       [
@@ -148,7 +146,6 @@ function getSampleDocument () : MapperDocument {
         [12.260742187500002, 51.549751017014195],
         [12.205810546875002, 51.41291212935532],
         [12.293701171875002, 51.089722918116315],
-        [12.139892578125002, 50.958426723359935],
       ],
     ],
   });
@@ -202,7 +199,6 @@ function getSampleDocument () : MapperDocument {
       [14.23828125, 52.8823912222619],
       [14.370117187500002, 53.553362785528094],
       [14.040527343750002, 53.72271667491848],
-      [14.150390625000002, 53.93021986394],
     ],
     holes: [],
   });
@@ -212,7 +208,6 @@ function getSampleDocument () : MapperDocument {
 
 const initialState: MapEditorDocState = {
   content: getSampleDocument(),
-  selectedId: null,
 }
 
 const mapEditorDocSlice = createSlice({
@@ -357,10 +352,6 @@ const mapEditorDocSlice = createSlice({
       if (el.type !== 'Polygon') return;
 
       el.vertices = vertices;
-    },
-    
-    setSelected (state, action: PayloadAction<string | null>) {
-      state.selectedId = action.payload;
     },
   },
 });

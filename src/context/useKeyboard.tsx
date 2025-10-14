@@ -17,7 +17,7 @@ export const KeyboardProvider = ({ children }: any) => {
     setState(prev => ({ ...prev, shift: value }));
   }
 
-  function setCtrl ( value: boolean) {
+  function setCtrl (value: boolean) {
     setState(prev => ({ ...prev, ctrl: value }));
   }
 

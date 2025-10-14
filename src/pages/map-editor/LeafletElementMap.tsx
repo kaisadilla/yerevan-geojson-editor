@@ -1,3 +1,4 @@
+import { useActiveElement } from 'context/useActiveElement';
 import type { MapperElementType, MapperPoint, MapperPolygon } from 'models/MapDocument';
 import useMapEditorDoc from 'state/mapEditor/useDoc';
 import ActiveFeature from './features/ActiveFeature';
@@ -8,24 +9,25 @@ export interface LeafletElementMapProps {
   
 }
 
-function LeafletElementMap (props: LeafletElementMapProps) {
+function LeafletElementMap (props: LeafletElementMapProps) {  
   const doc = useMapEditorDoc();
+  const active = useActiveElement();
 
   const elements = doc.getAllElements();
 
   const points = getFeaturesOfType('Point');
   const polygons = getFeaturesOfType('Polygon');
 
-  const selected = doc.getSelectedElement();
+  const selected = active.getElement();
 
   return (
     <>
       {points.map(p => <MapPoint
-        key={p.id + "_" + doc.selectedId}
+        key={p.id + "_" + active.id}
         point={p}
       />)}
       {polygons.map(p => <MapPolygon
-        key={p.id + "_" + doc.selectedId}
+        key={p.id + "_" + active.id}
         polygon={p}
       />)}
       
@@ -41,7 +43,7 @@ function LeafletElementMap (props: LeafletElementMapProps) {
   function getFeaturesOfType (type: 'Polygon') : MapperPolygon[];
   function getFeaturesOfType (type: MapperElementType) {
     return elements.filter(e => doc.isElementHidden(e.id) === false
-      && e.id !== doc.selectedId
+      && e.id !== active.id
       && e.type === type
     );
   }
