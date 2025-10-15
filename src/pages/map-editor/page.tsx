@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import useMapEditorSettings from "state/mapper/useSettings";
+import useMapperSettings from "state/mapper/useSettings";
 import Details from "./details-panel/Details";
 import DocumentRibbon from "./document-ribbon/Ribbon";
 import EditRibbon from "./edit-ribbon/Ribbon";
@@ -14,7 +14,7 @@ export interface MapEditorPageProps {
 }
 
 function MapEditorPage (props: MapEditorPageProps) {
-  const settings = useMapEditorSettings();
+  const settings = useMapperSettings();
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

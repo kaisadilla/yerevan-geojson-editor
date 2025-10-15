@@ -1,10 +1,10 @@
 import { createSlice, type PayloadAction, type WritableDraft } from "@reduxjs/toolkit";
 
-interface MapEditorUiState {
+interface MapperUiState {
   /**
    * The editing tool currently in use, or `null` if no tool is selected.
    */
-  tool: MapEditorTool | null;
+  tool: MapperTool | null;
   isSettingsPanelExpanded: boolean;
   toolSettings: {
     snap: boolean;
@@ -15,7 +15,7 @@ interface MapEditorUiState {
   };
 }
 
-const initialState: MapEditorUiState = {
+const initialState: MapperUiState = {
   tool: null,
   isSettingsPanelExpanded: false,
   toolSettings: {
@@ -27,11 +27,11 @@ const initialState: MapEditorUiState = {
   },
 }
 
-const mapEditorUiSlice = createSlice({
+const mapperUiSlice = createSlice({
   name: "mapEditorUi",
   initialState,
   reducers: {
-    setTool (state, action: PayloadAction<MapEditorTool | null>) {
+    setTool (state, action: PayloadAction<MapperTool | null>) {
       const tool = action.payload;
 
       state.tool = tool;
@@ -43,10 +43,10 @@ const mapEditorUiSlice = createSlice({
       state.isSettingsPanelExpanded = value;
     },
 
-    setToolSettings<K extends keyof MapEditorUiState['toolSettings']> (
-      state: WritableDraft<MapEditorUiState>, action: PayloadAction<{
+    setToolSettings<K extends keyof MapperUiState['toolSettings']> (
+      state: WritableDraft<MapperUiState>, action: PayloadAction<{
         key: K,
-        value: MapEditorUiState['toolSettings'][K],
+        value: MapperUiState['toolSettings'][K],
       }>
     ) {
       const { key, value } = action.payload;
@@ -56,17 +56,17 @@ const mapEditorUiSlice = createSlice({
   },
 });
 
-export const mapEditorUiReducer = mapEditorUiSlice.reducer;
-export const mapEditorUiActions = mapEditorUiSlice.actions;
+export const mapperUiReducer = mapperUiSlice.reducer;
+export const MapperUiActions = mapperUiSlice.actions;
 
-export type MapEditorDocumentTool = 'new-point'
+export type MapperDocumentTool = 'new-point'
   | 'new-line'
   | 'new-polygon'
   | 'new-square'
   | 'new_circle'
   ;
 
-export type MapEditorPolygonTool = 'draw_vertices'
+export type MapperPolygonTool = 'draw_vertices'
   | 'move_vertices'
   | 'cut'
   | 'delete_vertices'
@@ -77,4 +77,4 @@ export type MapEditorPolygonTool = 'draw_vertices'
   | 'move_shape'
   ;
 
-export type MapEditorTool = MapEditorDocumentTool | MapEditorPolygonTool;
+export type MapperTool = MapperDocumentTool | MapperPolygonTool;

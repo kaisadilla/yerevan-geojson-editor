@@ -7,8 +7,8 @@ import ToggleButton from 'components/ToggleButton';
 import Constants from 'Constants';
 import MathExt from 'MathExt';
 import { useDispatch } from 'react-redux';
-import { mapEditorUiActions } from 'state/mapper/uiSlice';
-import useMapEditorUi from 'state/mapper/useUi';
+import { MapperUiActions } from 'state/mapper/uiSlice';
+import useMapperUi from 'state/mapper/useUi';
 import BasePanel from "../BasePanel";
 import Description from '../Description';
 
@@ -17,7 +17,7 @@ export interface DrawVerticesPanelProps {
 }
 
 function DrawVerticesPanel (props: DrawVerticesPanelProps) {
-  const ui = useMapEditorUi();
+  const ui = useMapperUi();
   const dispatch = useDispatch();
 
   return (
@@ -72,14 +72,14 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
   );
 
   function handleChangeSnap (value: boolean) {
-    dispatch(mapEditorUiActions.setToolSettings({
+    dispatch(MapperUiActions.setToolSettings({
       key: 'snap',
       value,
     }));
   }
 
   function handleChangeSnapDistance (value: number) {
-    dispatch(mapEditorUiActions.setToolSettings({
+    dispatch(MapperUiActions.setToolSettings({
       key: 'snapDistance',
       value: MathExt.clamp(
         value, Constants.minSnapDistance, Constants.maxSnapDistance
@@ -88,7 +88,7 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
   }
 
   function handleChangePencilStep (value: number) {
-    dispatch(mapEditorUiActions.setToolSettings({
+    dispatch(MapperUiActions.setToolSettings({
       key: 'pencilStep',
       value: MathExt.clamp(
         value, Constants.minPencilStep, Constants.maxPencilStep
@@ -97,7 +97,7 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
   }
 
   function handleChangeVertexSize (value: number) {
-    dispatch(mapEditorUiActions.setToolSettings({
+    dispatch(MapperUiActions.setToolSettings({
       key: 'vertexSize',
       value: MathExt.clamp(
         value, Constants.minVertexSize, Constants.maxVertexSize

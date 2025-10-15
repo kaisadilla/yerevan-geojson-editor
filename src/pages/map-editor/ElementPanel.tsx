@@ -7,8 +7,8 @@ import { Boxes, Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Squar
 import type { MapperElement } from "models/MapDocument";
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapEditorDocActions } from 'state/mapper/docSlice';
-import useMapEditorDoc from "state/mapper/useDoc";
+import { MapperDocActions } from 'state/mapper/docSlice';
+import useMapperDoc from "state/mapper/useDoc";
 import type { RootState } from 'state/store';
 import { $cl } from 'utils';
 import MaterialSymbol from '../../components/MaterialSymbol';
@@ -57,7 +57,7 @@ function _Element ({
 
   validDropTarget = validDropTarget && isDragged === false;
 
-  const doc = useMapEditorDoc();
+  const doc = useMapperDoc();
   const active = useActiveElement();
   const dispatch = useDispatch();
 
@@ -225,7 +225,7 @@ function _Element ({
     if (source.data.id === element.id) return;
     if (target === null) return;
 
-    dispatch(MapEditorDocActions.moveElement({
+    dispatch(MapperDocActions.moveElement({
       elementId: source.data.id as string,
       targetId: element.id,
       position: target,
@@ -233,7 +233,7 @@ function _Element ({
   }
 
   function handleToggleVisibility () {
-    dispatch(MapEditorDocActions.setHidden({
+    dispatch(MapperDocActions.setHidden({
       elementId: element.id,
       value: !element.isHidden,
     }));

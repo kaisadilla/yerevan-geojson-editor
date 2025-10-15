@@ -1,20 +1,20 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
-interface MapEditorSettingsSlice {
+interface MapperSettingsSlice {
   colors: {
     active: string;
   };
   lineWidth: number;
 };
 
-const initialState: MapEditorSettingsSlice = {
+const initialState: MapperSettingsSlice = {
   colors: {
     active: "#ff9500"
   },
   lineWidth: 2,
 };
 
-const mapEditorSettingsSlice = createSlice({
+const mapperSettingsSlice = createSlice({
   name: "mapEditorSettings",
   initialState,
   reducers: {
@@ -26,5 +26,5 @@ const mapEditorSettingsSlice = createSlice({
   },
 });
 
-export const mapEditorSettingsReducer = mapEditorSettingsSlice.reducer;
-export const mapEditorSettingsActions = mapEditorSettingsSlice.actions;
+export const mapperSettingsReducer = mapperSettingsSlice.reducer;
+export const MapperSettingsActions = mapperSettingsSlice.actions;

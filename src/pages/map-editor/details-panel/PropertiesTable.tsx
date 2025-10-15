@@ -3,7 +3,7 @@ import { LockSimpleIcon, XCircleIcon } from '@phosphor-icons/react';
 import useUuid from 'hook/useUuid';
 import { LEAFLYS_PROP_PREFIX, type MapperElement, type MapperProperty } from 'models/MapDocument';
 import { useDispatch } from 'react-redux';
-import { MapEditorDocActions } from 'state/mapper/docSlice';
+import { MapperDocActions } from 'state/mapper/docSlice';
 import styles from './PropertiesTable.module.scss';
 
 export interface PropertiesTableProps {
@@ -71,14 +71,14 @@ function PropertiesTable ({
   )
 
   function handleChangeName (name: string) {
-    dispatch(MapEditorDocActions.setElementName({
+    dispatch(MapperDocActions.setElementName({
       elementId: element.id,
       name,
     }));
   }
 
   function handleChangePropName (id: string, name: string) {
-    dispatch(MapEditorDocActions.setPropertyName({
+    dispatch(MapperDocActions.setPropertyName({
       elementId: element.id,
       propertyId: id,
       name,
@@ -86,7 +86,7 @@ function PropertiesTable ({
   }
 
   function handleChangePropValue (id: string, value: string) {
-    dispatch(MapEditorDocActions.setPropertyValue({
+    dispatch(MapperDocActions.setPropertyValue({
       elementId: element.id,
       propertyId: id,
       value,
@@ -94,7 +94,7 @@ function PropertiesTable ({
   }
 
   function handleNewPropName (name: string) {
-    dispatch(MapEditorDocActions.addProperty({
+    dispatch(MapperDocActions.addProperty({
       elementId: element.id,
       propertyId: uuid.next(),
       name,
@@ -103,7 +103,7 @@ function PropertiesTable ({
   }
 
   function handleNewPropValue (value: string) {
-    dispatch(MapEditorDocActions.addProperty({
+    dispatch(MapperDocActions.addProperty({
       elementId: element.id,
       propertyId: uuid.next(),
       name: "",

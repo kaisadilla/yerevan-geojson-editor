@@ -5,9 +5,9 @@ import type { LatLngExpression, LeafletMouseEvent } from "leaflet";
 import MathExt from 'MathExt';
 import { useEffect, useRef, useState } from 'react';
 import { Marker, Polygon, Polyline, Tooltip, useMap } from 'react-leaflet';
-import useMapEditorDoc from 'state/mapper/useDoc';
-import useMapEditorSettings from 'state/mapper/useSettings';
-import useMapEditorUi from 'state/mapper/useUi';
+import useMapperDoc from 'state/mapper/useDoc';
+import useMapperSettings from 'state/mapper/useSettings';
+import useMapperUi from 'state/mapper/useUi';
 import MapEvents from '../MapEvents';
 import styles from './PolygonDraw.module.scss';
 
@@ -35,8 +35,8 @@ function PolygonDraw ({
   onAddVertex,
   onCompleteStroke,
 }: PolygonDrawProps) {
-  const ui = useMapEditorUi();
-  const settings = useMapEditorSettings();
+  const ui = useMapperUi();
+  const settings = useMapperSettings();
 
   const latlngVertices = shape.map(c => GLT.gj.coord.leaflet(c));
 
@@ -78,7 +78,7 @@ interface _MarkerLayerProps {
 function _MarkerLayer ({
   latlngVertices: lShape,
 }: _MarkerLayerProps) {
-  const ui = useMapEditorUi();
+  const ui = useMapperUi();
 
   const map = useMap();
   const markers = useRef<L.Marker[]>([]);
@@ -126,9 +126,9 @@ function _NextVertex ({
   onAddVertex,
   onCompleteStroke,
 }: _NextVertexProps) {
-  const doc = useMapEditorDoc();
-  const ui = useMapEditorUi();
-  const settings = useMapEditorSettings();
+  const doc = useMapperDoc();
+  const ui = useMapperUi();
+  const settings = useMapperSettings();
   const keyboard = useKeyboard();
   const map = useMap();
 

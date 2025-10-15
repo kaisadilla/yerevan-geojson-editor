@@ -2,8 +2,8 @@ import type { Position } from "geojson";
 import type { MapperElement } from "models/MapDocument";
 import { createContext, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
-import { MapEditorDocActions } from "state/mapper/docSlice";
-import useMapEditorDoc from "state/mapper/useDoc";
+import { MapperDocActions } from "state/mapper/docSlice";
+import useMapperDoc from "state/mapper/useDoc";
 
 export type DeleteMode = 'individual' | 'section';
 export type DeletePath = {
@@ -32,7 +32,7 @@ const ActiveElementContext = createContext(undefined as ActiveElementValue | und
 export const ActiveElementProvider = ({ children }: any) => {
   const [state, setState] = useState<InternalState>(initState);
 
-  const doc = useMapEditorDoc();
+  const doc = useMapperDoc();
   const dispatch = useDispatch();
 
   function getElement () {
@@ -101,7 +101,7 @@ export const ActiveElementProvider = ({ children }: any) => {
     if (el === null) return;
 
     if (el.type === 'Polygon') {
-      dispatch(MapEditorDocActions.updatePolygonVertices({
+      dispatch(MapperDocActions.updatePolygonVertices({
         elementId: el.id,
         vertices: state.vertices,
       }));

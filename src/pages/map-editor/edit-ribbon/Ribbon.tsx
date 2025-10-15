@@ -7,9 +7,9 @@ import { Eraser, Goal, Move, Pencil, Scissors } from 'lucide-react';
 import type React from "react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { mapEditorUiActions, type MapEditorTool } from "state/mapper/uiSlice";
-import useMapEditorDoc from "state/mapper/useDoc";
-import useMapEditorUi from "state/mapper/useUi";
+import { MapperUiActions, type MapperTool } from "state/mapper/uiSlice";
+import useMapperDoc from "state/mapper/useDoc";
+import useMapperUi from "state/mapper/useUi";
 import styles from './Ribbon.module.scss';
 
 export interface EditRibbonProps {
@@ -17,7 +17,7 @@ export interface EditRibbonProps {
 }
 
 function EditRibbon (props: EditRibbonProps) {
-  const doc = useMapEditorDoc();
+  const doc = useMapperDoc();
   const active = useActiveElement();
 
   const el = active.getElement();
@@ -35,7 +35,7 @@ interface _PolygonProps {
 }
 
 function _Polygon (props: _PolygonProps) {
-  const ui = useMapEditorUi();
+  const ui = useMapperUi();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -133,7 +133,7 @@ function _Polygon (props: _PolygonProps) {
   );
 
   function handleKeyDown (evt: KeyboardEvent) {
-    const tool: MapEditorTool | null = (() => {
+    const tool: MapperTool | null = (() => {
       if (evt.key === '1') return 'draw_vertices';
       else if (evt.key === '2') return 'move_vertices';
       else if (evt.key === '3') return 'cut';
@@ -147,13 +147,13 @@ function _Polygon (props: _PolygonProps) {
     })();
 
     if (tool) {
-      dispatch(mapEditorUiActions.setTool(tool === ui.tool ? null : tool));
+      dispatch(MapperUiActions.setTool(tool === ui.tool ? null : tool));
     }
   }
 }
 
 interface _ToggleProps {
-  tool: MapEditorTool;
+  tool: MapperTool;
   label: string;
   description?: string;
   shortcut?: string;
@@ -167,8 +167,8 @@ function _Toggle ({
   shortcut,
   children,
 }: _ToggleProps) {
-  const doc = useMapEditorDoc();
-  const ui = useMapEditorUi();
+  const doc = useMapperDoc();
+  const ui = useMapperUi();
   const dispatch = useDispatch();
 
   return (
@@ -188,8 +188,8 @@ function _Toggle ({
     </DescriptiveTooltip>
   );
 
-  function setTool (tool: MapEditorTool, value: boolean) {
-    dispatch(mapEditorUiActions.setTool(value ? tool : null));
+  function setTool (tool: MapperTool, value: boolean) {
+    dispatch(MapperUiActions.setTool(value ? tool : null));
   }
 }
 

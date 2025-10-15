@@ -1,9 +1,9 @@
-import type { MapperDocument, MapperGroup } from "models/MapDocument";
+import type { MapperGroup } from "models/MapDocument";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { getAllElements, getElement, idExists, isElementHidden } from "./docSlice";
 
-export default function useMapEditorDoc () {
+export default function useMapperDoc () {
   const doc = useSelector((state: RootState) => state.mapEditorDoc);
 
   return {
@@ -21,10 +21,4 @@ export default function useMapEditorDoc () {
     isElementHidden: (elementId: string) =>
       isElementHidden(doc.content, elementId),
   };
-}
-
-function getSelectedElement (document: MapperDocument, selectedId: string | null) {
-  if (selectedId === null) return null;
-
-  return getElement(document, selectedId, true);
 }

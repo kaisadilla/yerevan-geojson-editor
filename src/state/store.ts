@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { mapEditorDocReducer } from "./mapper/docSlice";
-import { mapEditorSettingsReducer } from "./mapper/settingsSlice";
-import { mapEditorUiReducer } from "./mapper/uiSlice";
+import { mapperDocReducer } from "./mapper/docSlice";
+import { mapperSettingsReducer } from "./mapper/settingsSlice";
+import { mapperUiReducer } from "./mapper/uiSlice";
 
 export const store = configureStore({
   reducer: {
-    mapEditorDoc: mapEditorDocReducer,
-    mapEditorUi: mapEditorUiReducer,
-    mapEditorSettings: mapEditorSettingsReducer,
+    mapEditorDoc: mapperDocReducer,
+    mapEditorUi: mapperUiReducer,
+    mapEditorSettings: mapperSettingsReducer,
   },
 });
 

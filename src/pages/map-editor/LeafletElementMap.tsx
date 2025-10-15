@@ -1,6 +1,6 @@
 import { useActiveElement } from 'context/useActiveElement';
 import type { MapperElementType, MapperPoint, MapperPolygon } from 'models/MapDocument';
-import useMapEditorDoc from 'state/mapper/useDoc';
+import useMapperDoc from 'state/mapper/useDoc';
 import ActiveFeature from './features/ActiveFeature';
 import MapPoint from './features/MapPoint';
 import MapPolygon from './features/MapPolygon';
@@ -10,7 +10,7 @@ export interface LeafletElementMapProps {
 }
 
 function LeafletElementMap (props: LeafletElementMapProps) {  
-  const doc = useMapEditorDoc();
+  const doc = useMapperDoc();
   const active = useActiveElement();
 
   const elements = doc.getAllElements();

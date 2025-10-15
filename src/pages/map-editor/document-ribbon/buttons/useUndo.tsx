@@ -1,11 +1,11 @@
 import { useActiveElement } from "context/useActiveElement";
 import { MapperHistory, type AddVerticesMapperAction } from "pages/map-editor/MapperHistory";
 import { useDispatch } from "react-redux";
-import { MapEditorDocActions } from "state/mapper/docSlice";
-import useMapEditorDoc from "state/mapper/useDoc";
+import { MapperDocActions } from "state/mapper/docSlice";
+import useMapperDoc from "state/mapper/useDoc";
 
 export default function useUndo () {
-  const doc = useMapEditorDoc();
+  const doc = useMapperDoc();
   const active = useActiveElement();
   const dispatch = useDispatch();
 
@@ -26,7 +26,7 @@ export default function useUndo () {
     const verts = [...el.vertices];
     verts.splice(action.index, action.vertices.length);
 
-    dispatch(MapEditorDocActions.updatePolygonVertices({
+    dispatch(MapperDocActions.updatePolygonVertices({
       elementId: el.id,
       vertices: verts,
     }));

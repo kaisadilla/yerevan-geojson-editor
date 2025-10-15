@@ -3,8 +3,8 @@ import { CaretDoubleDownIcon, CaretDoubleUpIcon } from '@phosphor-icons/react';
 import Button from 'components/Button';
 import type React from 'react';
 import { useDispatch } from 'react-redux';
-import { mapEditorUiActions } from 'state/mapper/uiSlice';
-import useMapEditorUi from 'state/mapper/useUi';
+import { MapperUiActions } from 'state/mapper/uiSlice';
+import useMapperUi from 'state/mapper/useUi';
 import { $cl } from 'utils';
 import styles from './BasePanel.module.scss';
 
@@ -19,7 +19,7 @@ function BasePanel ({
   className,
   children,
 }: PanelProps) {
-  const ui = useMapEditorUi();
+  const ui = useMapperUi();
   const dispatch = useDispatch();
 
   if (ui.isSettingsPanelExpanded === false) return (
@@ -49,11 +49,11 @@ function BasePanel ({
   );
 
   function handleExpand () {
-    dispatch(mapEditorUiActions.setSettingsPanelExpanded(true));
+    dispatch(MapperUiActions.setSettingsPanelExpanded(true));
   }
 
   function handleCollapse () {
-    dispatch(mapEditorUiActions.setSettingsPanelExpanded(false));
+    dispatch(MapperUiActions.setSettingsPanelExpanded(false));
   }
 }
 

@@ -1,7 +1,7 @@
 import { useActiveElement } from "context/useActiveElement";
 import { MapperHistory, type AddVerticesMapperAction } from "pages/map-editor/MapperHistory";
 import { useDispatch } from "react-redux";
-import { MapEditorDocActions as MapperDocActions } from "state/mapper/docSlice";
+import { MapperDocActions } from "state/mapper/docSlice";
 import useMapperDoc from "state/mapper/useDoc";
 
 export default function useRedo () {

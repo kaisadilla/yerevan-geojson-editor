@@ -3,7 +3,7 @@ import type { Position } from 'geojson';
 import GLT from 'GLT';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { mapEditorUiActions } from 'state/mapper/uiSlice';
+import { MapperUiActions } from 'state/mapper/uiSlice';
 import PolygonDraw from '../features/PolygonDraw';
 import { MapperHistory } from '../MapperHistory';
 
@@ -29,7 +29,7 @@ function PolygonDrawVerticesTool (props: PolygonDrawVerticesToolProps) {
     if (GLT.gj.coord.isEqual(coord, vertices[0])) {
       commitChanges();
       addStrokeToHistory();
-      dispatch(mapEditorUiActions.setTool(null));
+      dispatch(MapperUiActions.setTool(null));
       return;
     }
 

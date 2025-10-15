@@ -4,7 +4,7 @@ import Logger from "Logger";
 import type { MapperDocument, MapperElement, MapperGroup } from "models/MapDocument";
 import { v4 as uuid } from 'uuid';
 
-interface MapEditorDocState {
+interface MapperDocState {
   content: MapperDocument;
 }
 
@@ -206,12 +206,12 @@ function getSampleDocument () : MapperDocument {
   return doc;
 }
 
-const initialState: MapEditorDocState = {
+const initialState: MapperDocState = {
   content: getSampleDocument(),
 }
 
-const mapEditorDocSlice = createSlice({
-  name: 'geoJsonDoc',
+const mapperDocSlice = createSlice({
+  name: 'mapperDoc',
   initialState,
   reducers: {
     addFeature (state, action: PayloadAction<MapperElement>) {
@@ -356,8 +356,8 @@ const mapEditorDocSlice = createSlice({
   },
 });
 
-export const mapEditorDocReducer = mapEditorDocSlice.reducer;
-export const MapEditorDocActions = mapEditorDocSlice.actions;
+export const mapperDocReducer = mapperDocSlice.reducer;
+export const MapperDocActions = mapperDocSlice.actions;
 
 // #region Helper functions
 /**

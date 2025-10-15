@@ -2,8 +2,8 @@ import deleteImg from 'assets/img/marker_delete.png';
 import type { Position } from 'geojson';
 import GLT from 'GLT';
 import { Marker, Polygon, Polyline } from 'react-leaflet';
-import useMapEditorSettings from 'state/mapper/useSettings';
-import useMapEditorUi from 'state/mapper/useUi';
+import useMapperSettings from 'state/mapper/useSettings';
+import useMapperUi from 'state/mapper/useUi';
 import styles from './PolygonDeleteVertices.module.scss';
 
 export interface PolygonDeleteVerticesProps {
@@ -15,8 +15,8 @@ function PolygonDeleteVertices ({
   vertices,
   onDeleteVertex,
 }: PolygonDeleteVerticesProps) {
-  const ui = useMapEditorUi();
-  const settings = useMapEditorSettings();
+  const ui = useMapperUi();
+  const settings = useMapperSettings();
 
   const latlngVertices = GLT.gj.coords.leaflet(vertices);
   const ring = [...latlngVertices, latlngVertices[0]];
