@@ -2,7 +2,7 @@ import { $cl } from 'utils';
 import styles from './Button.module.scss';
 
 export interface ButtonProps
-  extends Omit<React.HTMLAttributes<HTMLButtonElement>, 'onClick'>
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>
 {
   onClick?: () => void;
 }

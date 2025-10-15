@@ -7,8 +7,8 @@ import ToggleButton from 'components/ToggleButton';
 import Constants from 'Constants';
 import MathExt from 'MathExt';
 import { useDispatch } from 'react-redux';
-import { mapEditorUiActions } from 'state/mapEditor/uiSlice';
-import useMapEditorUi from 'state/mapEditor/useUi';
+import { mapEditorUiActions } from 'state/mapper/uiSlice';
+import useMapEditorUi from 'state/mapper/useUi';
 import BasePanel from "../BasePanel";
 import Description from '../Description';
 

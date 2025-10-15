@@ -7,9 +7,9 @@ import { Eraser, Goal, Move, Pencil, Scissors } from 'lucide-react';
 import type React from "react";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { mapEditorUiActions, type MapEditorTool } from "state/mapEditor/uiSlice";
-import useMapEditorDoc from "state/mapEditor/useDoc";
-import useMapEditorUi from "state/mapEditor/useUi";
+import { mapEditorUiActions, type MapEditorTool } from "state/mapper/uiSlice";
+import useMapEditorDoc from "state/mapper/useDoc";
+import useMapEditorUi from "state/mapper/useUi";
 import styles from './Ribbon.module.scss';
 
 export interface EditRibbonProps {

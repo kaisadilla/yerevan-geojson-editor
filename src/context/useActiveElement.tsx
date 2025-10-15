@@ -2,8 +2,8 @@ import type { Position } from "geojson";
 import type { MapperElement } from "models/MapDocument";
 import { createContext, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
-import { MapEditorDocActions } from "state/mapEditor/docSlice";
-import useMapEditorDoc from "state/mapEditor/useDoc";
+import { MapEditorDocActions } from "state/mapper/docSlice";
+import useMapEditorDoc from "state/mapper/useDoc";
 
 export type DeleteMode = 'individual' | 'section';
 export type DeletePath = {

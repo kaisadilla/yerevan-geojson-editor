@@ -1,4 +1,4 @@
-import useMapEditorUi from 'state/mapEditor/useUi';
+import useMapEditorUi from 'state/mapper/useUi';
 import DeleteVerticesPanel from './panel/polygon/DeleteVerticesPanel';
 import DrawVerticesPanel from './panel/polygon/DrawVerticesPanel';
 

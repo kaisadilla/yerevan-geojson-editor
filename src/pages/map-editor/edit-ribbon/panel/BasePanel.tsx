@@ -3,8 +3,8 @@ import { CaretDoubleDownIcon, CaretDoubleUpIcon } from '@phosphor-icons/react';
 import Button from 'components/Button';
 import type React from 'react';
 import { useDispatch } from 'react-redux';
-import { mapEditorUiActions } from 'state/mapEditor/uiSlice';
-import useMapEditorUi from 'state/mapEditor/useUi';
+import { mapEditorUiActions } from 'state/mapper/uiSlice';
+import useMapEditorUi from 'state/mapper/useUi';
 import { $cl } from 'utils';
 import styles from './BasePanel.module.scss';
 

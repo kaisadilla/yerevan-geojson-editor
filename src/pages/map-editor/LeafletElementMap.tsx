@@ -1,6 +1,6 @@
 import { useActiveElement } from 'context/useActiveElement';
 import type { MapperElementType, MapperPoint, MapperPolygon } from 'models/MapDocument';
-import useMapEditorDoc from 'state/mapEditor/useDoc';
+import useMapEditorDoc from 'state/mapper/useDoc';
 import ActiveFeature from './features/ActiveFeature';
 import MapPoint from './features/MapPoint';
 import MapPolygon from './features/MapPolygon';

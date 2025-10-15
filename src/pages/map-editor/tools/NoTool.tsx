@@ -2,7 +2,7 @@ import { useActiveElement } from 'context/useActiveElement';
 import GLT from 'GLT';
 import type { MapperFeature, MapperPolygon } from 'models/MapDocument';
 import { Polygon } from 'react-leaflet';
-import useMapEditorSettings from 'state/mapEditor/useSettings';
+import useMapEditorSettings from 'state/mapper/useSettings';
 import styles from './NoTool.module.scss';
 
 export interface NoToolProps {

@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import useMapEditorSettings from "state/mapEditor/useSettings";
+import useMapEditorSettings from "state/mapper/useSettings";
 import Details from "./details-panel/Details";
+import DocumentRibbon from "./document-ribbon/Ribbon";
 import EditRibbon from "./edit-ribbon/Ribbon";
 import SettingsPanel from "./edit-ribbon/SettingsPanel";
-import EditorRibbon from "./EditorRibbon";
 import ElementPanel from "./ElementPanel";
 import Map from "./Map";
 import styles from "./page.module.scss";
@@ -54,7 +54,7 @@ function MapEditorPage (props: MapEditorPageProps) {
         </Panel>
       </PanelGroup>
       <div className={styles.appToolbar}>
-        <EditorRibbon />
+        <DocumentRibbon />
       </div>
     </div>
   );

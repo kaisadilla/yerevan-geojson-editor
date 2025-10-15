@@ -3,13 +3,28 @@ import { FileArrowDownIcon, FileArrowUpIcon, FilePlusIcon, FloppyDiskIcon, Folde
 import Button from 'components/Button';
 import DescriptiveTooltip from 'components/DescriptiveTooltip';
 import { Redo, Undo } from 'lucide-react';
-import styles from './EditorRibbon.module.scss';
+import { useEffect, useState } from 'react';
+import { MapperHistory } from '../MapperHistory';
+import styles from './Ribbon.module.scss';
+import useRedo from './buttons/useRedo';
+import useUndo from './buttons/useUndo';
 
 export interface EditorRibbonProps {
   
 }
 
-function EditorRibbon (props: EditorRibbonProps) {
+function DocumentRibbon (props: EditorRibbonProps) {
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+
+  const { handleUndo } = useUndo();
+  const { handleRedo } = useRedo();
+
+  useEffect(() => {
+    MapperHistory.onHistoryChange(handleHistoryChange);
+
+    return () => MapperHistory.offHistoryChange(handleHistoryChange);
+  }, []);
 
   return (
     <div className={styles.ribbon}>
@@ -77,13 +92,19 @@ function EditorRibbon (props: EditorRibbonProps) {
         </DescriptiveTooltip>
 
         <DescriptiveTooltip label="Undo"> 
-          <Button>
+          <Button
+            onClick={handleUndo}
+            disabled={canUndo === false}
+          >
             <Undo />
           </Button>
         </DescriptiveTooltip>
 
         <DescriptiveTooltip label="Redo"> 
-          <Button>
+          <Button
+            onClick={handleRedo}
+            disabled={canRedo === false}
+          >
             <Redo />
           </Button>
         </DescriptiveTooltip>
@@ -99,6 +120,11 @@ function EditorRibbon (props: EditorRibbonProps) {
       </div>
     </div>
   );
+
+  function handleHistoryChange (hasPast: boolean, hasFuture: boolean) {
+    setCanUndo(hasPast);
+    setCanRedo(hasFuture);
+  }
 }
 
-export default EditorRibbon;
+export default DocumentRibbon;

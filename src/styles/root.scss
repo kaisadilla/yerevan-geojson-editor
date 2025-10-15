@@ -9,7 +9,13 @@
 
 button,
 [role=button] {
-  cursor: pointer;
+  &:not([disabled]) {
+    cursor: pointer;
+  }
+
+  &[disabled] {
+    cursor: not-allowed;
+  }
 }
 
 button {

@@ -5,9 +5,9 @@ import type { LatLngExpression, LeafletMouseEvent } from "leaflet";
 import MathExt from 'MathExt';
 import { useEffect, useRef, useState } from 'react';
 import { Marker, Polygon, Polyline, Tooltip, useMap } from 'react-leaflet';
-import useMapEditorDoc from 'state/mapEditor/useDoc';
-import useMapEditorSettings from 'state/mapEditor/useSettings';
-import useMapEditorUi from 'state/mapEditor/useUi';
+import useMapEditorDoc from 'state/mapper/useDoc';
+import useMapEditorSettings from 'state/mapper/useSettings';
+import useMapEditorUi from 'state/mapper/useUi';
 import MapEvents from '../MapEvents';
 import styles from './PolygonDraw.module.scss';
 
@@ -16,12 +16,24 @@ export interface PolygonDrawProps {
    * A list of positions that make up the polygon.
    */
   vertices: Position[];
-  onAddVertex?: (coord: Position) => void;
+  /**
+   * Called every time one vertex is added to the polygon.
+   * @param pos The position where the vertex is.
+   */
+  onAddVertex?: (pos: Position) => void;
+  /**
+   * Called when the user completes a stroke. A stroke is one single action that
+   * adds vertices. For a left click, that's a single press. For a right click,
+   * a stroke starts when the user presses down the button and ends when the
+   * button is released.
+   */
+  onCompleteStroke?: () => void;
 }
 
 function PolygonDraw ({
   vertices: shape,
   onAddVertex,
+  onCompleteStroke,
 }: PolygonDrawProps) {
   const ui = useMapEditorUi();
   const settings = useMapEditorSettings();
@@ -54,6 +66,7 @@ function PolygonDraw ({
     <_NextVertex
       shape={shape}
       onAddVertex={onAddVertex}
+      onCompleteStroke={onCompleteStroke}
     />
   </>);
 }
@@ -105,11 +118,13 @@ function _MarkerLayer ({
 interface _NextVertexProps {
   shape: Position[];
   onAddVertex?: (coord: Position) => void;
+  onCompleteStroke?: () => void;
 }
 
 function _NextVertex ({
   shape,
   onAddVertex,
+  onCompleteStroke,
 }: _NextVertexProps) {
   const doc = useMapEditorDoc();
   const ui = useMapEditorUi();
@@ -203,8 +218,8 @@ function _NextVertex ({
   function handleLeftClick (evt: LeafletMouseEvent) {
     if (!hoveredCoords) return;
 
-    //addVertex(Convert.leaflet.coord.geojson(evt.latlng));
     onAddVertex?.(hoveredCoords);
+    onCompleteStroke?.();
   }
 
   function handleRightClickDown () {
@@ -213,6 +228,7 @@ function _NextVertex ({
 
   function handleRightClickUp () {
     setDrawingLine(false);
+    onCompleteStroke?.();
   }
 }
 

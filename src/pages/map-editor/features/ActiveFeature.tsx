@@ -1,6 +1,6 @@
 
 import type { MapperFeature } from 'models/MapDocument';
-import useMapEditorUi from 'state/mapEditor/useUi';
+import useMapEditorUi from 'state/mapper/useUi';
 import NoTool from '../tools/NoTool';
 import PolygonDeleteVerticesTool from '../tools/PolygonDeleteVerticesTool';
 import PolygonDrawVerticesTool from '../tools/PolygonDrawVerticesTool';
@@ -16,7 +16,7 @@ function ActiveFeature ({
 
   if (feature.type === 'Polygon') {
     if (ui.tool === 'draw_vertices') return (
-      <PolygonDrawVerticesTool polygon={feature} />
+      <PolygonDrawVerticesTool />
     )
     if (ui.tool === 'delete_vertices') return (
       <PolygonDeleteVerticesTool />

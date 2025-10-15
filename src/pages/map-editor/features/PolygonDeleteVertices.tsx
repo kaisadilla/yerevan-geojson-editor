@@ -2,8 +2,8 @@ import deleteImg from 'assets/img/marker_delete.png';
 import type { Position } from 'geojson';
 import GLT from 'GLT';
 import { Marker, Polygon, Polyline } from 'react-leaflet';
-import useMapEditorSettings from 'state/mapEditor/useSettings';
-import useMapEditorUi from 'state/mapEditor/useUi';
+import useMapEditorSettings from 'state/mapper/useSettings';
+import useMapEditorUi from 'state/mapper/useUi';
 import styles from './PolygonDeleteVertices.module.scss';
 
 export interface PolygonDeleteVerticesProps {

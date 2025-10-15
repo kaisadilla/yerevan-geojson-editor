@@ -7,8 +7,8 @@ import { Boxes, Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Squar
 import type { MapperElement } from "models/MapDocument";
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { MapEditorDocActions } from 'state/mapEditor/docSlice';
-import useMapEditorDoc from "state/mapEditor/useDoc";
+import { MapEditorDocActions } from 'state/mapper/docSlice';
+import useMapEditorDoc from "state/mapper/useDoc";
 import type { RootState } from 'state/store';
 import { $cl } from 'utils';
 import MaterialSymbol from '../../components/MaterialSymbol';

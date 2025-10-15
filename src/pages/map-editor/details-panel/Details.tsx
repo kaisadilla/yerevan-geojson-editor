@@ -1,7 +1,7 @@
 import { Tabs } from '@mantine/core';
 import { useActiveElement } from 'context/useActiveElement';
 import { useState } from 'react';
-import useMapEditorDoc from 'state/mapEditor/useDoc';
+import useMapEditorDoc from 'state/mapper/useDoc';
 import styles from './Details.module.scss';
 import Metadata from './Metadata';
 import PropertiesTable from './PropertiesTable';

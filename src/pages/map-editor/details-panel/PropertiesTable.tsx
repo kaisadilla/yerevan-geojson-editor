@@ -3,7 +3,7 @@ import { LockSimpleIcon, XCircleIcon } from '@phosphor-icons/react';
 import useUuid from 'hook/useUuid';
 import { LEAFLYS_PROP_PREFIX, type MapperElement, type MapperProperty } from 'models/MapDocument';
 import { useDispatch } from 'react-redux';
-import { MapEditorDocActions } from 'state/mapEditor/docSlice';
+import { MapEditorDocActions } from 'state/mapper/docSlice';
 import styles from './PropertiesTable.module.scss';
 
 export interface PropertiesTableProps {
