@@ -20,7 +20,24 @@ export interface AddVerticesMapperAction {
   vertices: Position[];
 }
 
+export interface DeleteVerticesMapperAction {
+  type: 'delete_vertices';
+  /**
+   * The element that had vertices removed.
+   */
+  elementId: string;
+  /**
+   * The index of the first vertex removed.
+   */
+  index: number;
+  /**
+   * The vertices removed.
+   */
+  vertices: Position[];
+}
+
 export type MapperAction = AddVerticesMapperAction
+  | DeleteVerticesMapperAction
   ;
 
 export type OnHistoryChangeEventHandler
