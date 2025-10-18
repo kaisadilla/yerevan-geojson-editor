@@ -7,8 +7,8 @@ import useMapperDoc from "state/mapper/useDoc";
 
 export type DeleteMode = 'individual' | 'section';
 export type DeletePath = {
-  start: Position | null;
-  end: Position | null;
+  start: number | null;
+  end: number | null;
 };
 
 interface InternalState {
@@ -16,6 +16,7 @@ interface InternalState {
   vertices: Position[];
   deleteMode: DeleteMode;
   deletePath: DeletePath;
+  reverseDeletePath: boolean;
 }
 
 interface ActiveElementValue extends InternalState {
@@ -24,6 +25,11 @@ interface ActiveElementValue extends InternalState {
   setVertices: (value: (prev: Position[]) => Position[]) => void;
   setDeleteMode: (mode: DeleteMode) => void;
   setDeletePath: (value: (prev: DeletePath) => DeletePath) => void;
+  setDeletePathReverse: (value: boolean) => void;
+  /**
+   * Returns an array with all the indices currently included in the delete path.
+   */
+  getDeletePath: () => number[] | null;
   commitChanges: () => void;
 }
 
@@ -84,6 +90,7 @@ export const ActiveElementProvider = ({ children }: any) => {
     setState(prev => ({
       ...prev,
       deleteMode: mode,
+      deletePath: { start: null, end: null },
     }));
   }
 
@@ -92,6 +99,45 @@ export const ActiveElementProvider = ({ children }: any) => {
       ...prev,
       deletePath: value(prev.deletePath),
     }))
+  }
+
+  function setDeletePathReverse (value: boolean) {
+    setState(prev => ({
+      ...prev,
+      reverseDeletePath: value,
+    }));
+  }
+
+  function getDeletePath () : number[] | null {
+    if (state.deletePath.start === null) return null;
+    if (state.deletePath.end === null) return [state.deletePath.start];
+
+    if (state.vertices.length === 0) return [];
+    
+    const indices: number[] = [];
+
+    let i = state.deletePath.start;
+
+    if (state.reverseDeletePath === false) {
+      while (true) {
+        indices.push(i);
+        if (i === state.deletePath.end) break;
+
+        i++;
+        if (i >= state.vertices.length) i = 0;
+      }
+    }
+    else {
+      while (true) {
+        indices.push(i);
+        if (i === state.deletePath.end) break;
+
+        i--;
+        if (i < 0) i = state.vertices.length - 1;
+      }
+    }
+
+    return indices;
   }
 
   function commitChanges () {
@@ -116,6 +162,8 @@ export const ActiveElementProvider = ({ children }: any) => {
       setVertices,
       setDeleteMode,
       setDeletePath,
+      setDeletePathReverse,
+      getDeletePath,
       commitChanges,
     }}>
       {children}
@@ -142,5 +190,6 @@ function initState () : InternalState {
       start: null,
       end: null,
     },
+    reverseDeletePath: false,
   };
 }

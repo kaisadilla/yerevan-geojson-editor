@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { MapperUiActions, type MapperTool } from "state/mapper/uiSlice";
 import useMapperDoc from "state/mapper/useDoc";
 import useMapperUi from "state/mapper/useUi";
+import { isEventTargetEditable } from "utils";
 import styles from './Ribbon.module.scss';
 
 export interface EditRibbonProps {
@@ -133,6 +134,8 @@ function _Polygon (props: _PolygonProps) {
   );
 
   function handleKeyDown (evt: KeyboardEvent) {
+    if (isEventTargetEditable(evt.target)) return;
+    
     const tool: MapperTool | null = (() => {
       if (evt.key === '1') return 'draw_vertices';
       else if (evt.key === '2') return 'move_vertices';

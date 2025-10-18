@@ -143,3 +143,18 @@ export function romanNumber (num: number) {
 export function numberWithDecimals (num: number, dec: number) : string {
   return parseFloat(num.toFixed(dec)).toString();
 }
+
+/**
+ * Returns true if the target of an event is editable - i.e. it receives
+ * keyboard input.
+ * @param target The target of an event (evt.target).
+ */
+export function isEventTargetEditable (target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+
+  if (target.isContentEditable) return true;
+
+  const tag = target.tagName.toLowerCase();
+
+  return tag === 'input' || tag === 'textarea';
+}

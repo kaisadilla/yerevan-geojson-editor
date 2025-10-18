@@ -36,8 +36,25 @@ export interface DeleteVerticesMapperAction {
   vertices: Position[];
 }
 
+export interface ChangeVerticesMapperAction {
+  type: 'change_vertices';
+  /**
+   * The element that had vertices removed.
+   */
+  elementId: string;
+  /**
+   * The vertices before the chnage.
+   */
+  before: Position[];
+  /**
+   * The vertices after the change.
+   */
+  after: Position[];
+}
+
 export type MapperAction = AddVerticesMapperAction
   | DeleteVerticesMapperAction
+  | ChangeVerticesMapperAction
   ;
 
 export type OnHistoryChangeEventHandler

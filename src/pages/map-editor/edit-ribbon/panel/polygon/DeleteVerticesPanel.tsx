@@ -2,6 +2,9 @@ import { Button, SegmentedControl } from '@mantine/core';
 import { CursorIcon, LineSegmentsIcon } from '@phosphor-icons/react';
 import DescriptiveTooltip from 'components/DescriptiveTooltip';
 import { useActiveElement, type DeleteMode } from 'context/useActiveElement';
+import type { Position } from 'geojson';
+import { MapperHistory } from 'pages/map-editor/MapperHistory';
+import { useEffect } from 'react';
 import BasePanel from '../BasePanel';
 import Description from '../Description';
 import styles from './DeleteVerticesPanel.module.scss';
@@ -12,6 +15,11 @@ export interface DeleteVerticesPanelProps {
 
 function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
   const active = useActiveElement();
+  
+  // Every time vertices change, that counts as an edit and is commited.
+  useEffect(() => {
+    active.commitChanges();
+  }, [active.vertices]);
 
   return (
     <BasePanel className={styles.panel} name="Delete vertices tool">
@@ -54,16 +62,56 @@ function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
         containerClassName={styles.deleteSectionRibbon}
         label="Delete section"
       >
-        <Button size='compact-sm' variant='light'>
+        <Button
+          size='compact-sm'
+          variant='light'
+          onClick={handleReversePath}
+        >
           Reverse path
         </Button>
 
-        <Button size='compact-sm' color='red'>
+        <Button
+          size='compact-sm'
+          color='red'
+          onClick={deletePath}
+        >
           Delete vertices
         </Button>
       </BasePanel.Ribbon>}
     </BasePanel>
   );
+
+  function handleReversePath () {
+    active.setDeletePathReverse(!active.reverseDeletePath);
+  }
+
+  function deletePath () {
+    if (active.id === null) return;
+
+    const indexArr = active.getDeletePath();
+    if (indexArr === null) return;
+
+    const indices = new Set(indexArr);
+
+    const before = [...active.vertices];
+    const after: Position[] = [];
+
+    for (let i = 0; i < active.vertices.length; i++) {
+      if (indices.has(i) === false) {
+        after.push(before[i]);
+      }
+    }
+
+    MapperHistory.push({
+      type: 'change_vertices',
+      elementId: active.id,
+      before,
+      after,
+    });
+
+    active.setVertices(prev => after);
+    active.setDeletePath(prev => ({ start: null, end: null }));
+  }
 }
 
 export default DeleteVerticesPanel;

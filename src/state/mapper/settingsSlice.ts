@@ -3,13 +3,15 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 interface MapperSettingsSlice {
   colors: {
     active: string;
+    delete: string;
   };
   lineWidth: number;
 };
 
 const initialState: MapperSettingsSlice = {
   colors: {
-    active: "#ff9500"
+    active: "#ff9500",
+    delete: "#ff0000",
   },
   lineWidth: 2,
 };
