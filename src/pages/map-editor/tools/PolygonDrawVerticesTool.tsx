@@ -1,7 +1,7 @@
 import { useActiveElement } from 'context/useActiveElement';
 import type { Position } from 'geojson';
 import GLT from 'GLT';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { MapperUiActions } from 'state/mapper/uiSlice';
 import PolygonDraw from '../features/PolygonDraw';
@@ -16,6 +16,24 @@ function PolygonDrawVerticesTool (props: PolygonDrawVerticesToolProps) {
   const dispatch = useDispatch();
 
   const [lastStroke, setLastStroke] = useState(vertices.length);
+  const [strokeCompleted, setStrokeCompleted] = useState(false);
+
+  useEffect(() => {
+    if (strokeCompleted === false) return;
+
+    if (id === null) return;
+
+    setStrokeCompleted(true);
+
+    MapperHistory.push({
+      type: 'add_vertices',
+      elementId: id,
+      index: lastStroke,
+      vertices: vertices.slice(lastStroke),
+    });
+
+    setLastStroke(vertices.length);
+  }, [vertices.length]);
 
   return (
     <PolygonDraw
@@ -45,16 +63,7 @@ function PolygonDrawVerticesTool (props: PolygonDrawVerticesToolProps) {
   }
 
   function addStrokeToHistory () {
-    if (id === null) return;
-
-    MapperHistory.push({
-      type: 'add_vertices',
-      elementId: id,
-      index: lastStroke,
-      vertices: vertices.slice(lastStroke),
-    })
-
-    setLastStroke(vertices.length);
+    setStrokeCompleted(true);
   }
 }
 

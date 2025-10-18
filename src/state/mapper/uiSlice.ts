@@ -11,6 +11,7 @@ interface MapperUiState {
     snapDistance: number;
     pencilStep: number;
     vertexSize: number;
+    showVertices: boolean;
     deleteVertexSize: number;
   };
 }
@@ -23,6 +24,7 @@ const initialState: MapperUiState = {
     snapDistance: 20,
     pencilStep: 10,
     vertexSize: 12,
+    showVertices: true,
     deleteVertexSize: 20,
   },
 }

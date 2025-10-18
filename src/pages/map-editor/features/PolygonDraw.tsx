@@ -45,13 +45,10 @@ function PolygonDraw ({
     iconSize: [ui.toolSettings.vertexSize * (3 / 2), ui.toolSettings.vertexSize * (3 / 2)],
   });
 
-  const vertex = L.divIcon({
-    className: styles.vertex,
-    iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
-  });
-
   return (<>
-    <_MarkerLayer latlngVertices={latlngVertices} />
+    {ui.toolSettings.showVertices && <_MarkerLayer
+      latlngVertices={latlngVertices}
+    />}
     <Polygon
       className={styles.polygon}
       positions={latlngVertices}
@@ -62,6 +59,10 @@ function PolygonDraw ({
       positions={[latlngVertices]}
       weight={settings.lineWidth}
       color={settings.colors.active}
+    />
+    <Marker
+      position={latlngVertices[0]}
+      icon={firstVertex}
     />
     <_NextVertex
       shape={shape}
@@ -83,21 +84,22 @@ function _MarkerLayer ({
   const map = useMap();
   const markers = useRef<L.Marker[]>([]);
 
-  const firstVertex = L.divIcon({
-    className: styles.firstVertex,
-    iconSize: [ui.toolSettings.vertexSize * (3 / 2), ui.toolSettings.vertexSize * (3 / 2)],
-  });
-
   const vertex = L.divIcon({
     className: styles.vertex,
     iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
+  });
+  const noIcon = L.divIcon({
+    className:  styles.noIcon,
+    iconSize: [0, 0],
   });
 
   useEffect(() => {
     if (markers.current.length >= lShape.length) return;
 
     for (let i = markers.current.length; i < lShape.length; i++) {
-      const m = L.marker(lShape[i], {icon: i === 0 ? firstVertex : vertex}).addTo(map);
+      const m = L.marker(lShape[i], {
+        icon: i === 0 ? noIcon : vertex
+    }).addTo(map);
       markers.current.push(m);
     }
 

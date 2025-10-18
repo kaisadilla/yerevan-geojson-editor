@@ -1,6 +1,6 @@
 import styles from './DrawVerticesPanel.module.scss';
 
-import { MagnetIcon } from '@phosphor-icons/react';
+import { MagnetIcon, MapPinIcon } from '@phosphor-icons/react';
 import DescriptiveTooltip from 'components/DescriptiveTooltip';
 import Slider from 'components/Slider';
 import ToggleButton from 'components/ToggleButton';
@@ -35,6 +35,18 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
             onChange={handleChangeSnap}
           >
             <MagnetIcon size={24} weight='thin' />
+          </ToggleButton>
+        </DescriptiveTooltip>
+
+        <DescriptiveTooltip
+          label="Show vertices"
+          description="Whether to show a marker on each vertex of the polygon."
+        >
+          <ToggleButton
+            active={ui.toolSettings.showVertices}
+            onChange={handleChangeShowVertices}
+          >
+            <MapPinIcon size={24} weight='thin' />
           </ToggleButton>
         </DescriptiveTooltip>
       </BasePanel.Ribbon>
@@ -102,6 +114,13 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
       value: MathExt.clamp(
         value, Constants.minVertexSize, Constants.maxVertexSize
       ),
+    }));
+  }
+
+  function handleChangeShowVertices (value: boolean) {
+    dispatch(MapperUiActions.setToolSettings({
+      key: 'showVertices',
+      value,
     }));
   }
 }
