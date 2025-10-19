@@ -42,7 +42,7 @@ function _Polygon ({
 
       let area = 0;
       if (vertices.length > 2) {
-        const gj = turf.polygon([[...active.vertices, active.vertices[0]]]);
+        const gj = turf.polygon([[...vertices, vertices[0]]]);
         area = turf.area(gj) / 1_000_000;
       }
 
@@ -55,8 +55,11 @@ function _Polygon ({
   );
 
   useEffect(() => {
-    updateMetrics(active.vertices);
-  }, [active.vertices, updateMetrics]);
+    const el = active.getElement();
+    if (el?.type !== 'Polygon') return;
+
+    updateMetrics([...el.vertices, ...active.stroke]);
+  }, [active.stroke, updateMetrics]);
 
   return (
     <div className={styles.panel}>

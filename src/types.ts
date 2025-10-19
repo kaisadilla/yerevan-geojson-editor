@@ -3,7 +3,7 @@ import React from "react";
 export type DivProps = React.HTMLAttributes<HTMLDivElement>;
 export type SpanProps = React.HTMLAttributes<HTMLSpanElement>;
 export type ImgProps = React.ImgHTMLAttributes<HTMLImageElement>;
-export type StateSetter<T> = React.Dispatch<React.SetStateAction<T>>;
+export type StateSetter<T> = React.SetStateAction<T>;
 
 export type Except<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 export type Collection<T> = Record<string, T>;
@@ -25,4 +25,13 @@ export type ElementSize = 'xs' | 's' | 'm' | 'l' | 'xl';
 export interface Vec2 {
   x: number;
   y: number;
+}
+
+export function getStateSetterValue<T> (setter: StateSetter<T>, prev: T) {
+  if (typeof setter === 'function') {
+    return (setter as (prev: T) => T)(prev);
+  }
+  else {
+    return setter;
+  }
 }

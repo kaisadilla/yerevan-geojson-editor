@@ -203,6 +203,23 @@ function getSampleDocument () : MapperDocument {
     holes: [],
   });
 
+  doc.elements.push({
+    type: 'Polygon',
+    id: 'easypeasy',
+    name: "Sample feature",
+    properties: [],
+    isHidden: false,
+    vertices: [
+      [44.866462, 40.178873],
+      [45.7456, 36.102376],
+      [32.558527, 24.846565],
+      [49.350067, 30.524413],
+      [58.317277, 35.960223],
+      [48.470928, 40.111689],
+    ],
+    holes: [],
+  });
+
   return doc;
 }
 

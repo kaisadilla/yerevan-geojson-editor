@@ -3,6 +3,7 @@ import GLT from "GLT";
 import type { MapperPolygon } from "models/MapDocument";
 import { Polygon } from "react-leaflet";
 import { useDispatch } from "react-redux";
+import useMapperUi from "state/mapper/useUi";
 
 export interface MapPolygonProps {
   polygon: MapperPolygon;
@@ -12,6 +13,7 @@ function MapPolygon ({
   polygon,
 }: MapPolygonProps) {
   const active = useActiveElement();
+  const ui = useMapperUi();
   const dispatch = useDispatch();
 
   return (
@@ -23,10 +25,25 @@ function MapPolygon ({
       weight={2}
       color='var(--color-primary-d1)'
       eventHandlers={{
-        click: () => active.setElement(polygon.id, true)
+        click: handleClick,
       }}
     />
   );
+
+  function handleClick () {
+    if (ui.tool === 'union') {
+
+    }
+    else if (ui.tool === 'difference') {
+
+    }
+    else if (ui.tool === 'intersect') {
+
+    }
+    else {
+      active.setElement(polygon.id, true);
+    }
+  }
 }
 
 export default MapPolygon;

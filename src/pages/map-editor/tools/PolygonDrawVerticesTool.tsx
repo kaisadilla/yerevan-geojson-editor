@@ -1,7 +1,6 @@
 import { useActiveElement } from 'context/useActiveElement';
 import type { Position } from 'geojson';
 import GLT from 'GLT';
-import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { MapperUiActions } from 'state/mapper/uiSlice';
 import PolygonDraw from '../features/PolygonDraw';
@@ -12,58 +11,72 @@ export interface PolygonDrawVerticesToolProps {
 }
 
 function PolygonDrawVerticesTool (props: PolygonDrawVerticesToolProps) {
-  const { id, vertices, setVertices, commitChanges } = useActiveElement();
+  const active = useActiveElement();
   const dispatch = useDispatch();
 
-  const [lastStroke, setLastStroke] = useState(vertices.length);
-  const [strokeCompleted, setStrokeCompleted] = useState(false);
-
-  useEffect(() => {
-    if (strokeCompleted === false) return;
-
-    if (id === null) return;
-
-    setStrokeCompleted(true);
-
-    MapperHistory.push({
-      type: 'add_vertices',
-      elementId: id,
-      index: lastStroke,
-      vertices: vertices.slice(lastStroke),
-    });
-
-    setLastStroke(vertices.length);
-  }, [vertices.length]);
+  const polygon = active.getPolygon();
+  if (!polygon) return null;
 
   return (
     <PolygonDraw
-      vertices={vertices}
+      vertices={[...polygon.vertices, ...active.stroke]}
       onAddVertex={handleAddVertex}
       onCompleteStroke={handleCompleteStroke}
     />
   );
 
-  function handleAddVertex (coord: Position) {
-    if (GLT.gj.coord.isEqual(coord, vertices[0])) {
-      commitChanges();
-      addStrokeToHistory();
+  function handleAddVertex (position: Position, isStroke: boolean) {
+    if (isStroke === false) {
+      addVertexToPolygon(position);
+    }
+    else {
+      addVertexToStroke(position);
+    }
+  }
+
+  function addVertexToPolygon (position: Position) {
+    if (!polygon) return;
+
+    if (GLT.gj.coord.isEqual(position, polygon.vertices[0])) {
+      //active.commitChanges();
+      //addStrokeToHistory();
       dispatch(MapperUiActions.setTool(null));
       return;
     }
 
-    setVertices(prev => [
+    MapperHistory.push({
+      type: 'add_vertices',
+      elementId: polygon.id,
+      index: polygon.vertices.length,
+      vertices: [position],
+    });
+
+    active.setVertices(prev => [
       ...prev,
-      coord,
+      position,
+    ]);
+  }
+
+  function addVertexToStroke (position: Position) {
+    active.setStroke(prev => [
+      ...prev,
+      position,
     ]);
   }
 
   function handleCompleteStroke () {
-    commitChanges();
-    addStrokeToHistory();
-  }
+    if (!polygon) return;
 
-  function addStrokeToHistory () {
-    setStrokeCompleted(true);
+    const vertices = [...active.stroke];
+
+    MapperHistory.push({
+      type: 'add_vertices',
+      elementId: polygon.id,
+      index: polygon.vertices.length,
+      vertices,
+    })
+
+    active.commitStroke();
   }
 }
 

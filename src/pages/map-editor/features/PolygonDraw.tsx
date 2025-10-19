@@ -19,13 +19,14 @@ export interface PolygonDrawProps {
   /**
    * Called every time one vertex is added to the polygon.
    * @param pos The position where the vertex is.
+   * @param isStroke True when the position is added as part of a single
+   * multi-position stroke (right-click behavior).
    */
-  onAddVertex?: (pos: Position) => void;
+  onAddVertex?: (pos: Position, isStroke: boolean) => void;
   /**
-   * Called when the user completes a stroke. A stroke is one single action that
-   * adds vertices. For a left click, that's a single press. For a right click,
-   * a stroke starts when the user presses down the button and ends when the
-   * button is released.
+   * Called when the user completes a stroke. A stroke occurs when the user
+   * presses the right button of the mouse, drags to form a path, and releases
+   * the button.
    */
   onCompleteStroke?: () => void;
 }
@@ -94,7 +95,14 @@ function _MarkerLayer ({
   });
 
   useEffect(() => {
-    if (markers.current.length >= lShape.length) return;
+    if (markers.current.length > lShape.length) {
+      for (let i = lShape.length; i < markers.current.length; i++) {
+        map.removeLayer(markers.current[i]);
+      }
+
+      markers.current = markers.current.slice(0, lShape.length);
+      return;
+    }
 
     for (let i = markers.current.length; i < lShape.length; i++) {
       const m = L.marker(lShape[i], {
@@ -119,7 +127,7 @@ function _MarkerLayer ({
 
 interface _NextVertexProps {
   shape: Position[];
-  onAddVertex?: (coord: Position) => void;
+  onAddVertex?: (pos: Position, isStroke: boolean) => void;
   onCompleteStroke?: () => void;
 }
 
@@ -212,7 +220,7 @@ function _NextVertex ({
     const pxCursor = map.latLngToLayerPoint(cursorPos);
 
     if (MathExt.vec2distance(pxLast, pxCursor) > ui.toolSettings.pencilStep) {
-      onAddVertex?.(hoveredCoords);
+      onAddVertex?.(hoveredCoords, true);
       lastVertex.current = hoveredCoords;
     }
   }
@@ -220,8 +228,7 @@ function _NextVertex ({
   function handleLeftClick (evt: LeafletMouseEvent) {
     if (!hoveredCoords) return;
 
-    onAddVertex?.(hoveredCoords);
-    onCompleteStroke?.();
+    onAddVertex?.(hoveredCoords, false);
   }
 
   function handleRightClickDown () {

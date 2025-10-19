@@ -1,6 +1,5 @@
 import { useActiveElement } from 'context/useActiveElement';
 import Logger from 'Logger';
-import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import PolygonDeleteVertices from '../features/PolygonDeleteVertices';
 import { MapperHistory } from '../MapperHistory';
@@ -13,16 +12,14 @@ function PolygonDeleteVerticesTool (props: PolygonDeleteVerticesToolProps) {
   const active = useActiveElement();
   const dispatch = useDispatch();
 
-  // Every time vertices change, that counts as an edit and is commited.
-  useEffect(() => {
-    active.commitChanges();
-  }, [active.vertices]);
+  const polygon = active.getPolygon();
+  if (!polygon) return null;
 
   const indices = active.getDeletePath();
 
   return (<>
     <PolygonDeleteVertices
-      vertices={active.vertices}
+      vertices={polygon.vertices}
       deletePath={active.deleteMode === 'section' ? indices : undefined}
       onDeleteVertex={handleDeleteVertex}
     />
@@ -41,14 +38,14 @@ function PolygonDeleteVerticesTool (props: PolygonDeleteVerticesToolProps) {
   }
 
   function deleteVertex (index: number) {
-    if (active.id) {
-      MapperHistory.push({
-        type: 'delete_vertices',
-        elementId: active.id,
-        index,
-        vertices: [active.vertices[index]],
-      });
-    }
+    if (!polygon) return;
+
+    MapperHistory.push({
+      type: 'delete_vertices',
+      elementId: polygon.id,
+      index,
+      vertices: [polygon.vertices[index]],
+    });
 
     active.setVertices(prev => {
       const upd = [...prev];
@@ -60,6 +57,7 @@ function PolygonDeleteVerticesTool (props: PolygonDeleteVerticesToolProps) {
 
   function updateDeletePath (index: number) {
     active.setDeletePath(prev => {
+      console.log(prev);
       if (prev.start === null) return {
         start: index,
         end: null,

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { isEventTargetEditable } from "utils";
 
 interface InternalState {
   shift: boolean;
@@ -23,6 +24,8 @@ export const KeyboardProvider = ({ children }: any) => {
 
   useEffect(() => {
     function handleKeyDown (evt: KeyboardEvent) {
+      if (isEventTargetEditable(evt.target)) return;
+    
       if (evt.shiftKey) setShift(true);
       if (evt.ctrlKey) setCtrl(true);
     }

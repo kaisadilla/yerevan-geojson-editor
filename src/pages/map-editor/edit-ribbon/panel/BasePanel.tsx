@@ -1,12 +1,16 @@
-import { Tooltip } from '@mantine/core';
 import { CaretDoubleDownIcon, CaretDoubleUpIcon } from '@phosphor-icons/react';
 import Button from 'components/Button';
+import DescriptiveTooltip from 'components/DescriptiveTooltip';
+import { useKeyboard } from 'context/useKeyboard';
 import type React from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { MapperUiActions } from 'state/mapper/uiSlice';
 import useMapperUi from 'state/mapper/useUi';
 import { $cl } from 'utils';
+import BasePanel_Keys from './BasePanel.Keys';
 import styles from './BasePanel.module.scss';
+import BasePanel_Ribbon from './BasePanel.Ribbon';
 
 export interface PanelProps {
   name: string;
@@ -20,26 +24,40 @@ function BasePanel ({
   children,
 }: PanelProps) {
   const ui = useMapperUi();
+  const keyboard = useKeyboard();
   const dispatch = useDispatch();
 
-  if (ui.isSettingsPanelExpanded === false) return (
+  useEffect(() => {
+    // Shift will collapse the panel. Ctrl + shift will expand it.
+    if (keyboard.shift) {
+      dispatch(MapperUiActions.setSettingsPanelExpanded(keyboard.ctrl));
+    }
+  }, [keyboard.shift]);
+
+  if (keyboard.shift === false && ui.isSettingsPanelExpanded === false) return (
     <div className={styles.panel}>
-      <Tooltip.Floating label={`Expand settings for ${name}.`}>
+      <DescriptiveTooltip
+        label={`Expand settings for ${name}.`}
+        description="🛈 You can use 'shift' to temporarily expand the panel or 'ctrl + shift' to leave it expanded."
+      >
         <Button onClick={handleExpand}>
           <CaretDoubleDownIcon size={24} weight='thin' />
         </Button>
-      </Tooltip.Floating>
+      </DescriptiveTooltip>
     </div>
   )
 
   return (
     <div className={styles.panel} data-expanded={true}>
       <div className={styles.header}>
-        <Tooltip.Floating label="Collapse">
+        <DescriptiveTooltip
+          label="Collapse"
+          shortcut="Shift"
+        >
           <Button onClick={handleCollapse}>
             <CaretDoubleUpIcon size={24} weight='thin' />
           </Button>
-        </Tooltip.Floating>
+        </DescriptiveTooltip>
         <h3>{name}</h3>
       </div>
       <div className={$cl(styles.content, className)}>
@@ -57,30 +75,7 @@ function BasePanel ({
   }
 }
 
-interface _RibbonProps {
-  label?: string;
-  containerClassName?: string;
-  children: React.ReactNode;
-}
-
-function _Ribbon ({
-  label,
-  containerClassName,
-  children,
-}: _RibbonProps) {
-
-  return (
-    <div className={styles.ribbon}>
-      {label && <h3>
-        {label}
-      </h3>}
-      <div className={$cl(styles.items, containerClassName)}>
-        {children}
-      </div>
-    </div>
-  );
-}
-
-BasePanel.Ribbon = _Ribbon;
+BasePanel.Ribbon = BasePanel_Ribbon;
+BasePanel.Keys = BasePanel_Keys;
 
 export default BasePanel;

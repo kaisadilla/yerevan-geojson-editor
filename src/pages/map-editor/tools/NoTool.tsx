@@ -32,7 +32,7 @@ function _Polygon ({
       key={polygon.id}
       className={styles.polygon}
       positions={[
-        GLT.gj.coords.leaflet(active.vertices),
+        GLT.gj.coords.leaflet(polygon.vertices),
         ...polygon.holes.map(h => GLT.gj.coords.leaflet(h)),
       ]}
       weight={2}

@@ -1,7 +1,6 @@
 import { useActiveElement } from "context/useActiveElement";
 import { MapperHistory, type AddVerticesMapperAction, type ChangeVerticesMapperAction, type DeleteVerticesMapperAction } from "pages/map-editor/MapperHistory";
 import { useDispatch } from "react-redux";
-import { MapperDocActions } from "state/mapper/docSlice";
 import useMapperDoc from "state/mapper/useDoc";
 
 export default function useUndo () {
@@ -28,16 +27,16 @@ export default function useUndo () {
     const el = doc.getElement(action.elementId);
     if (!el) return;
     if (el.type !== 'Polygon') return;
+    
+    console.log("Vertices in redux", [...el.vertices]);
+    console.log("action", action);
 
     const verts = [...el.vertices];
     verts.splice(action.index, action.vertices.length);
 
-    dispatch(MapperDocActions.updatePolygonVertices({
-      elementId: el.id,
-      vertices: verts,
-    }));
+    console.log("Vertices given to active", verts);
 
-    active.setVertices(_ => verts);
+    active.setVertices(verts);
   }
 
   function undoDeleteVertices (action: DeleteVerticesMapperAction) {
@@ -50,26 +49,16 @@ export default function useUndo () {
       ...action.vertices,
       ...el.vertices.slice(action.index),
     ];
-    
-    dispatch(MapperDocActions.updatePolygonVertices({
-      elementId: el.id,
-      vertices: verts,
-    }));
 
-    active.setVertices(_ => verts);
+    active.setVertices(verts);
   }
 
   function undoChangeVertices (action: ChangeVerticesMapperAction) {
     const el = doc.getElement(action.elementId);
     if (!el) return;
     if (el.type !== 'Polygon') return;
-
-    dispatch(MapperDocActions.updatePolygonVertices({
-      elementId: el.id,
-      vertices: action.before,
-    }));
-
-    active.setVertices(_ => action.before);
+    
+    active.setVertices(action.before);
   }
 
   return {

@@ -1,7 +1,6 @@
 import { useActiveElement } from "context/useActiveElement";
 import { MapperHistory, type AddVerticesMapperAction, type ChangeVerticesMapperAction, type DeleteVerticesMapperAction } from "pages/map-editor/MapperHistory";
 import { useDispatch } from "react-redux";
-import { MapperDocActions } from "state/mapper/docSlice";
 import useMapperDoc from "state/mapper/useDoc";
 
 export default function useRedo () {
@@ -35,12 +34,7 @@ export default function useRedo () {
       ...el.vertices.slice(action.index),
     ];
 
-    dispatch(MapperDocActions.updatePolygonVertices({
-      elementId: el.id,
-      vertices: verts,
-    }));
-
-    active.setVertices(_ => verts);
+    active.setVertices(verts);
   }
 
   function redoDeleteVertices (action: DeleteVerticesMapperAction) {
@@ -51,14 +45,7 @@ export default function useRedo () {
     const verts = [...el.vertices];
     verts.splice(action.index, action.vertices.length);
 
-    dispatch(MapperDocActions.updatePolygonVertices({
-      elementId: el.id,
-      vertices: verts,
-    }));
-
-    console.log(verts);
-
-    active.setVertices(_ => verts);
+    active.setVertices(verts);
   }
 
   function redoChangeVertices (action: ChangeVerticesMapperAction) {
@@ -66,12 +53,7 @@ export default function useRedo () {
     if (!el) return;
     if (el.type !== 'Polygon') return;
 
-    dispatch(MapperDocActions.updatePolygonVertices({
-      elementId: el.id,
-      vertices: action.after,
-    }));
-
-    active.setVertices(_ => action.after);
+    active.setVertices(action.after);
   }
 
   return {

@@ -156,5 +156,44 @@ export function isEventTargetEditable (target: EventTarget | null) {
 
   const tag = target.tagName.toLowerCase();
 
-  return tag === 'input' || tag === 'textarea';
+  if (tag === 'textarea') return true;
+
+  if (tag === 'input') {
+    const input = target as HTMLInputElement;
+    const type = input.type?.toLowerCase() ?? 'text';
+
+    return type === 'text'
+      || type === 'search'
+      || type === 'password'
+      || type === 'email'
+      || type === 'url'
+      || type === 'tel'
+      || type === 'number'
+      ;
+  }
+
+  return false;
+}
+
+/**
+ * By default, shift + click on a label won't act as a click on the input
+ * element the label is pointing to. By calling this function with the click
+ * event 
+ * @param evt 
+ * @returns 
+ */
+export function allowLabelShiftClick (evt: MouseEvent) {
+  if (!evt.shiftKey) return;
+  
+  const lbl = (evt.target as HTMLElement)?.closest('label');
+  if (!lbl) return;
+
+  const inputId = lbl.getAttribute('for');
+  if (!inputId) return;
+
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  evt.preventDefault();
+  input.click();
 }

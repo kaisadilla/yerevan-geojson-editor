@@ -1,9 +1,11 @@
 import type { Position } from "geojson";
-import type { MapperElement } from "models/MapDocument";
+import type { MapperElement, MapperPolygon } from "models/MapDocument";
 import { createContext, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 import { MapperDocActions } from "state/mapper/docSlice";
+import { MapperUiActions } from "state/mapper/uiSlice";
 import useMapperDoc from "state/mapper/useDoc";
+import { getStateSetterValue, type StateSetter } from "types";
 
 export type DeleteMode = 'individual' | 'section';
 export type DeletePath = {
@@ -13,7 +15,7 @@ export type DeletePath = {
 
 interface InternalState {
   id: string | null;
-  vertices: Position[];
+  stroke: Position[];
   deleteMode: DeleteMode;
   deletePath: DeletePath;
   reverseDeletePath: boolean;
@@ -21,16 +23,18 @@ interface InternalState {
 
 interface ActiveElementValue extends InternalState {
   getElement: () => MapperElement | null;
+  getPolygon: () => MapperPolygon | null;
   setElement: (elementId: string | null, commitChanges: boolean) => void;
-  setVertices: (value: (prev: Position[]) => Position[]) => void;
+  setVertices: (verts: StateSetter<Position[]>) => void;
+  setStroke: (verts: StateSetter<Position[]>) => void;
+  commitStroke: () => void;
   setDeleteMode: (mode: DeleteMode) => void;
-  setDeletePath: (value: (prev: DeletePath) => DeletePath) => void;
+  setDeletePath: (value: StateSetter<DeletePath>) => void;
   setDeletePathReverse: (value: boolean) => void;
   /**
    * Returns an array with all the indices currently included in the delete path.
    */
   getDeletePath: () => number[] | null;
-  commitChanges: () => void;
 }
 
 const ActiveElementContext = createContext(undefined as ActiveElementValue | undefined);
@@ -47,43 +51,64 @@ export const ActiveElementProvider = ({ children }: any) => {
     return doc.getElement(state.id);
   }
 
-  function setActiveElement (elementId: string | null, commit: boolean) {
+  function getPolygon () : MapperPolygon | null {
+    const el = getElement();
+
+    if (el?.type === 'Polygon') return el;
+    return null;
+  }
+
+  function setElement (elementId: string | null, commit: boolean) {
     if (commit) {
-      commitChanges();
+      commitStroke();
     }
 
-    let el = null;
-    if (elementId !== null) {
-      el = doc.getElement(elementId);
-    }
-
-    if (el === null) {
-      setState(prev => ({
-        ...prev,
-        id: null,
-        vertices: []
-      }));
-
-      return;
-    }
-
-    let vertices: Position[] = [];
-    if (el.type === 'Polygon') {
-      vertices = [...el.vertices];
-    }
+    dispatch(MapperUiActions.setTool(null));
 
     setState(prev => ({
       ...prev,
       id: elementId,
+      stroke: [],
+    }));
+  }
+
+  function setVertices (verts: StateSetter<Position[]>) {
+    if (state.id === null) return;
+
+    const el = doc.getElement(state.id);
+    if (!el) return;
+
+    if (el.type !== 'Polygon') return;
+
+    const vertices = getStateSetterValue(verts, el.vertices);
+
+    dispatch(MapperDocActions.updatePolygonVertices({
+      elementId: el.id,
       vertices,
     }));
   }
 
-  function setVertices (vertices: (prev: Position[]) => Position[]) {
+  function setStroke (verts: StateSetter<Position[]>) {
     setState(prev => ({
       ...prev,
-      vertices: vertices(prev.vertices),
+      stroke: getStateSetterValue(verts, prev.stroke),
     }));
+  }
+
+  function commitStroke () {
+    if (state.id === null) return;
+    
+    const el = doc.getElement(state.id);
+    if (el === null) return;
+
+    if (el.type === 'Polygon') {
+      dispatch(MapperDocActions.updatePolygonVertices({
+        elementId: el.id,
+        vertices: [...el.vertices, ...state.stroke],
+      }));
+    }
+
+    setState(prev => ({ ...prev, stroke: [] }));
   }
 
   function setDeleteMode (mode: DeleteMode) {
@@ -94,10 +119,10 @@ export const ActiveElementProvider = ({ children }: any) => {
     }));
   }
 
-  function setDeletePath (value: (prev: DeletePath) => DeletePath) {
+  function setDeletePath (value: StateSetter<DeletePath>) {
     setState(prev => ({
       ...prev,
-      deletePath: value(prev.deletePath),
+      deletePath: getStateSetterValue(value, prev.deletePath),
     }))
   }
 
@@ -109,10 +134,13 @@ export const ActiveElementProvider = ({ children }: any) => {
   }
 
   function getDeletePath () : number[] | null {
+    const polygon = getPolygon();
+    if (!polygon) return null;
+
     if (state.deletePath.start === null) return null;
     if (state.deletePath.end === null) return [state.deletePath.start];
 
-    if (state.vertices.length === 0) return [];
+    if (polygon.vertices.length === 0) return [];
     
     const indices: number[] = [];
 
@@ -124,7 +152,7 @@ export const ActiveElementProvider = ({ children }: any) => {
         if (i === state.deletePath.end) break;
 
         i++;
-        if (i >= state.vertices.length) i = 0;
+        if (i >= polygon.vertices.length) i = 0;
       }
     }
     else {
@@ -133,38 +161,26 @@ export const ActiveElementProvider = ({ children }: any) => {
         if (i === state.deletePath.end) break;
 
         i--;
-        if (i < 0) i = state.vertices.length - 1;
+        if (i < 0) i = polygon.vertices.length - 1;
       }
     }
 
     return indices;
   }
 
-  function commitChanges () {
-    if (state.id === null) return;
-    
-    const el = doc.getElement(state.id);
-    if (el === null) return;
-
-    if (el.type === 'Polygon') {
-      dispatch(MapperDocActions.updatePolygonVertices({
-        elementId: el.id,
-        vertices: state.vertices,
-      }));
-    }
-  }
-
   return (
     <ActiveElementContext.Provider value={{
       ...state,
       getElement,
-      setElement: setActiveElement,
+      getPolygon,
+      setElement,
       setVertices,
+      setStroke,
+      commitStroke,
       setDeleteMode,
       setDeletePath,
       setDeletePathReverse,
       getDeletePath,
-      commitChanges,
     }}>
       {children}
     </ActiveElementContext.Provider>
@@ -184,7 +200,7 @@ export function useActiveElement () : ActiveElementValue {
 function initState () : InternalState {
   return {
     id: null,
-    vertices: [],
+    stroke: [],
     deleteMode: 'individual',
     deletePath: {
       start: null,

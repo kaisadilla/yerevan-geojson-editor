@@ -4,7 +4,7 @@ import DescriptiveTooltip from 'components/DescriptiveTooltip';
 import { useActiveElement, type DeleteMode } from 'context/useActiveElement';
 import type { Position } from 'geojson';
 import { MapperHistory } from 'pages/map-editor/MapperHistory';
-import { useEffect } from 'react';
+import { allowLabelShiftClick } from 'utils';
 import BasePanel from '../BasePanel';
 import Description from '../Description';
 import styles from './DeleteVerticesPanel.module.scss';
@@ -15,14 +15,12 @@ export interface DeleteVerticesPanelProps {
 
 function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
   const active = useActiveElement();
-  
-  // Every time vertices change, that counts as an edit and is commited.
-  useEffect(() => {
-    active.commitChanges();
-  }, [active.vertices]);
+  const polygon = active.getPolygon();
 
   return (
     <BasePanel className={styles.panel} name="Delete vertices tool">
+      <BasePanel.Keys onKey={handleKey} />
+
       <Description>
         Select one of the two delete modes to choose how to delete vertices.
       </Description>
@@ -31,6 +29,7 @@ function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
         <SegmentedControl
           value={active.deleteMode}
           onChange={v => active.setDeleteMode(v as DeleteMode)}
+          onClick={evt => allowLabelShiftClick(evt.nativeEvent)}
           data={[
             {
               value: 'individual',
@@ -81,36 +80,49 @@ function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
     </BasePanel>
   );
 
+  function handleKey (code: string) {
+    if (code === 'KeyQ') {
+      active.setDeleteMode('individual');
+    }
+    else if (code === 'KeyW') {
+      active.setDeleteMode('section');
+    }
+  }
+
   function handleReversePath () {
     active.setDeletePathReverse(!active.reverseDeletePath);
   }
 
   function deletePath () {
-    if (active.id === null) return;
+    if (!polygon) return;
 
     const indexArr = active.getDeletePath();
     if (indexArr === null) return;
 
     const indices = new Set(indexArr);
 
-    const before = [...active.vertices];
+    const before = [...polygon.vertices];
     const after: Position[] = [];
 
-    for (let i = 0; i < active.vertices.length; i++) {
-      if (indices.has(i) === false) {
+    for (let i = 0; i < before.length; i++) {
+      if (
+        indices.has(i) === false
+        || indexArr[0] === i 
+        || indexArr[indexArr.length - 1] === i
+      ) {
         after.push(before[i]);
       }
     }
 
     MapperHistory.push({
       type: 'change_vertices',
-      elementId: active.id,
+      elementId: polygon.id,
       before,
       after,
     });
 
-    active.setVertices(prev => after);
-    active.setDeletePath(prev => ({ start: null, end: null }));
+    active.setVertices(after);
+    active.setDeletePath({ start: null, end: null });
   }
 }
 
