@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router';
 
 import { ActiveElementProvider } from 'context/useActiveElement.tsx';
 import { KeyboardProvider } from 'context/useKeyboard.tsx';
+import 'i18n';
 import App from './App.tsx';
 import { store } from './state/store.ts';
 

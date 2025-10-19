@@ -5,7 +5,6 @@ export type SpanProps = React.HTMLAttributes<HTMLSpanElement>;
 export type ImgProps = React.ImgHTMLAttributes<HTMLImageElement>;
 export type StateSetter<T> = React.SetStateAction<T>;
 
-export type Except<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>
 export type Collection<T> = Record<string, T>;
 /**
  * Defines a version of a type that is recursively immutable.

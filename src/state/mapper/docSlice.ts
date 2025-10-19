@@ -236,6 +236,13 @@ const mapperDocSlice = createSlice({
       //state.content.features.push(action.payload);
     },
 
+    deleteElement (state, action: PayloadAction<string>) {
+      const targetParent = getElementParent(state.content, action.payload);
+      if (!targetParent) return;
+
+      removeElement(targetParent, action.payload);
+    },
+
     moveElement (state, action: PayloadAction<{
       elementId: string,
       targetId: string,
@@ -446,7 +453,7 @@ export function isElementHidden (
 
 /**
  * Removes an element from the group given and returns it. Returns `null` if an
- * element is not found.
+ * element is not found. This function is not recursive.
  * @param group The group where the element is.
  * @param elementId The id of the element to remove.
  */

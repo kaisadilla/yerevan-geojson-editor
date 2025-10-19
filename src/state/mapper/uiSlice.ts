@@ -1,5 +1,11 @@
 import { createSlice, type PayloadAction, type WritableDraft } from "@reduxjs/toolkit";
 
+const TOOLS_THAT_AUTO_EXPAND_SETTINGS = new Set<MapperTool>([
+  'union',
+  'difference',
+  'intersect',
+]);
+
 interface MapperUiState {
   /**
    * The editing tool currently in use, or `null` if no tool is selected.
@@ -13,6 +19,7 @@ interface MapperUiState {
     vertexSize: number;
     showVertices: boolean;
     deleteVertexSize: number;
+    deleteFeaturesUsedByCombine: boolean;
   };
 }
 
@@ -26,6 +33,7 @@ const initialState: MapperUiState = {
     vertexSize: 12,
     showVertices: true,
     deleteVertexSize: 20,
+    deleteFeaturesUsedByCombine: false,
   },
 }
 
@@ -37,6 +45,10 @@ const mapperUiSlice = createSlice({
       const tool = action.payload;
 
       state.tool = tool;
+
+      if (tool && TOOLS_THAT_AUTO_EXPAND_SETTINGS.has(tool)) {
+        state.isSettingsPanelExpanded = true;
+      }
     },
 
     setSettingsPanelExpanded (state, action: PayloadAction<boolean>) {

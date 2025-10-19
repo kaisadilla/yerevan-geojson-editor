@@ -30,6 +30,7 @@ function _Polygon ({
   polygon
 }: _PolygonProps) {
   const active = useActiveElement();
+  const el = active.getElement();
 
   const [data, setData] = useState({
     area: 0,
@@ -59,7 +60,7 @@ function _Polygon ({
     if (el?.type !== 'Polygon') return;
 
     updateMetrics([...el.vertices, ...active.stroke]);
-  }, [active.stroke, updateMetrics]);
+  }, [el, active.stroke, updateMetrics]);
 
   return (
     <div className={styles.panel}>

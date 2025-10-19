@@ -8,9 +8,11 @@ import { useDispatch } from 'react-redux';
 import { MapperUiActions } from 'state/mapper/uiSlice';
 import useMapperUi from 'state/mapper/useUi';
 import { $cl } from 'utils';
+import BasePanel_FeatureMenu from './BasePanel.FeatureMenu';
 import BasePanel_Keys from './BasePanel.Keys';
 import styles from './BasePanel.module.scss';
 import BasePanel_Ribbon from './BasePanel.Ribbon';
+import BasePanel_Row from './BasePanel.Row';
 
 export interface PanelProps {
   name: string;
@@ -77,5 +79,7 @@ function BasePanel ({
 
 BasePanel.Ribbon = BasePanel_Ribbon;
 BasePanel.Keys = BasePanel_Keys;
+BasePanel.FeatureMenu = BasePanel_FeatureMenu;
+BasePanel.Row = BasePanel_Row;
 
 export default BasePanel;

@@ -1,4 +1,7 @@
+import * as turf from "@turf/turf";
 import type { Position } from "geojson";
+import GLT from "GLT";
+import Logger from "Logger";
 import type { MapperElement, MapperPolygon } from "models/MapDocument";
 import { createContext, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -35,6 +38,7 @@ interface ActiveElementValue extends InternalState {
    * Returns an array with all the indices currently included in the delete path.
    */
   getDeletePath: () => number[] | null;
+  union: (targetId: string, deleteTarget: boolean) => void;
 }
 
 const ActiveElementContext = createContext(undefined as ActiveElementValue | undefined);
@@ -168,6 +172,33 @@ export const ActiveElementProvider = ({ children }: any) => {
     return indices;
   }
 
+  function union (targetId: string, deleteTarget: boolean) {
+    const el = getPolygon();
+    if (!el) return;
+
+    const target = doc.getElement(targetId);
+    if (target?.type !== 'Polygon') return;
+
+    const poly1 = GLT.mapper.polygon.turf(el);
+    const poly2 = GLT.mapper.polygon.turf(target);
+
+    const fusion = turf.union(turf.featureCollection([poly1, poly2]));
+
+    if (fusion?.geometry.type === 'Polygon') {
+      dispatch(MapperDocActions.updatePolygonVertices({
+        elementId: el.id,
+        vertices: fusion.geometry.coordinates[0],
+      }));
+    }
+    else if (fusion?.geometry.type === 'MultiPolygon') {
+      Logger.error("Not yet implemented.");
+    }
+    
+    if (deleteTarget === false) return;
+
+    dispatch(MapperDocActions.deleteElement(target.id));
+  }
+
   return (
     <ActiveElementContext.Provider value={{
       ...state,
@@ -181,6 +212,7 @@ export const ActiveElementProvider = ({ children }: any) => {
       setDeletePath,
       setDeletePathReverse,
       getDeletePath,
+      union,
     }}>
       {children}
     </ActiveElementContext.Provider>

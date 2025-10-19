@@ -1,7 +1,7 @@
-@import "../../node_modules/@substrate-system/css-normalize/dist/index.min.css";
+@use "../../node_modules/@substrate-system/css-normalize/dist/index.min.css" as *;
 
-@import "vars";
-@import "mantine";
+@use "vars" as *;
+@use "mantine" as *;
 
 :root {
   font-family: var(--font-segoe);
