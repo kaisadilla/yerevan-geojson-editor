@@ -112,6 +112,18 @@ export class MapperHistoryState {
     return null;
   }
   
+  peekPast () : MapperAction | null {
+    if (this.past.length === 0) return null;
+
+    return this.past[this.past.length - 1];
+  }
+  
+  peekFuture () : MapperAction | null {
+    if (this.future.length === 0) return null;
+
+    return this.future[this.future.length - 1];
+  }
+  
   onHistoryChange (handler: OnHistoryChangeEventHandler) {
     this.listeners.add(handler);
   }

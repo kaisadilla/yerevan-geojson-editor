@@ -57,7 +57,6 @@ function PolygonDeleteVerticesTool (props: PolygonDeleteVerticesToolProps) {
 
   function updateDeletePath (index: number) {
     active.setDeletePath(prev => {
-      console.log(prev);
       if (prev.start === null) return {
         start: index,
         end: null,

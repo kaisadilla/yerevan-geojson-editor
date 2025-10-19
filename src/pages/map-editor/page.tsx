@@ -20,7 +20,6 @@ function MapEditorPage (props: MapEditorPageProps) {
   useEffect(() => {
     if (!ref.current) return;
 
-    console.log(ref.current.style);
     ref.current.style.setProperty('--col-gj-active', settings.colors.active);
   }, [settings]);
 

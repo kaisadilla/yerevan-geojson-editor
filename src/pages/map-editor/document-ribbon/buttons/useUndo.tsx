@@ -27,14 +27,9 @@ export default function useUndo () {
     const el = doc.getElement(action.elementId);
     if (!el) return;
     if (el.type !== 'Polygon') return;
-    
-    console.log("Vertices in redux", [...el.vertices]);
-    console.log("action", action);
 
     const verts = [...el.vertices];
     verts.splice(action.index, action.vertices.length);
-
-    console.log("Vertices given to active", verts);
 
     active.setVertices(verts);
   }
