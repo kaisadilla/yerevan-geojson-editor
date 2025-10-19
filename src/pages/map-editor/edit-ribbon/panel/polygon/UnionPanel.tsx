@@ -31,7 +31,7 @@ function UnionPanel (props: UnionPanelProps) {
   return (
     <BasePanel name="Union tool">
       <Description>
-        {t("tools.union.settings.description")}
+        {t("tool.polygon.union.settings.desc")}
       </Description>
 
       <BasePanel.Row>
@@ -39,7 +39,7 @@ function UnionPanel (props: UnionPanelProps) {
           elements={options}
           value={value}
           onChange={setValue}
-          placeholder="Select a feature..."
+          placeholder={t("tool.polygon.union.settings.menu_placeholder")}
         />
 
         <Button
@@ -47,14 +47,16 @@ function UnionPanel (props: UnionPanelProps) {
           onClick={handleJoin}
           disabled={value === null}
         >
-          Join
+          {t("tool.polygon.union.settings.join")}
         </Button>
       </BasePanel.Row>
 
-      <h3>Options</h3>
+      <h3>
+        {t("tool.polygon.union.settings.section.options")}
+      </h3>
 
       <Checkbox
-        label="Delete polygons added to this one."
+        label={t("tool.polygon.union.settings.delete_target.label")}
         checked={ui.toolSettings.deleteFeaturesUsedByCombine}
         onChange={handleChangeDeleteFeatures}
       />

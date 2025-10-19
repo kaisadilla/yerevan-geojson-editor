@@ -4,6 +4,7 @@ import DescriptiveTooltip from 'components/DescriptiveTooltip';
 import { useActiveElement, type DeleteMode } from 'context/useActiveElement';
 import type { Position } from 'geojson';
 import { MapperHistory } from 'pages/map-editor/MapperHistory';
+import { useTranslation } from 'react-i18next';
 import { allowLabelShiftClick } from 'utils';
 import BasePanel from '../BasePanel';
 import Description from '../Description';
@@ -17,15 +18,19 @@ function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
   const active = useActiveElement();
   const polygon = active.getPolygon();
 
+  const { t } = useTranslation();
+
   return (
     <BasePanel className={styles.panel} name="Delete vertices tool">
       <BasePanel.Keys onKey={handleKey} />
 
       <Description>
-        Select one of the two delete modes to choose how to delete vertices.
+        {t("tool.polygon.delete_vertices.settings.desc")}
       </Description>
 
-      <BasePanel.Ribbon label="Mode">
+      <BasePanel.Ribbon
+        label={t("tool.polygon.delete_vertices.settings.section.mode")}
+      >
         <SegmentedControl
           value={active.deleteMode}
           onChange={v => active.setDeleteMode(v as DeleteMode)}
@@ -35,8 +40,12 @@ function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
               value: 'individual',
               label: (
                 <DescriptiveTooltip
-                  label="Individual"
-                  description="Click on individual vertices to remove them."
+                  label={
+                    t("tool.polygon.delete_vertices.settings.mode.individual.name")
+                  }
+                  description={
+                    t("tool.polygon.delete_vertices.settings.mode.individual.desc")
+                  }
                 >
                   <CursorIcon size={24} weight='thin' />
                 </DescriptiveTooltip>
@@ -46,8 +55,12 @@ function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
               value: 'section',
               label: (
                 <DescriptiveTooltip
-                  label="Section"
-                  description="Select two vertices. This will form a path between the two. Then, use the 'Delete vertices' button to delete all vertices in the path, excluding both ends."
+                  label={
+                    t("tool.polygon.delete_vertices.settings.mode.section.name")
+                  }
+                  description={
+                    t("tool.polygon.delete_vertices.settings.mode.section.desc")
+                  }
                 >
                   <LineSegmentsIcon size={24} weight='thin' />
                 </DescriptiveTooltip>
@@ -59,14 +72,14 @@ function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
 
       {active.deleteMode === 'section' && <BasePanel.Ribbon
         containerClassName={styles.deleteSectionRibbon}
-        label="Delete section"
+        label={t("tool.polygon.delete_vertices.settings.section.delete_section")}
       >
         <Button
           size='compact-sm'
           variant='light'
           onClick={handleReversePath}
         >
-          Reverse path
+          {t("tool.polygon.delete_vertices.settings.delete_section.reverse")}
         </Button>
 
         <Button
@@ -74,7 +87,7 @@ function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
           color='red'
           onClick={deletePath}
         >
-          Delete vertices
+          {t("tool.polygon.delete_vertices.settings.delete_section.delete")}
         </Button>
       </BasePanel.Ribbon>}
     </BasePanel>

@@ -1,8 +1,110 @@
 {
-  "tools": {
-    "union": {
-      "settings": {
-        "description": "Select a polygon from the list below and click on 'Join'. Alternative, just hold down Ctrl and click on other polygons on the map to add them to this one."
+  "tools_ribbon": {
+    "polygon": {
+      "title": "Polygon"
+    }
+  },
+  "tool": {
+    "polygon": {
+      "draw_vertices": {
+        "name": "Draw vertices",
+        "desc": "Add new vertices to this polygon.",
+        "settings": {
+          "desc": "Click anywhere on the map to add the next vertex of your polygon. When you are done, click on the first vertex to close it, or simply deselect the draw tool and it will close automatically.",
+          "section": {
+            "options": "Options"
+          },
+          "snap": {
+            "name": "Snap to nearby features",
+            "desc": "When enabled, the cursor will automatically snap to nearby features such as vertices or points, making it easy to draw the same line in different features."
+          },
+          "show_verts": {
+            "name": "Show vertices",
+            "desc": "Whether to show a marker on each vertex of the polygon."
+          },
+          "snap_distance": {
+            "name": "Snap distance",
+            "desc": "The distance, in pixels, under which the cursor will snap to nearby features."
+          },
+          "pencil_step": {
+            "name": "Pencil step",
+            "desc": "The distance, in pixels, between vertices laid out while right-clicking."
+          },
+          "vertex_size": {
+            "name": "Vertex size",
+            "desc": "The size of the vertices on the map (visual only)."
+          }
+        }
+      },
+      "move_vertices": {
+        "name": "Move vertices",
+        "desc": "Move the vertices that make up this polygon, and add new vertices between them."
+      },
+      "cut": {
+        "name": "Cut shape",
+        "tool": {
+          "polygon": {
+            "cut": {
+              "desc": "Draw a new shape that will be cut from this one."
+            }
+          }
+        }
+      },
+      "delete_vertices": {
+        "name": "Delete vertices",
+        "desc": "Remove individual vertices, or entire sections of the shape.",
+        "settings": {
+          "desc": "Select one of the two delete modes to choose how to delete vertices.",
+          "section": {
+            "mode": "Mode",
+            "delete_section": "Delete section"
+          },
+          "mode": {
+            "individual": {
+              "name": "Individual",
+              "desc": "Click on individual vertices to remove them."
+            },
+            "section": {
+              "name": "Section",
+              "desc": "Select two vertices. This will form a path between the two. Then, use the 'Delete vertices' button to delete all vertices in the path, excluding both ends."
+            }
+          },
+          "delete_section": {
+            "reverse": "Reverse path",
+            "delete": "Delete vertices"
+          }
+        }
+      },
+      "union": {
+        "name": "Polygon union",
+        "desc": "Choose other polygons to add their area to this one.",
+        "settings": {
+          "desc": "Select a polygon from the list below and click on 'Join'. Alternative, just hold down Ctrl and click on other polygons on the map to add them to this one.",
+          "section": {
+            "options": "Options"
+          },
+          "menu_placeholder": "Select a feature...",
+          "join": "Join",
+          "delete_target": {
+            "label": "Delete polygons added to this one."
+          }
+        }
+      },
+      "difference": {
+        "name": "Polygon subtraction",
+        "desc": "Choose other polygons to remove their area from this one."
+      },
+      "intersect": {
+        "name": "Polygon intersection",
+        "desc": "Choose another polygon to remove all area in this polygon that isn't shared with the one chosen."
+      },
+      "set_origin": {
+        "name": "Set first vertex",
+        "desc": "Choose which vertex becomes the first vertex of the shape."
+      },
+      "move_shape": {
+        "name": "Move polygon",
+        "desc": "Move the polygon itself around the map."
       }
     }
   }

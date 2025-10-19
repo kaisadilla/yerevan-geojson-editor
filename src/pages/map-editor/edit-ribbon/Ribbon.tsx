@@ -6,6 +6,7 @@ import { useActiveElement } from "context/useActiveElement";
 import { Eraser, Goal, Move, Pencil, Scissors } from 'lucide-react';
 import type React from "react";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { MapperUiActions, type MapperTool } from "state/mapper/uiSlice";
 import useMapperDoc from "state/mapper/useDoc";
@@ -39,6 +40,8 @@ function _Polygon (props: _PolygonProps) {
   const ui = useMapperUi();
   const dispatch = useDispatch();
 
+  const { t } = useTranslation("ui");
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
 
@@ -49,12 +52,12 @@ function _Polygon (props: _PolygonProps) {
 
   return (
     <div className={styles.toolset}>
-      <div className={styles.title}>Polygon</div>
+      <div className={styles.title}>{t("tools_ribbon.polygon.title")}</div>
       <_Toggle
         tool='draw_vertices'
         shortcut="1"
-        label="Draw vertices"
-        description="Add new vertices to this polygon."
+        label={t("tool.polygon.draw_vertices.name")}
+        description={t("tool.polygon.draw_vertices.desc")}
       >
         <Pencil />
       </_Toggle>
@@ -62,8 +65,8 @@ function _Polygon (props: _PolygonProps) {
       <_Toggle
         tool='move_vertices'
         shortcut="2"
-        label="Move vertices"
-        description="Move the vertices that make up this polygon, and add new vertices between them."
+        label={t("tool.polygon.move_vertices.name")}
+        description={t("tool.polygon.move_vertices.desc")}
       >
         <PolygonIcon width={24} height={24} weight='thin' />
       </_Toggle>
@@ -71,8 +74,8 @@ function _Polygon (props: _PolygonProps) {
       <_Toggle
         tool='cut'
         shortcut="3"
-        label="Cut shape"
-        description="Draw a new shape that will be cut from this one."
+        label={t("tool.polygon.cut.name")}
+        description={t("tool.polygon.cut.desc")}
       >
         <Scissors />
       </_Toggle>
@@ -80,8 +83,8 @@ function _Polygon (props: _PolygonProps) {
       <_Toggle
         tool='delete_vertices'
         shortcut="4"
-        label="Delete vertices"
-        description="Remove individual vertices, or entire sections of the shape."
+        label={t("tool.polygon.delete_vertices.name")}
+        description={t("tool.polygon.delete_vertices.desc")}
       >
         <Eraser />
       </_Toggle>
@@ -89,8 +92,8 @@ function _Polygon (props: _PolygonProps) {
       <_Toggle
         tool='union'
         shortcut="5"
-        label="Add other polygon"
-        description="Choose other polygons to add their area to this one."
+        label={t("tool.polygon.union.name")}
+        description={t("tool.polygon.union.desc")}
       >
         <UniteSquareIcon width={24} height={24} weight='thin' />
       </_Toggle>
@@ -98,8 +101,8 @@ function _Polygon (props: _PolygonProps) {
       <_Toggle
         tool='difference'
         shortcut="6"
-        label="Subtract other polygon"
-        description="Choose other polygons to remove their area from this one."
+        label={t("tool.polygon.difference.name")}
+        description={t("tool.polygon.difference.desc")}
       >
         <SubtractSquareIcon width={24} height={24} weight='thin' />
       </_Toggle>
@@ -107,8 +110,8 @@ function _Polygon (props: _PolygonProps) {
       <_Toggle
         tool='intersect'
         shortcut="7"
-        label="Keep intersection with other polygon"
-        description="Choose another polygon to remove all area in this polygon that isn't shared with the one chosen."
+        label={t("tool.polygon.intersect.name")}
+        description={t("tool.polygon.intersect.desc")}
       >
         <IntersectSquareIcon width={24} height={24} weight='thin' />
       </_Toggle>
@@ -116,8 +119,8 @@ function _Polygon (props: _PolygonProps) {
       <_Toggle
         tool='set_origin'
         shortcut="8"
-        label="Set first vertex"
-        description="Choose which vertex becomes the first vertex of the shape."
+        label={t("tool.polygon.set_origin.name")}
+        description={t("tool.polygon.set_origin.desc")}
       >
         <Goal />
       </_Toggle>
@@ -125,8 +128,8 @@ function _Polygon (props: _PolygonProps) {
       <_Toggle
         tool='move_shape'
         shortcut="9"
-        label="Move polygon"
-        description="Move the polygon itself around the map."
+        label={t("tool.polygon.move_shape.name")}
+        description={t("tool.polygon.move_shape.desc")}
       >
         <Move />
       </_Toggle>

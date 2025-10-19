@@ -6,6 +6,7 @@ import Slider from 'components/Slider';
 import ToggleButton from 'components/ToggleButton';
 import Constants from 'Constants';
 import MathExt from 'MathExt';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { MapperUiActions } from 'state/mapper/uiSlice';
 import useMapperUi from 'state/mapper/useUi';
@@ -20,15 +21,21 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
   const ui = useMapperUi();
   const dispatch = useDispatch();
 
+  const { t } = useTranslation();
+
   return (
     <BasePanel className={styles.panel} name="Draw vertices tool">
-      <Description>Click anywhere on the map to add the next vertex of your polygon. When you are done, click on the first vertex to close it, or simply deselect the draw tool and it will close automatically.</Description>
+      <Description>
+        {t("tool.polygon.draw_vertices.settings.desc")}
+      </Description>
       
-      <h3>Options</h3>
+      <h3>
+        {t("tool.polygon.draw_vertices.settings.section.options")}
+      </h3>
       <BasePanel.Ribbon>
         <DescriptiveTooltip
-          label="Snap to nearby features"
-          description="When enabled, the cursor will automatically snap to nearby features such as vertices or points, making it easy to draw the same line in different features."
+          label={t("tool.polygon.draw_vertices.settings.snap.name")}
+          description={t("tool.polygon.draw_vertices.settings.snap.desc")}
         >
           <ToggleButton
             active={ui.toolSettings.snap}
@@ -39,8 +46,8 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
         </DescriptiveTooltip>
 
         <DescriptiveTooltip
-          label="Show vertices"
-          description="Whether to show a marker on each vertex of the polygon."
+          label={t("tool.polygon.draw_vertices.settings.show_verts.name")}
+          description={t("tool.polygon.draw_vertices.settings.show_verts.desc")}
         >
           <ToggleButton
             active={ui.toolSettings.showVertices}
@@ -52,9 +59,9 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
       </BasePanel.Ribbon>
       
       <Slider
-        label="Snap distance"
+        label={t("tool.polygon.draw_vertices.settings.snap_distance.name")}
         labelWidth={120}
-        description="The distance, in pixels, under which the cursor will snap to nearby features."
+        description={t("tool.polygon.draw_vertices.settings.snap_distance.desc")}
         min={Constants.minSnapDistance}
         max={Constants.maxSnapDistance}
         value={ui.toolSettings.snapDistance}
@@ -62,9 +69,9 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
       />
 
       <Slider
-        label="Pencil step"
+        label={t("tool.polygon.draw_vertices.settings.pencil_step.name")}
         labelWidth={120}
-        description="The distance, in pixels, between vertices laid out while right-clicking."
+        description={t("tool.polygon.draw_vertices.settings.pencil_step.desc")}
         min={Constants.minPencilStep}
         max={Constants.maxPencilStep}
         value={ui.toolSettings.pencilStep}
@@ -72,9 +79,9 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
       />
 
       <Slider
-        label="Vertex size"
+        label={t("tool.polygon.draw_vertices.settings.vertex_size.name")}
         labelWidth={120}
-        description="The size of the vertices on the map (visual only)."
+        description={t("tool.polygon.draw_vertices.settings.vertex_size.desc")}
         min={Constants.minVertexSize}
         max={Constants.maxVertexSize}
         value={ui.toolSettings.vertexSize}
