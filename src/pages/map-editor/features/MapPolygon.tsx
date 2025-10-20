@@ -1,4 +1,5 @@
 import { useActiveElement } from "context/useActiveElement";
+import { useKeyboard } from "context/useKeyboard";
 import GLT from "GLT";
 import type { MapperPolygon } from "models/MapDocument";
 import { Polygon } from "react-leaflet";
@@ -14,6 +15,7 @@ function MapPolygon ({
 }: MapPolygonProps) {
   const active = useActiveElement();
   const ui = useMapperUi();
+  const keyboard = useKeyboard();
   const dispatch = useDispatch();
 
   return (
@@ -31,14 +33,16 @@ function MapPolygon ({
   );
 
   function handleClick () {
-    if (ui.tool === 'union') {
+    if (keyboard.ctrl) {
+      if (ui.tool === 'union') {
+        active.union(polygon.id, ui.toolSettings.deleteFeaturesUsedByCombine);
+      }
+      else if (ui.tool === 'difference') {
 
-    }
-    else if (ui.tool === 'difference') {
+      }
+      else if (ui.tool === 'intersect') {
 
-    }
-    else if (ui.tool === 'intersect') {
-
+      }
     }
     else {
       active.setElement(polygon.id, true);

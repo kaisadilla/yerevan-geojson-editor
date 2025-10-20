@@ -22,7 +22,7 @@ function UnionPanel (props: UnionPanelProps) {
   const { t } = useTranslation('ui');
 
   const polygon = active.getPolygon();
-  const options = doc.content.elements.filter(
+  const options = doc.getAllElements().filter(
     e => e.type === 'Polygon' && e.id !== polygon?.id
   );
 
