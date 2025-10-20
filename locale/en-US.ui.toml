@@ -23,6 +23,23 @@ redo.name = "Redo"
 settings.name = "Settings"
 settings.desc = "Edit settings and properties related to this document and the app."
 
+[element_panel.ribbon]
+group.name = "Group"
+group.desc = "A folder to group features together. This is a Leaflys-only feature: the document will be flattened when saved."
+
+point.name = "Point"
+
+line.name = "Line"
+
+polygon.name = "Polygon"
+
+square.name = "Square"
+
+circle.name = "Circle"
+
+collection.name = "Geometry collection"
+collection.desc = "A GeoJson collection of features. Leaflys will automatically pick the correct collection type on save. As per GeoJson standard, the contents of a GeoJson collection are not independent and will not retain their individual properties."
+
 [tool_ribbon]
 title.polygon = "Polygon"
 
@@ -92,3 +109,18 @@ desc = "Choose which vertex becomes the first vertex of the shape."
 [tool.polygon.move_shape]
 name = "Move polygon"
 desc = "Move the polygon itself around the map."
+
+[details]
+section.properties.name = "Properties"
+section.source.name = "Source"
+section.actions.name = "Actions"
+
+[properties]
+field.key.name = "Key"
+field.value.name = "Value"
+
+[metadata]
+area.name = "Area"
+area.value = "{{value}} km²"
+
+verts.name = "Vertices"

@@ -5,7 +5,7 @@ import Details from "./details-panel/Details";
 import DocumentRibbon from "./document-ribbon/Ribbon";
 import EditRibbon from "./edit-ribbon/Ribbon";
 import SettingsPanel from "./edit-ribbon/SettingsPanel";
-import ElementPanel from "./ElementPanel";
+import ElementPanel from "./element-panel/ElementPanel";
 import Map from "./Map";
 import styles from "./page.module.scss";
 

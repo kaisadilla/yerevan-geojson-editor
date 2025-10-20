@@ -5,6 +5,7 @@ import Fmt from "Fmt";
 import type { Position } from 'geojson';
 import type { MapperElement, MapperPolygon } from "models/MapDocument";
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from './Metadata.module.scss';
 
 export interface MetadataProps {
@@ -31,6 +32,8 @@ function _Polygon ({
 }: _PolygonProps) {
   const active = useActiveElement();
   const el = active.getElement();
+
+  const { t } = useTranslation();
 
   const [data, setData] = useState({
     area: 0,
@@ -65,12 +68,20 @@ function _Polygon ({
   return (
     <div className={styles.panel}>
       <div className={styles.datum}>
-        <div className={styles.title}>Area</div>
-        <div className={styles.value}>{Fmt.number(data.area)} km²</div>
+        <div className={styles.title}>
+          {t("metadata.area.name")}
+        </div>
+        <div className={styles.value}>
+          {t("metadata.area.value", { value: Fmt.number(data.area) })}
+        </div>
       </div>
       <div className={styles.datum}>
-        <div className={styles.title}>Vertices</div>
-        <div className={styles.value}>{Fmt.number(data.vertices, 0)}</div>
+        <div className={styles.title}>
+          {t("metadata.verts.name")}
+        </div>
+        <div className={styles.value}>
+          {Fmt.number(data.vertices, 0)}
+        </div>
       </div>
     </div>
   );

@@ -1,9 +1,8 @@
 import type { BaseEventPayload, DropTargetLocalizedData, ElementDragType } from "@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types";
 import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Text } from '@mantine/core';
-import DescriptiveTooltip from "components/DescriptiveTooltip";
 import { useActiveElement } from "context/useActiveElement";
-import { Boxes, Circle, Eye, EyeOff, Folder, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
+import { Boxes, Eye, EyeOff, Folder, MapPin, Pentagon, Waypoints } from 'lucide-react';
 import type { MapperElement } from "models/MapDocument";
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,8 +10,9 @@ import { MapperDocActions } from 'state/mapper/docSlice';
 import useMapperDoc from "state/mapper/useDoc";
 import type { RootState } from 'state/store';
 import { $cl } from 'utils';
-import MaterialSymbol from '../../components/MaterialSymbol';
+import MaterialSymbol from '../../../components/MaterialSymbol';
 import styles from './ElementPanel.module.scss';
+import Ribbon from "./ElementPanel.ribbon";
 
 type DropTarget = 'before' | 'inside' | 'after'
 
@@ -30,7 +30,7 @@ function ElementPanel (props: ElementPanelProps) {
       <div className={styles.header}>
         <Text lineClamp={1}>{doc.content.name}</Text>
       </div>
-      <_Ribbon />
+      <Ribbon />
       <div className={styles.treeContainer}>
         <_Element element={doc.content} depth={-1} />
       </div>
@@ -238,70 +238,6 @@ function _Element ({
       value: !element.isHidden,
     }));
   }
-}
-
-function _Ribbon () {
-  return (
-    <div className={styles.ribbon}>
-      <DescriptiveTooltip
-        label="Group"
-        description="A folder to group features together. This is a Leaflys-only feature: the document will be flattened when saved."
-      >
-        <button>
-          <FolderPlus />
-        </button>
-      </DescriptiveTooltip>
-
-      <DescriptiveTooltip
-        label="Point"
-      >
-        <button>
-          <MapPin />
-        </button>
-      </DescriptiveTooltip>
-
-      <DescriptiveTooltip
-        label="Line"
-      >
-        <button>
-          <Waypoints />
-        </button>
-      </DescriptiveTooltip>
-
-      <DescriptiveTooltip
-        label="Polygon"
-      >
-        <button>
-          <Pentagon />
-        </button>
-      </DescriptiveTooltip>
-
-      <DescriptiveTooltip
-        label="Square"
-      >
-        <button>
-          <Square />
-        </button>
-      </DescriptiveTooltip>
-
-      <DescriptiveTooltip
-        label="Circle"
-      >
-        <button>
-          <Circle />
-        </button>
-      </DescriptiveTooltip>
-
-      <DescriptiveTooltip
-        label="Geometry collection"
-        description="A GeoJson collection of features. Leaflys will automatically pick the correct collection type on save. As per GeoJson standard, the contents of a GeoJson collection are not independent and will not retain their individual properties."
-      >
-        <button>
-          <Boxes />
-        </button>
-      </DescriptiveTooltip>
-    </div>
-  );
 }
 
 export default ElementPanel;

@@ -2,6 +2,7 @@ import { Table, TextInput, Tooltip } from '@mantine/core';
 import { LockSimpleIcon, XCircleIcon } from '@phosphor-icons/react';
 import useUuid from 'hook/useUuid';
 import { LEAFLYS_PROP_PREFIX, type MapperElement, type MapperProperty } from 'models/MapDocument';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { MapperDocActions } from 'state/mapper/docSlice';
 import styles from './PropertiesTable.module.scss';
@@ -15,6 +16,8 @@ function PropertiesTable ({
 }: PropertiesTableProps) {
   const dispatch = useDispatch();
   const uuid = useUuid();
+
+  const { t } = useTranslation();
 
   return (
     <Table
@@ -31,8 +34,12 @@ function PropertiesTable ({
     >
       <Table.Thead>
         <Table.Tr>
-          <Table.Th>Key</Table.Th>
-          <Table.Th>Value</Table.Th>
+          <Table.Th>
+            {t("properties.field.key.name")}
+          </Table.Th>
+          <Table.Th>
+            {t("properties.field.value.name")}
+          </Table.Th>
         </Table.Tr>
       </Table.Thead>
 
