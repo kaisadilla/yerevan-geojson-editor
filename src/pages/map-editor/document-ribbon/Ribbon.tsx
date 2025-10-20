@@ -4,6 +4,7 @@ import Button from 'components/Button';
 import DescriptiveTooltip from 'components/DescriptiveTooltip';
 import { Redo, Undo } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapperHistory } from '../MapperHistory';
 import styles from './Ribbon.module.scss';
 import useRedo from './buttons/useRedo';
@@ -14,11 +15,12 @@ export interface EditorRibbonProps {
 }
 
 function DocumentRibbon (props: EditorRibbonProps) {
-  const [canUndo, setCanUndo] = useState(false);
-  const [canRedo, setCanRedo] = useState(false);
-
   const { handleUndo } = useUndo();
   const { handleRedo } = useRedo();
+  const { t } = useTranslation();
+
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
 
   useEffect(() => {
     MapperHistory.onHistoryChange(handleHistoryChange);
@@ -34,21 +36,21 @@ function DocumentRibbon (props: EditorRibbonProps) {
             classNames={{root: styles.toolButton}}
             variant='light'
           >
-            Map editor
+            {t("mapper.name")}
           </MButton>
         </Menu.Target>
 
         <Menu.Dropdown>
           <Menu.Item>
-            Map editor
+            {t("mapper.name")}
           </Menu.Item>
         </Menu.Dropdown>
       </Menu>
 
       <div className={styles.documentRibbon}>
         <DescriptiveTooltip
-          label="New document"
-          description="Create a new blank document."
+          label={t("ribbon.new.name")}
+          description={t("ribbon.new.desc")}
         >
           <Button>
             <FilePlusIcon size={24} weight='thin' />
@@ -56,8 +58,8 @@ function DocumentRibbon (props: EditorRibbonProps) {
         </DescriptiveTooltip>
 
         <DescriptiveTooltip
-          label="Open document"
-          description="Opens a different Leaflys document. For GeoJson documents from other origins, use 'Import' instead."
+          label={t("ribbon.open.name")}
+          description={t("ribbon.open.desc")}
         >
           <Button>
             <FolderOpenIcon size={24} weight='thin' />
@@ -65,8 +67,8 @@ function DocumentRibbon (props: EditorRibbonProps) {
         </DescriptiveTooltip>
 
         <DescriptiveTooltip
-          label="Save document"
-          description="Saves this document, preserving all Leaflys-related information for future use inside this app."
+          label={t("ribbon.save.name")}
+          description={t("ribbon.save.desc")}
         >
           <Button>
             <FloppyDiskIcon size={24} weight='thin' />
@@ -74,8 +76,8 @@ function DocumentRibbon (props: EditorRibbonProps) {
         </DescriptiveTooltip>
 
         <DescriptiveTooltip
-          label="Import GeoJSON"
-          description="Add the contents of a GeoJson file (partially or completely) to this document."
+          label={t("ribbon.import.name")}
+          description={t("ribbon.import.desc")}
         >
           <Button>
             <FileArrowDownIcon size={24} weight='thin' />
@@ -83,15 +85,17 @@ function DocumentRibbon (props: EditorRibbonProps) {
         </DescriptiveTooltip>
 
         <DescriptiveTooltip
-          label="Export GeoJSON"
-          description="Save this document as a regular GeoJson file, stripping all Leaflys-related fields. If you want to use that file in Leaflys later, use 'Save' instead."
+          label={t("ribbon.export.name")}
+          description={t("ribbon.export.desc")}
         > 
           <Button>
             <FileArrowUpIcon size={24} weight='thin' />
           </Button>
         </DescriptiveTooltip>
 
-        <DescriptiveTooltip label="Undo"> 
+        <DescriptiveTooltip
+          label={t("ribbon.undo.name")}
+        > 
           <Button
             onClick={handleUndo}
             disabled={canUndo === false}
@@ -100,7 +104,9 @@ function DocumentRibbon (props: EditorRibbonProps) {
           </Button>
         </DescriptiveTooltip>
 
-        <DescriptiveTooltip label="Redo"> 
+        <DescriptiveTooltip
+          label={t("ribbon.redo.name")}
+        > 
           <Button
             onClick={handleRedo}
             disabled={canRedo === false}
@@ -110,8 +116,8 @@ function DocumentRibbon (props: EditorRibbonProps) {
         </DescriptiveTooltip>
 
         <DescriptiveTooltip
-          label="Settings"
-          description="Edit settings and properties related to this document and the app."
+          label={t("ribbon.settings.name")}
+          description={t("ribbon.settings.desc")}
         > 
           <Button>
             <GearIcon size={24} weight='thin' />

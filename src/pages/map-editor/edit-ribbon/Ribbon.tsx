@@ -52,7 +52,7 @@ function _Polygon (props: _PolygonProps) {
 
   return (
     <div className={styles.toolset}>
-      <div className={styles.title}>{t("tools_ribbon.polygon.title")}</div>
+      <div className={styles.title}>{t("tool_ribbon.title.polygon")}</div>
       <_Toggle
         tool='draw_vertices'
         shortcut="1"

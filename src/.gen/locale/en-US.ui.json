@@ -1,7 +1,42 @@
 {
-  "tools_ribbon": {
-    "polygon": {
-      "title": "Polygon"
+  "mapper": {
+    "name": "Map editor"
+  },
+  "ribbon": {
+    "new": {
+      "name": "New document",
+      "desc": "Create a new blank document."
+    },
+    "open": {
+      "name": "Open document",
+      "desc": "Opens a different Leaflys document. For GeoJson documents from other origins, use 'Import' instead."
+    },
+    "save": {
+      "name": "Save document",
+      "desc": "Saves this document, preserving all Leaflys-related information for future use inside this app."
+    },
+    "import": {
+      "name": "Import GeoJSON",
+      "desc": "Add the contents of a GeoJson file (partially or completely) to this document."
+    },
+    "export": {
+      "name": "Export GeoJSON",
+      "desc": "Save this document as a regular GeoJson file, stripping all Leaflys-related fields. If you want to use that file in Leaflys later, use 'Save' instead."
+    },
+    "undo": {
+      "name": "Undo"
+    },
+    "redo": {
+      "name": "Redo"
+    },
+    "settings": {
+      "name": "Settings",
+      "desc": "Edit settings and properties related to this document and the app."
+    }
+  },
+  "tool_ribbon": {
+    "title": {
+      "polygon": "Polygon"
     }
   },
   "tool": {

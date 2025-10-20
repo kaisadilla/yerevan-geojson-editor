@@ -1,4 +1,30 @@
-tools_ribbon.polygon.title = "Polygon"
+mapper.name = "Map editor"
+
+[ribbon]
+new.name = "New document"
+new.desc = "Create a new blank document."
+
+open.name = "Open document"
+open.desc = "Opens a different Leaflys document. For GeoJson documents from other origins, use 'Import' instead."
+
+save.name = "Save document"
+save.desc = "Saves this document, preserving all Leaflys-related information for future use inside this app."
+
+import.name = "Import GeoJSON"
+import.desc = "Add the contents of a GeoJson file (partially or completely) to this document."
+
+export.name = "Export GeoJSON"
+export.desc = "Save this document as a regular GeoJson file, stripping all Leaflys-related fields. If you want to use that file in Leaflys later, use 'Save' instead."
+
+undo.name = "Undo"
+
+redo.name = "Redo"
+
+settings.name = "Settings"
+settings.desc = "Edit settings and properties related to this document and the app."
+
+[tool_ribbon]
+title.polygon = "Polygon"
 
 [tool.polygon.draw_vertices]
 name = "Draw vertices"
