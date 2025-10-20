@@ -1,6 +1,7 @@
 import { useActiveElement } from "context/useActiveElement";
-import { MapperHistory, type AddVerticesMapperAction, type ChangeVerticesMapperAction, type DeleteVerticesMapperAction } from "pages/map-editor/MapperHistory";
+import { MapperHistory, type AddVerticesMapperAction, type ChangeElementMapperAction, type ChangeVerticesMapperAction, type DeleteElementMapperAction, type DeleteVerticesMapperAction, type MapperAction } from "pages/map-editor/MapperHistory";
 import { useDispatch } from "react-redux";
+import { MapperDocActions } from "state/mapper/docSlice";
 import useMapperDoc from "state/mapper/useDoc";
 
 export default function useUndo () {
@@ -12,7 +13,22 @@ export default function useUndo () {
     const action = MapperHistory.undo();
     if (!action) return;
 
-    if (action.type === 'add_vertices') {
+    undo(action);
+  }
+
+  function undo (action: MapperAction) {
+    if (action.type === 'multiple') {
+      for (const innerAction of action.actions) {
+        undo(innerAction);
+      }
+    }
+    else if (action.type === 'delete_element') {
+      undoDeleteElement(action);
+    }
+    else if (action.type === 'change_element') {
+      undoChangeElement(action);
+    }
+    else if (action.type === 'add_vertices') {
       undoAddVertices(action);
     }
     else if (action.type === 'delete_vertices') {
@@ -21,6 +37,21 @@ export default function useUndo () {
     else if (action.type === 'change_vertices') {
       undoChangeVertices(action);
     }
+  }
+
+  function undoDeleteElement (action: DeleteElementMapperAction) {
+    dispatch(MapperDocActions.addElement({
+      element: action.element,
+      groupId: action.groupId,
+      index: action.index,
+    }));
+  }
+
+  function undoChangeElement (action: ChangeElementMapperAction) {
+    dispatch(MapperDocActions.changeElement({
+      elementId: action.elementId,
+      update: action.before,
+    }));
   }
 
   function undoAddVertices (action: AddVerticesMapperAction) {

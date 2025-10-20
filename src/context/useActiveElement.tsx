@@ -1,8 +1,7 @@
-import * as turf from "@turf/turf";
 import type { Position } from "geojson";
-import GLT from "GLT";
-import Logger from "Logger";
 import type { MapperElement, MapperPolygon } from "models/MapDocument";
+import Ops from "Ops";
+import { MapperHistory, type MapperAction } from "pages/map-editor/MapperHistory";
 import { createContext, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 import { MapperDocActions } from "state/mapper/docSlice";
@@ -179,24 +178,54 @@ export const ActiveElementProvider = ({ children }: any) => {
     const target = doc.getElement(targetId);
     if (target?.type !== 'Polygon') return;
 
-    const poly1 = GLT.mapper.polygon.turf(el);
-    const poly2 = GLT.mapper.polygon.turf(target);
+    const actions: MapperAction[] = [];
 
-    const fusion = turf.union(turf.featureCollection([poly1, poly2]));
+    const oldElement = { ...el };
 
-    if (fusion?.geometry.type === 'Polygon') {
-      dispatch(MapperDocActions.updatePolygonVertices({
-        elementId: el.id,
-        vertices: fusion.geometry.coordinates[0],
-      }));
+    const fusion = Ops.polygonUnion(el, target);
+
+    const update = {
+      vertices: fusion.vertices,
     }
-    else if (fusion?.geometry.type === 'MultiPolygon') {
-      Logger.error("Not yet implemented.");
-    }
+
+    dispatch(MapperDocActions.updatePolygon({
+      elementId: el.id,
+      update,
+    }));
+
+    actions.push({
+      type: 'change_element',
+      elementId: oldElement.id,
+      before: oldElement,
+      after: {
+        ...oldElement,
+        ...update,
+      }
+    });
     
-    if (deleteTarget === false) return;
+    if (deleteTarget) {
+      dispatch(MapperDocActions.deleteElement(target.id));
 
-    dispatch(MapperDocActions.deleteElement(target.id));
+      const targetParent = doc.getParent(target.id);
+      const targetIndex = doc.getElementIndex(target.id);
+
+      actions.push({
+        type: 'delete_element',
+        element: target,
+        groupId: targetParent?.id ?? null,
+        index: targetIndex,
+      });
+    }
+
+    if (actions.length === 1) {
+      MapperHistory.push(actions[0]);
+    }
+    else {
+      MapperHistory.push({
+        type: 'multiple',
+        actions,
+      });
+    }
   }
 
   return (

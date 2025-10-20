@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Position } from "geojson";
 import Logger from "Logger";
-import type { MapperDocument, MapperElement, MapperGroup } from "models/MapDocument";
+import type { MapperDocument, MapperElement, MapperGroup, MapperPolygon } from "models/MapDocument";
 import { v4 as uuid } from 'uuid';
 
 interface MapperDocState {
@@ -231,9 +231,37 @@ const mapperDocSlice = createSlice({
   name: 'mapperDoc',
   initialState,
   reducers: {
-    addFeature (state, action: PayloadAction<MapperElement>) {
-      // TODO: Implement.
-      //state.content.features.push(action.payload);
+    addElement (state, action: PayloadAction<{
+      element: MapperElement,
+      groupId: string | null,
+      index: number | null,
+    }>) {
+      const { element, groupId, index } = action.payload;
+
+      const existingEl = getElement(state.content, element.id, true);
+      if (existingEl) {
+        Logger.error(
+          `An element with id '${element.id}' already exists, so it won't be ` +
+          `added.`
+        );
+        return;
+      }
+
+      if (groupId === null || groupId === state.content.id) {
+        insertElement(state.content, element, index);
+      }
+      else {
+        const group = getElement(state.content, groupId, true);
+
+        if (group?.type !== 'Group') {
+          Logger.error(
+            `Element with id '${groupId}' either doesn't exist, or isn't a group.`
+          )
+        }
+        else {
+          insertElement(group, element, index);
+        }
+      }
     },
 
     deleteElement (state, action: PayloadAction<string>) {
@@ -241,6 +269,18 @@ const mapperDocSlice = createSlice({
       if (!targetParent) return;
 
       removeElement(targetParent, action.payload);
+    },
+
+    changeElement (state, action: PayloadAction<{
+      elementId: string,
+      update: Partial<Omit<MapperElement, 'id'>>
+    }>) {
+      const { elementId, update } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+
+      Object.assign(el, update);
     },
 
     moveElement (state, action: PayloadAction<{
@@ -282,7 +322,7 @@ const mapperDocSlice = createSlice({
         }
       }
       else {
-        insertElement(targetParent, origin, targetId, position);
+        insertElementBetween(targetParent, origin, targetId, position);
       }
     },
 
@@ -363,6 +403,20 @@ const mapperDocSlice = createSlice({
         value,
       });
     },
+
+    updatePolygon (state, action: PayloadAction<{
+      elementId: string,
+      update: Partial<Omit<MapperPolygon, 'id'>>
+    }>) {
+      const { elementId, update } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+
+      if (el.type !== 'Polygon') return;
+
+      Object.assign(el, update);
+    },
     
     updatePolygonVertices (state, action: PayloadAction<{
       elementId: string,
@@ -428,6 +482,25 @@ export function getElementParent (
 }
 
 /**
+ * Locates the position of the element with the id given in its group.
+ * @param group 
+ * @param elementId 
+ * @returns 
+ */
+export function getElementIndex (
+  group: MapperGroup, elementId: string
+) : number | null {
+  const groupEl = getElementParent(group, elementId);
+  if (!groupEl) return null;
+
+  for (let i = 0; i < groupEl.elements.length; i++) {
+    if (groupEl.elements[i].id === elementId) return i;
+  }
+
+  return null;
+}
+
+/**
  * Return whether the element with the id given is hidden, either by itself or
  * by being in a group that is hidden altogether.
  * @param group The group from which to start searching.
@@ -471,6 +544,26 @@ export function removeElement (group: MapperGroup, elementId: string) {
 }
 
 /**
+ * Adds an element to the group given, either as the first or the last element
+ * of the group.
+ * @param group The group to add the element to.
+ * @param element The element to add.
+ * @param index The index at which the element will be in the group.
+ */
+export function insertElement (
+  group: MapperGroup,
+  element: MapperElement,
+  index: number | null,
+) {
+  if (index === null) {
+    group.elements.push(element);
+  }
+  else {
+    group.elements.splice(index, 0, element);
+  }
+}
+
+/**
  * Adds an element to the group given, before or after the element given. If the
  * reference element given is not found, the element to append will be added at
  * the end of the group.
@@ -479,7 +572,7 @@ export function removeElement (group: MapperGroup, elementId: string) {
  * @param referenceId The id of the element to use as reference.
  * @param position Whether the element will be added before or after that one.
  */
-export function insertElement (
+export function insertElementBetween (
   group: MapperGroup,
   element: MapperElement,
   referenceId: string,

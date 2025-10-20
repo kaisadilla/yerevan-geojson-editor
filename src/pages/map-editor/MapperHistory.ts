@@ -1,7 +1,36 @@
 import type { Position } from "geojson";
+import type { MapperElement } from "models/MapDocument";
 
 interface MapperActionBase {
   type: string;
+}
+
+export interface MultipleMapperAction {
+  type: 'multiple';
+  actions: MapperAction[];
+}
+
+export interface DeleteElementMapperAction {
+  type: 'delete_element',
+  /**
+   * The element that was deleted.
+   */
+  element: MapperElement,
+  /**
+   * The id of the group the element was in, or `null` if it was at the root.
+   */
+  groupId: string | null;
+  /**
+   * The position of the element within the group.
+   */
+  index: number | null;
+}
+
+export interface ChangeElementMapperAction {
+  type: 'change_element';
+  elementId: string;
+  before: MapperElement;
+  after: MapperElement;
 }
 
 export interface AddVerticesMapperAction {
@@ -52,7 +81,10 @@ export interface ChangeVerticesMapperAction {
   after: Position[];
 }
 
-export type MapperAction = AddVerticesMapperAction
+export type MapperAction = MultipleMapperAction
+  | DeleteElementMapperAction
+  | ChangeElementMapperAction
+  | AddVerticesMapperAction
   | DeleteVerticesMapperAction
   | ChangeVerticesMapperAction
   ;
