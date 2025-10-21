@@ -16,7 +16,7 @@ function LeafletElementMap (props: LeafletElementMapProps) {
   const elements = doc.getAllElements();
 
   const points = getFeaturesOfType('Point');
-  const polygons = getFeaturesOfType('Polygon');
+  const polygons = getFeaturesOfType('Shape');
 
   const selected = active.getElement();
 
@@ -40,7 +40,7 @@ function LeafletElementMap (props: LeafletElementMapProps) {
   );
 
   function getFeaturesOfType (type: 'Point') : MapperPoint[];
-  function getFeaturesOfType (type: 'Polygon') : MapperPolygon[];
+  function getFeaturesOfType (type: 'Shape') : MapperPolygon[];
   function getFeaturesOfType (type: MapperElementType) {
     return elements.filter(e => doc.isElementHidden(e.id) === false
       && e.id !== active.id
