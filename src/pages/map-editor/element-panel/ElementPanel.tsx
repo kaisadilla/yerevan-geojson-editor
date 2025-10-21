@@ -12,7 +12,7 @@ import type { RootState } from 'state/store';
 import { $cl } from 'utils';
 import MaterialSymbol from '../../../components/MaterialSymbol';
 import styles from './ElementPanel.module.scss';
-import Ribbon from "./ElementPanel.ribbon";
+import Ribbon from "./ElementPanel.Ribbon";
 
 type DropTarget = 'before' | 'inside' | 'after'
 

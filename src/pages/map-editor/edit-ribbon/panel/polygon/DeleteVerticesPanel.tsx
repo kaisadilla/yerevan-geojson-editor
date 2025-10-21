@@ -7,7 +7,6 @@ import { MapperHistory } from 'pages/map-editor/MapperHistory';
 import { useTranslation } from 'react-i18next';
 import { allowLabelShiftClick } from 'utils';
 import BasePanel from '../BasePanel';
-import Description from '../Description';
 import styles from './DeleteVerticesPanel.module.scss';
 
 export interface DeleteVerticesPanelProps {
@@ -24,9 +23,9 @@ function DeleteVerticesPanel (props: DeleteVerticesPanelProps) {
     <BasePanel className={styles.panel} name="Delete vertices tool">
       <BasePanel.Keys onKey={handleKey} />
 
-      <Description>
+      <BasePanel.Desc>
         {t("tool.polygon.delete_vertices.settings.desc")}
-      </Description>
+      </BasePanel.Desc>
 
       <BasePanel.Ribbon
         label={t("tool.polygon.delete_vertices.settings.section.mode")}

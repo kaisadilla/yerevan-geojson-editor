@@ -3,7 +3,7 @@ import { createSlice, type PayloadAction, type WritableDraft } from "@reduxjs/to
 const TOOLS_THAT_AUTO_EXPAND_SETTINGS = new Set<MapperTool>([
   'union',
   'difference',
-  'intersect',
+  'intersection',
 ]);
 
 interface MapperUiState {
@@ -20,6 +20,7 @@ interface MapperUiState {
     showVertices: boolean;
     deleteVertexSize: number;
     deleteFeaturesUsedByCombine: boolean;
+    deleteFeaturesUsedByDifference: boolean;
   };
 }
 
@@ -34,6 +35,7 @@ const initialState: MapperUiState = {
     showVertices: true,
     deleteVertexSize: 20,
     deleteFeaturesUsedByCombine: false,
+    deleteFeaturesUsedByDifference: false,
   },
 }
 
@@ -86,7 +88,7 @@ export type MapperPolygonTool = 'draw_vertices'
   | 'delete_vertices'
   | 'union'
   | 'difference'
-  | 'intersect'
+  | 'intersection'
   | 'set_origin'
   | 'move_shape'
   ;

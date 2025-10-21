@@ -1,7 +1,7 @@
 import type { Position } from "geojson";
 import type { MapperElement, MapperPolygon } from "models/MapDocument";
 import Ops from "Ops";
-import { MapperHistory, type MapperAction } from "pages/map-editor/MapperHistory";
+import { MapperActions, MapperHistory, type MapperAction } from "pages/map-editor/MapperHistory";
 import { createContext, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 import { MapperDocActions } from "state/mapper/docSlice";
@@ -38,6 +38,8 @@ interface ActiveElementValue extends InternalState {
    */
   getDeletePath: () => number[] | null;
   union: (targetId: string, deleteTarget: boolean) => void;
+  difference: (targetId: string, deleteTarget: boolean) => void;
+  intersection: (targetId: string, deleteTarget: boolean) => void;
 }
 
 const ActiveElementContext = createContext(undefined as ActiveElementValue | undefined);
@@ -172,60 +174,15 @@ export const ActiveElementProvider = ({ children }: any) => {
   }
 
   function union (targetId: string, deleteTarget: boolean) {
-    const el = getPolygon();
-    if (!el) return;
+    polygonOp(targetId, deleteTarget, (a, b) => Ops.polygonUnion(a, b));
+  }
 
-    const target = doc.getElement(targetId);
-    if (target?.type !== 'Polygon') return;
+  function difference (targetId: string, deleteTarget: boolean) {
+    polygonOp(targetId, deleteTarget, (a, b) => Ops.polygonDifference(a, b));
+  }
 
-    const actions: MapperAction[] = [];
-
-    const oldElement = { ...el };
-
-    const fusion = Ops.polygonUnion(el, target);
-
-    const update = {
-      vertices: fusion.vertices,
-    }
-
-    dispatch(MapperDocActions.updatePolygon({
-      elementId: el.id,
-      update,
-    }));
-
-    actions.push({
-      type: 'change_element',
-      elementId: oldElement.id,
-      before: oldElement,
-      after: {
-        ...oldElement,
-        ...update,
-      }
-    });
-    
-    if (deleteTarget) {
-      dispatch(MapperDocActions.deleteElement(target.id));
-
-      const targetParent = doc.getParent(target.id);
-      const targetIndex = doc.getElementIndex(target.id);
-
-      actions.push({
-        type: 'delete_element',
-        element: target,
-        groupId: targetParent?.id ?? null,
-        index: targetIndex,
-      });
-    }
-
-    if (actions.length === 1) {
-      MapperHistory.push(actions[0]);
-    }
-    else {
-      MapperHistory.push({
-        type: 'multiple',
-        actions,
-      });
-    }
+  function intersection (targetId: string, deleteTarget: boolean) {
+    polygonOp(targetId, deleteTarget, (a, b) => Ops.polygonIntersection(a, b));
   }
 
   return (
@@ -242,10 +199,61 @@ export const ActiveElementProvider = ({ children }: any) => {
       setDeletePathReverse,
       getDeletePath,
       union,
+      difference,
+      intersection,
     }}>
       {children}
     </ActiveElementContext.Provider>
   );
+
+  function polygonOp (
+    targetId: string,
+    deleteTarget: boolean,
+    op: (receiver: MapperPolygon, target: MapperPolygon) => MapperPolygon,
+  ) {
+    const el = getPolygon();
+    if (!el) return;
+
+    const target = doc.getElement(targetId);
+    if (target?.type !== 'Polygon') return;
+
+    const actions: MapperAction[] = [];
+
+    const oldElement = { ...el };
+
+    const result = op(el, target);
+
+    const update = {
+      vertices: result.vertices,
+    }
+
+    dispatch(MapperDocActions.updatePolygon({
+      elementId: el.id,
+      update,
+    }));
+
+    actions.push(MapperActions.changeElement(
+      oldElement.id, oldElement, { ...oldElement, ...update }
+    ));
+    
+    if (deleteTarget) {
+      dispatch(MapperDocActions.deleteElement(target.id));
+
+      const targetParent = doc.getParent(target.id);
+      const targetIndex = doc.getElementIndex(target.id);
+
+      actions.push(MapperActions.deleteElement(
+        target, targetParent?.id ?? null, targetIndex ?? 0
+      ));
+    }
+
+    if (actions.length === 1) {
+      MapperHistory.push(actions[0]);
+    }
+    else {
+      MapperHistory.push(MapperActions.multiple(actions));
+    }
+  }
 }
 
 export function useActiveElement () : ActiveElementValue {

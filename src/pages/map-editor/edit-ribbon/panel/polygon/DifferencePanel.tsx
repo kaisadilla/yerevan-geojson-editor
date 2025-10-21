@@ -8,11 +8,11 @@ import useMapperDoc from 'state/mapper/useDoc';
 import useMapperUi from 'state/mapper/useUi';
 import BasePanel from '../BasePanel';
 
-export interface UnionPanelProps {
+export interface DifferencePanelProps {
   
 }
 
-function UnionPanel (props: UnionPanelProps) {
+function DifferencePanel (props: DifferencePanelProps) {
   const doc = useMapperDoc();
   const active = useActiveElement();
   const ui = useMapperUi();
@@ -34,9 +34,9 @@ function UnionPanel (props: UnionPanelProps) {
   }, [options]);
 
   return (
-    <BasePanel name="Union tool">
+    <BasePanel name={t("tool.polygon.difference.settings.name")}>
       <BasePanel.Desc>
-        {t("tool.polygon.union.settings.desc")}
+        {t("tool.polygon.difference.settings.desc")}
       </BasePanel.Desc>
 
       <BasePanel.Row>
@@ -44,25 +44,25 @@ function UnionPanel (props: UnionPanelProps) {
           elements={options}
           value={value}
           onChange={setValue}
-          placeholder={t("tool.polygon.union.settings.menu_placeholder")}
+          placeholder={t("tool.polygon.difference.settings.menu_placeholder")}
         />
 
         <Button
           color='red'
-          onClick={handleJoin}
+          onClick={handleCarve}
           disabled={value === null}
         >
-          {t("tool.polygon.union.settings.join")}
+          {t("tool.polygon.difference.settings.carve")}
         </Button>
       </BasePanel.Row>
 
       <h3>
-        {t("tool.polygon.union.settings.section.options")}
+        {t("tool.polygon.difference.settings.section.options")}
       </h3>
 
       <Checkbox
-        label={t("tool.polygon.union.settings.delete_target.label")}
-        checked={ui.toolSettings.deleteFeaturesUsedByCombine}
+        label={t("tool.polygon.difference.settings.delete_target.label")}
+        checked={ui.toolSettings.deleteFeaturesUsedByDifference}
         onChange={handleChangeDeleteFeatures}
       />
     </BasePanel>
@@ -70,16 +70,16 @@ function UnionPanel (props: UnionPanelProps) {
 
   function handleChangeDeleteFeatures (evt: React.ChangeEvent<HTMLInputElement>) {
     dispatch(MapperUiActions.setToolSettings({
-      key: 'deleteFeaturesUsedByCombine',
+      key: 'deleteFeaturesUsedByDifference',
       value: evt.target.checked,
     }));
   }
 
-  function handleJoin () {
+  function handleCarve () {
     if (!value) return;
 
-    active.union(value, ui.toolSettings.deleteFeaturesUsedByCombine);
+    active.difference(value, ui.toolSettings.deleteFeaturesUsedByDifference);
   }
 }
 
-export default UnionPanel;
+export default DifferencePanel;

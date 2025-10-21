@@ -8,11 +8,11 @@ import useMapperDoc from 'state/mapper/useDoc';
 import useMapperUi from 'state/mapper/useUi';
 import BasePanel from '../BasePanel';
 
-export interface UnionPanelProps {
+export interface IntersectionPanelProps {
   
 }
 
-function UnionPanel (props: UnionPanelProps) {
+function IntersectionPanel (props: IntersectionPanelProps) {
   const doc = useMapperDoc();
   const active = useActiveElement();
   const ui = useMapperUi();
@@ -34,9 +34,9 @@ function UnionPanel (props: UnionPanelProps) {
   }, [options]);
 
   return (
-    <BasePanel name="Union tool">
+    <BasePanel name={t("tool.polygon.intersection.settings.name")}>
       <BasePanel.Desc>
-        {t("tool.polygon.union.settings.desc")}
+        {t("tool.polygon.intersection.settings.desc")}
       </BasePanel.Desc>
 
       <BasePanel.Row>
@@ -44,24 +44,24 @@ function UnionPanel (props: UnionPanelProps) {
           elements={options}
           value={value}
           onChange={setValue}
-          placeholder={t("tool.polygon.union.settings.menu_placeholder")}
+          placeholder={t("tool.polygon.intersection.settings.menu_placeholder")}
         />
 
         <Button
           color='red'
-          onClick={handleJoin}
+          onClick={handleCarve}
           disabled={value === null}
         >
-          {t("tool.polygon.union.settings.join")}
+          {t("tool.polygon.intersection.settings.carve")}
         </Button>
       </BasePanel.Row>
 
       <h3>
-        {t("tool.polygon.union.settings.section.options")}
+        {t("tool.polygon.intersection.settings.section.options")}
       </h3>
 
       <Checkbox
-        label={t("tool.polygon.union.settings.delete_target.label")}
+        label={t("tool.polygon.intersection.settings.delete_target.label")}
         checked={ui.toolSettings.deleteFeaturesUsedByCombine}
         onChange={handleChangeDeleteFeatures}
       />
@@ -75,11 +75,11 @@ function UnionPanel (props: UnionPanelProps) {
     }));
   }
 
-  function handleJoin () {
+  function handleCarve () {
     if (!value) return;
 
-    active.union(value, ui.toolSettings.deleteFeaturesUsedByCombine);
+    active.intersection(value, ui.toolSettings.deleteFeaturesUsedByCombine);
   }
 }
 
-export default UnionPanel;
+export default IntersectionPanel;

@@ -108,10 +108,10 @@ function _Polygon (props: _PolygonProps) {
       </_Toggle>
 
       <_Toggle
-        tool='intersect'
+        tool='intersection'
         shortcut="7"
-        label={t("tool.polygon.intersect.name")}
-        description={t("tool.polygon.intersect.desc")}
+        label={t("tool.polygon.intersection.name")}
+        description={t("tool.polygon.intersection.desc")}
       >
         <IntersectSquareIcon width={24} height={24} weight='thin' />
       </_Toggle>
@@ -146,7 +146,7 @@ function _Polygon (props: _PolygonProps) {
       else if (evt.key === '4') return 'delete_vertices';
       else if (evt.key === '5') return 'union';
       else if (evt.key === '6') return 'difference';
-      else if (evt.key === '7') return 'intersect';
+      else if (evt.key === '7') return 'intersection';
       else if (evt.key === '8') return 'set_origin';
       else if (evt.key === '9') return 'move_shape';
       return null;

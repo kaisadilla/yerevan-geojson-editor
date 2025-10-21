@@ -1,0 +1,24 @@
+.vertex,
+.firstVertex,
+.nextVertex {
+  border-radius: 50%;
+  margin: -8px 0 0 -8px;
+  width: 12px;
+  height: 12px;
+  outline: 0;
+  transition: opacity ease 0.35s;
+  
+  background-color: #fff;
+  border: 1px solid var(--col-gj-active-d1);
+}
+
+.firstVertex {
+  border-width: 5px;
+  border-color: var(--col-gj-active);
+  box-shadow: 0 0 0 1px black;
+  //background-color: var(--col-gj-active-l1);
+}
+
+.nextVertex {
+  border-width: 2px;
+}

@@ -5,6 +5,7 @@ import DescriptiveTooltip from 'components/DescriptiveTooltip';
 import { Redo, Undo } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { isEventTargetEditable } from 'utils';
 import { MapperHistory } from '../MapperHistory';
 import styles from './Ribbon.module.scss';
 import useRedo from './buttons/useRedo';
@@ -25,7 +26,12 @@ function DocumentRibbon (props: EditorRibbonProps) {
   useEffect(() => {
     MapperHistory.onHistoryChange(handleHistoryChange);
 
-    return () => MapperHistory.offHistoryChange(handleHistoryChange);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      MapperHistory.offHistoryChange(handleHistoryChange);
+      document.removeEventListener('keydown', handleKeyDown)
+    }
   }, []);
 
   return (
@@ -95,6 +101,7 @@ function DocumentRibbon (props: EditorRibbonProps) {
 
         <DescriptiveTooltip
           label={t("ribbon.undo.name")}
+          shortcut="Ctrl + Z"
         > 
           <Button
             onClick={handleUndo}
@@ -106,6 +113,7 @@ function DocumentRibbon (props: EditorRibbonProps) {
 
         <DescriptiveTooltip
           label={t("ribbon.redo.name")}
+          shortcut="Ctrl + Y"
         > 
           <Button
             onClick={handleRedo}
@@ -130,6 +138,17 @@ function DocumentRibbon (props: EditorRibbonProps) {
   function handleHistoryChange (hasPast: boolean, hasFuture: boolean) {
     setCanUndo(hasPast);
     setCanRedo(hasFuture);
+  }
+
+  function handleKeyDown (evt: KeyboardEvent) {
+    if (isEventTargetEditable(evt.target)) return;
+
+    if (evt.code === 'KeyZ') {
+      handleUndo();
+    }
+    else if (evt.code === 'KeyY') {
+      handleRedo();
+    }
   }
 }
 

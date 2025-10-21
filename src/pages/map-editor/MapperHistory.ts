@@ -1,6 +1,88 @@
 import type { Position } from "geojson";
 import type { MapperElement } from "models/MapDocument";
 
+export type OnHistoryChangeEventHandler
+  = (hasPast: boolean, hasFuture: boolean) => void;
+
+export class MapperHistoryState {
+  private past: MapperAction[] = [];
+  private future: MapperAction[] = [];
+
+  private listeners: Set<OnHistoryChangeEventHandler> = new Set();
+
+  /**
+   * Pushes a new action in the history. Doing this will discard future actions
+   * that may exist if the user had undone something.
+   * @param action An action that describes what the user has done.
+   */
+  push (action: MapperAction) {
+    this.past.push(action);
+    this.future = [];
+
+    this.notify();
+  }
+
+  /**
+   * Returns the most recent action in history, removing it from history and
+   * adding it to the future.
+   */
+  undo () : MapperAction | null {
+    const action = this.past.pop();
+
+    if (action) {
+      this.future.push(action);
+      this.notify();
+
+      return action;
+    }
+
+    return null;
+  }
+
+  /**
+   * Returns the next action in the future, removing it from the future and
+   * adding it to history.
+   */
+  redo () : MapperAction | null {
+    const action = this.future.pop();
+
+    if (action) {
+      this.past.push(action);
+      this.notify();
+
+      return action;
+    }
+
+    return null;
+  }
+  
+  peekPast () : MapperAction | null {
+    if (this.past.length === 0) return null;
+
+    return this.past[this.past.length - 1];
+  }
+  
+  peekFuture () : MapperAction | null {
+    if (this.future.length === 0) return null;
+
+    return this.future[this.future.length - 1];
+  }
+  
+  onHistoryChange (handler: OnHistoryChangeEventHandler) {
+    this.listeners.add(handler);
+  }
+
+  offHistoryChange (handler: OnHistoryChangeEventHandler) {
+    this.listeners.delete(handler);
+  }
+
+  private notify () {
+    for (const l of this.listeners) {
+      l(this.past.length > 0, this.future.length > 0);
+    }
+  }
+}
+
 interface MapperActionBase {
   type: string;
 }
@@ -89,86 +171,57 @@ export type MapperAction = MultipleMapperAction
   | ChangeVerticesMapperAction
   ;
 
-export type OnHistoryChangeEventHandler
-  = (hasPast: boolean, hasFuture: boolean) => void;
+export const MapperActions = {
+  multiple (actions: MapperAction[]) {
+    return {
+      type: 'multiple',
+      actions,
+    } satisfies MultipleMapperAction;
+  },
 
-export class MapperHistoryState {
-  private past: MapperAction[] = [];
-  private future: MapperAction[] = [];
+  deleteElement (element: MapperElement, groupId: string | null, index: number) {
+    return {
+      type: 'delete_element',
+      element,
+      groupId,
+      index,
+    } satisfies DeleteElementMapperAction;
+  },
 
-  private listeners: Set<OnHistoryChangeEventHandler> = new Set();
+  changeElement (id: string, before: MapperElement, after: MapperElement) {
+    return {
+      type: 'change_element',
+      elementId: id,
+      before,
+      after,
+    } satisfies ChangeElementMapperAction;
+  },
 
-  /**
-   * Pushes a new action in the history. Doing this will discard future actions
-   * that may exist if the user had undone something.
-   * @param action An action that describes what the user has done.
-   */
-  push (action: MapperAction) {
-    this.past.push(action);
-    this.future = [];
+  addVertices (id: string, index: number, vertices: Position[]) {
+    return {
+      type: 'add_vertices',
+      elementId: id,
+      index,
+      vertices,
+    } satisfies AddVerticesMapperAction;
+  },
 
-    this.notify();
-  }
+  deleteVertices (id: string, index: number, vertices: Position[]) {
+    return {
+      type: 'delete_vertices',
+      elementId: id,
+      index,
+      vertices,
+    } satisfies DeleteVerticesMapperAction;
+  },
 
-  /**
-   * Returns the most recent action in history, removing it from history and
-   * adding it to the future.
-   */
-  undo () : MapperAction | null {
-    const action = this.past.pop();
-
-    if (action) {
-      this.future.push(action);
-      this.notify();
-
-      return action;
-    }
-
-    return null;
-  }
-
-  /**
-   * Returns the next action in the future, removing it from the future and
-   * adding it to history.
-   */
-  redo () : MapperAction | null {
-    const action = this.future.pop();
-
-    if (action) {
-      this.past.push(action);
-      this.notify();
-
-      return action;
-    }
-
-    return null;
-  }
-  
-  peekPast () : MapperAction | null {
-    if (this.past.length === 0) return null;
-
-    return this.past[this.past.length - 1];
-  }
-  
-  peekFuture () : MapperAction | null {
-    if (this.future.length === 0) return null;
-
-    return this.future[this.future.length - 1];
-  }
-  
-  onHistoryChange (handler: OnHistoryChangeEventHandler) {
-    this.listeners.add(handler);
-  }
-
-  offHistoryChange (handler: OnHistoryChangeEventHandler) {
-    this.listeners.delete(handler);
-  }
-
-  private notify () {
-    for (const l of this.listeners) {
-      l(this.past.length > 0, this.future.length > 0);
-    }
-  }
+  changeVertices (id: string, before: Position[], after: Position[]) {
+    return {
+      type: 'change_vertices',
+      elementId: id,
+      before,
+      after,
+    } satisfies ChangeVerticesMapperAction;
+  },
 }
-
 export const MapperHistory = new MapperHistoryState();

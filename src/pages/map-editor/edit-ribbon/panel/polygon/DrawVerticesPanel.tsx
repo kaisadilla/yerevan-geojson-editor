@@ -11,7 +11,6 @@ import { useDispatch } from 'react-redux';
 import { MapperUiActions } from 'state/mapper/uiSlice';
 import useMapperUi from 'state/mapper/useUi';
 import BasePanel from "../BasePanel";
-import Description from '../Description';
 
 export interface DrawVerticesPanelProps {
   
@@ -25,9 +24,9 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
 
   return (
     <BasePanel className={styles.panel} name="Draw vertices tool">
-      <Description>
+      <BasePanel.Desc>
         {t("tool.polygon.draw_vertices.settings.desc")}
-      </Description>
+      </BasePanel.Desc>
       
       <h3>
         {t("tool.polygon.draw_vertices.settings.section.options")}

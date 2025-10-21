@@ -4,10 +4,12 @@ import DescriptiveTooltip from 'components/DescriptiveTooltip';
 import { useKeyboard } from 'context/useKeyboard';
 import type React from 'react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { MapperUiActions } from 'state/mapper/uiSlice';
 import useMapperUi from 'state/mapper/useUi';
 import { $cl } from 'utils';
+import BasePanel_Description from './BasePanel.Description';
 import BasePanel_FeatureMenu from './BasePanel.FeatureMenu';
 import BasePanel_Keys from './BasePanel.Keys';
 import styles from './BasePanel.module.scss';
@@ -29,6 +31,8 @@ function BasePanel ({
   const keyboard = useKeyboard();
   const dispatch = useDispatch();
 
+  const { t } = useTranslation();
+
   useEffect(() => {
     // Shift will collapse the panel. Ctrl + shift will expand it.
     if (keyboard.shift) {
@@ -39,8 +43,8 @@ function BasePanel ({
   if (keyboard.shift === false && ui.isSettingsPanelExpanded === false) return (
     <div className={styles.panel}>
       <DescriptiveTooltip
-        label={`Expand settings for ${name}.`}
-        description="🛈 You can use 'shift' to temporarily expand the panel or 'ctrl + shift' to leave it expanded."
+        label={t("tool.settings.expand.name", { name })}
+        description={t("tool.settings.expand.desc")}
       >
         <Button onClick={handleExpand}>
           <CaretDoubleDownIcon size={24} weight='thin' />
@@ -53,7 +57,7 @@ function BasePanel ({
     <div className={styles.panel} data-expanded={true}>
       <div className={styles.header}>
         <DescriptiveTooltip
-          label="Collapse"
+          label={t("tool.settings.collapse.name")}
           shortcut="Shift"
         >
           <Button onClick={handleCollapse}>
@@ -77,6 +81,7 @@ function BasePanel ({
   }
 }
 
+BasePanel.Desc = BasePanel_Description;
 BasePanel.Ribbon = BasePanel_Ribbon;
 BasePanel.Keys = BasePanel_Keys;
 BasePanel.FeatureMenu = BasePanel_FeatureMenu;

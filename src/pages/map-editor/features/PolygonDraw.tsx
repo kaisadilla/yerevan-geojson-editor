@@ -10,6 +10,7 @@ import useMapperSettings from 'state/mapper/useSettings';
 import useMapperUi from 'state/mapper/useUi';
 import MapEvents from '../MapEvents';
 import styles from './PolygonDraw.module.scss';
+import useMarkers from './useMarkers';
 
 export interface PolygonDrawProps {
   /**
@@ -40,11 +41,8 @@ function PolygonDraw ({
   const settings = useMapperSettings();
 
   const latlngVertices = shape.map(c => GLT.gj.coord.leaflet(c));
-
-  const firstVertex = L.divIcon({
-    className: styles.firstVertex,
-    iconSize: [ui.toolSettings.vertexSize * (3 / 2), ui.toolSettings.vertexSize * (3 / 2)],
-  });
+  
+  const { firstVertex } = useMarkers();
 
   return (<>
     {ui.toolSettings.showVertices && <_MarkerLayer
@@ -84,15 +82,8 @@ function _MarkerLayer ({
 
   const map = useMap();
   const markers = useRef<L.Marker[]>([]);
-
-  const vertex = L.divIcon({
-    className: styles.vertex,
-    iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
-  });
-  const noIcon = L.divIcon({
-    className:  styles.noIcon,
-    iconSize: [0, 0],
-  });
+  
+  const { vertex, noIcon } = useMarkers();
 
   useEffect(() => {
     if (markers.current.length > lShape.length) {
@@ -145,11 +136,8 @@ function _NextVertex ({
   const [hoveredCoords, setHoveredCoords] = useState<Position | null>();
   const [drawingLine, setDrawingLine] = useState(false);
   const lastVertex = useRef<Position>(shape[shape.length - 1]);
-
-  const vertex = L.divIcon({
-    className: styles.nextVertex,
-    iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
-  });
+  
+  const { volatileVertex } = useMarkers();
 
   useEffect(() => {
     const removeMouseMove = MapEvents.mouseMove(handleMouseMove);
@@ -178,7 +166,7 @@ function _NextVertex ({
     />}
     {hoveredCoords && <Marker
       position={GLT.gj.coord.leaflet(hoveredCoords)}
-      icon={vertex}
+      icon={volatileVertex}
     >
       {
         shape.length > 2 && keyboard.ctrl === false && <Tooltip
