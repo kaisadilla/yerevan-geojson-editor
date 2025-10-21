@@ -38,7 +38,6 @@ function tomlToJsonPlugin () : PluginOption {
 
   return {
     name: 'toml-to-json',
-    apply: 'serve',
 
     async buildStart () {
       convertLocaleFiles();
