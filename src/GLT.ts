@@ -1,7 +1,7 @@
 import * as turf from "@turf/turf";
 import type { Position } from "geojson";
 import { LatLng } from "leaflet";
-import type { MapperPolygon } from "models/MapDocument";
+import { shapeToPolygon, type MapperPolygon } from "models/MapDocument";
 
 /**
  * An object that contains methods to easily communicate between GeoJson,
@@ -40,8 +40,13 @@ const GLT = {
     polygon: {
       turf (polygon: MapperPolygon) {
         return turf.polygon([
-          [...polygon.vertices, polygon.vertices[0]],
-          ...polygon.holes.map(h => [...h, h[0]]),
+          [ ...polygon.vertices, polygon.vertices[0] ],
+          
+          ...polygon.holes.map(h => {
+            const poly = shapeToPolygon(h);
+
+            return [ ...poly.vertices, poly.vertices[0] ];
+          }),
         ]);
       },
     },

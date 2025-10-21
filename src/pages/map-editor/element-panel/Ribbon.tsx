@@ -1,7 +1,7 @@
 import DescriptiveTooltip from "components/DescriptiveTooltip";
 import { Boxes, Circle, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
 import { useTranslation } from "react-i18next";
-import styles from './ElementPanel.Ribbon.module.scss';
+import styles from './Ribbon.module.scss';
 
 function Ribbon () {
   const { t } = useTranslation();

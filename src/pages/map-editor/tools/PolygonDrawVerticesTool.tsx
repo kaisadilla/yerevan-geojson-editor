@@ -1,8 +1,11 @@
 import { useActiveElement } from 'context/useActiveElement';
 import type { Position } from 'geojson';
 import GLT from 'GLT';
+import { isPseudoContainer } from 'models/MapDocument';
 import { useDispatch } from 'react-redux';
 import { MapperUiActions } from 'state/mapper/uiSlice';
+import useMapperDoc from 'state/mapper/useDoc';
+import useMapperSettings from 'state/mapper/useSettings';
 import PolygonDraw from '../features/PolygonDraw';
 import { MapperHistory } from '../MapperHistory';
 
@@ -11,15 +14,21 @@ export interface PolygonDrawVerticesToolProps {
 }
 
 function PolygonDrawVerticesTool (props: PolygonDrawVerticesToolProps) {
+  const doc = useMapperDoc();
   const active = useActiveElement();
+  const settings = useMapperSettings();
   const dispatch = useDispatch();
 
   const polygon = active.getPolygon();
   if (!polygon) return null;
 
+  const parent = doc.getParent(polygon.id);
+  const isPseudo = !!parent && isPseudoContainer(parent);
+
   return (
     <PolygonDraw
       vertices={[...polygon.vertices, ...active.stroke]}
+      color={isPseudo ? settings.colors.activePseudo : settings.colors.active}
       onAddVertex={handleAddVertex}
       onCompleteStroke={handleCompleteStroke}
     />

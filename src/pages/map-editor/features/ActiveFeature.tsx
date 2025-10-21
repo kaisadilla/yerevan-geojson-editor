@@ -1,5 +1,6 @@
 
-import type { MapperFeature } from 'models/MapDocument';
+import { type MapperFeature } from 'models/MapDocument';
+import useMapperDoc from 'state/mapper/useDoc';
 import useMapperUi from 'state/mapper/useUi';
 import NoTool from '../tools/NoTool';
 import PolygonDeleteVerticesTool from '../tools/PolygonDeleteVerticesTool';
@@ -13,6 +14,7 @@ export interface ActiveFeatureProps {
 function ActiveFeature ({
   feature,
 }: ActiveFeatureProps) {
+  const doc = useMapperDoc();
   const ui = useMapperUi();
 
   if (feature.type === 'Polygon') {

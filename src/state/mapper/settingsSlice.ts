@@ -2,7 +2,11 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface MapperSettingsSlice {
   colors: {
+    default: string;
     active: string;
+    activeParent: string;
+    activePseudo: string;
+    activeSibling: string;
     delete: string;
   };
   lineWidth: number;
@@ -10,7 +14,11 @@ interface MapperSettingsSlice {
 
 const initialState: MapperSettingsSlice = {
   colors: {
+    default: "var(--color-primary-d1)",
     active: "#ff9500",
+    activeParent: "#a78270",
+    activePseudo: "#ff9500",
+    activeSibling: "#000000",
     delete: "#ff0000",
   },
   lineWidth: 2,

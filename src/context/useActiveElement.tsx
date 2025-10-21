@@ -1,5 +1,5 @@
 import type { Position } from "geojson";
-import type { MapperElement, MapperPolygon } from "models/MapDocument";
+import { type MapperElement, type MapperPolygon } from "models/MapDocument";
 import Ops from "Ops";
 import { MapperActions, MapperHistory, type MapperAction } from "pages/map-editor/MapperHistory";
 import { createContext, useContext, useState } from "react";
@@ -225,7 +225,8 @@ export const ActiveElementProvider = ({ children }: any) => {
 
     const update = {
       vertices: result.vertices,
-    }
+      holes: result.holes,
+    };
 
     dispatch(MapperDocActions.updatePolygon({
       elementId: el.id,

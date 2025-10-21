@@ -21,7 +21,7 @@ function DifferencePanel (props: DifferencePanelProps) {
   const { t } = useTranslation('ui');
 
   const polygon = active.getPolygon();
-  const options = doc.getAllElements().filter(
+  const options = doc.getAllElements(false).filter(
     e => e.type === 'Polygon' && e.id !== polygon?.id
   );
 

@@ -1,7 +1,7 @@
-import { useActiveElement } from 'context/useActiveElement';
 import GLT from 'GLT';
-import type { MapperFeature, MapperPolygon } from 'models/MapDocument';
+import { isPseudoContainer, type MapperFeature, type MapperPolygon } from 'models/MapDocument';
 import { Polygon } from 'react-leaflet';
+import useMapperDoc from 'state/mapper/useDoc';
 import useMapperSettings from 'state/mapper/useSettings';
 import styles from './NoTool.module.scss';
 
@@ -24,19 +24,21 @@ interface _PolygonProps {
 function _Polygon ({
   polygon,
 }: _PolygonProps) {
+  const doc = useMapperDoc();
   const settings = useMapperSettings();
-  const active = useActiveElement();
+
+  const parent = doc.getParent(polygon.id);
+  const isPseudo = !!parent && isPseudoContainer(parent);
 
   return (
     <Polygon
       key={polygon.id}
       className={styles.polygon}
       positions={[
-        GLT.gj.coords.leaflet(polygon.vertices),
-        ...polygon.holes.map(h => GLT.gj.coords.leaflet(h)),
+        GLT.gj.coords.leaflet(polygon.vertices)
       ]}
       weight={2}
-      color={settings.colors.active}
+      color={isPseudo ? settings.colors.activePseudo : settings.colors.active}
     />
   );
 }

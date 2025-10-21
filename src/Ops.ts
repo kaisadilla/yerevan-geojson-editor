@@ -1,12 +1,16 @@
 import * as turf from "@turf/turf";
 import type { Feature, GeoJsonProperties, MultiPolygon, Polygon } from "geojson";
 import GLT from "GLT";
-import type { MapperPolygon } from "models/MapDocument";
+import { shapeToPolygon, type MapperPolygon, type MapperShape } from "models/MapDocument";
+import { v4 as uuid } from "uuid";
 
 const Ops = {
   polygonUnion (
-    receiver: MapperPolygon, target: MapperPolygon
+    receiver: MapperShape, target: MapperShape
   ) : MapperPolygon {
+    receiver = shapeToPolygon(receiver);
+    target = shapeToPolygon(target);
+
     const poly1 = GLT.mapper.polygon.turf(receiver);
     const poly2 = GLT.mapper.polygon.turf(target);
 
@@ -15,8 +19,11 @@ const Ops = {
   },
 
   polygonDifference (
-    receiver: MapperPolygon, target: MapperPolygon
+    receiver: MapperShape, target: MapperShape
   ) : MapperPolygon {
+    receiver = shapeToPolygon(receiver);
+    target = shapeToPolygon(target);
+
     const poly1 = GLT.mapper.polygon.turf(receiver);
     const poly2 = GLT.mapper.polygon.turf(target);
 
@@ -25,8 +32,11 @@ const Ops = {
   },
 
   polygonIntersection (
-    receiver: MapperPolygon, target: MapperPolygon
+    receiver: MapperShape, target: MapperShape
   ) : MapperPolygon {
+    receiver = shapeToPolygon(receiver);
+    target = shapeToPolygon(target);
+
     const poly1 = GLT.mapper.polygon.turf(receiver);
     const poly2 = GLT.mapper.polygon.turf(target);
 
@@ -37,16 +47,24 @@ const Ops = {
 
 function getMapperPolygons (
   base: MapperPolygon,
-  gjPolygon: Feature<Polygon | MultiPolygon, GeoJsonProperties>
+  gPolygon: Feature<Polygon | MultiPolygon, GeoJsonProperties>
 ) : MapperPolygon {
-  if (gjPolygon?.geometry.type === 'Polygon') {
+  if (gPolygon?.geometry.type === 'Polygon') {
     return {
       ...base,
-      vertices: gjPolygon.geometry.coordinates[0].slice(0, -1),
-      holes: gjPolygon.geometry.coordinates.slice(1).map(h => h.slice(0, -1)),
-    } satisfies MapperPolygon;
+      vertices: gPolygon.geometry.coordinates[0].slice(0, -1),
+      holes: gPolygon.geometry.coordinates.slice(1).map((h, i) => ({
+        type: 'Polygon',
+        id: uuid(),
+        name: "",
+        properties: [],
+        isHidden: false,
+        vertices: h.slice(0, -1),
+        holes: []
+      })),
+    } satisfies MapperShape;
   }
-  else if (gjPolygon?.geometry.type === 'MultiPolygon') {
+  else if (gPolygon?.geometry.type === 'MultiPolygon') {
     throw "Not yet implemented.";
   }
   else {

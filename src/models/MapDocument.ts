@@ -59,7 +59,33 @@ export interface MapperLine extends BaseMapperElement {
 export interface MapperPolygon extends BaseMapperElement {
   type: 'Polygon';
   vertices: Position[];
-  holes: Position[][];
+  holes: MapperShape[];
+}
+
+export interface MapperRectangle extends BaseMapperElement {
+  type: 'Rectangle';
+  north: number;
+  south: number;
+  west: number;
+  east: number;
+  holes: MapperShape[];
+}
+
+export interface MapperCircle extends BaseMapperElement {
+  type: 'Circle';
+  center: Position;
+  radius: number;
+  holes: MapperShape[];
+}
+
+export interface MapperImage extends BaseMapperElement {
+  type: 'Image';
+  north: number;
+  south: number;
+  west: number;
+  east: number;
+  image: string;
+  isBackgroundImage: boolean;
 }
 
 /**
@@ -70,7 +96,7 @@ export interface MapperPolygon extends BaseMapperElement {
  */
 export interface MapperCollection extends BaseMapperElement {
   type: 'Collection';
-  features: MapperFeature;
+  elements: MapperElement[];
 }
 
 /**
@@ -78,8 +104,13 @@ export interface MapperCollection extends BaseMapperElement {
  */
 export type MapperFeature = MapperPoint
   | MapperLine
-  | MapperPolygon
+  | MapperShape
   | MapperCollection
+  ;
+
+export type MapperShape = MapperPolygon
+  | MapperRectangle
+  | MapperCircle
   ;
 
 /**
@@ -96,3 +127,44 @@ export type MapperElementType = MapperElement['type'];
  * The root of a Mapper document. It map's to GeoJson's root FeatureCollection.
  */
 export type MapperDocument = MapperGroup;
+
+export const PseudoContainerType = new Set<MapperElementType>([
+  'Polygon',
+  'Rectangle',
+  'Circle',
+] as MapperElementType[]);
+
+/**
+ * The types of `MapperElement` that can contain children.
+ */
+export const ContainerType = new Set<MapperElementType>([
+  'Group',
+  'Collection',
+  ...PseudoContainerType,
+] as MapperElementType[]);
+
+export function isContainer (element: MapperElement) : boolean {
+  return ContainerType.has(element.type);
+}
+
+export function isPseudoContainer (element: MapperElement) 
+  : element is MapperPolygon | MapperRectangle | MapperCircle
+{
+  return PseudoContainerType.has(element.type);
+}
+
+export function rectangleToPolygon (rect: MapperRectangle) : MapperPolygon {
+  throw "Not yet implemented";
+}
+
+export function circleToPolygon (circle: MapperCircle) : MapperPolygon {
+  throw "Not yet implemented";
+}
+
+export function shapeToPolygon (shape: MapperShape) : MapperPolygon {
+  if (shape.type === 'Polygon') return shape;
+  if (shape.type === 'Rectangle') return rectangleToPolygon(shape);
+  if (shape.type === 'Circle') return circleToPolygon(shape);
+
+  throw `Unknown shape type.`;
+}

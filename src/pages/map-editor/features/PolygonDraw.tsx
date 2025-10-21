@@ -17,6 +17,7 @@ export interface PolygonDrawProps {
    * A list of positions that make up the polygon.
    */
   vertices: Position[];
+  color?: string;
   /**
    * Called every time one vertex is added to the polygon.
    * @param pos The position where the vertex is.
@@ -33,14 +34,17 @@ export interface PolygonDrawProps {
 }
 
 function PolygonDraw ({
-  vertices: shape,
+  vertices,
+  color,
   onAddVertex,
   onCompleteStroke,
 }: PolygonDrawProps) {
   const ui = useMapperUi();
   const settings = useMapperSettings();
 
-  const latlngVertices = shape.map(c => GLT.gj.coord.leaflet(c));
+  color ??= settings.colors.active;
+
+  const latlngVertices = vertices.map(c => GLT.gj.coord.leaflet(c));
   
   const { firstVertex } = useMarkers();
 
@@ -52,19 +56,20 @@ function PolygonDraw ({
       className={styles.polygon}
       positions={latlngVertices}
       weight={0}
-      color={settings.colors.active}
+      color={color}
     />
     <Polyline
       positions={[latlngVertices]}
       weight={settings.lineWidth}
-      color={settings.colors.active}
+      color={color}
     />
     <Marker
       position={latlngVertices[0]}
       icon={firstVertex}
     />
     <_NextVertex
-      shape={shape}
+      shape={vertices}
+      color={color}
       onAddVertex={onAddVertex}
       onCompleteStroke={onCompleteStroke}
     />
@@ -118,12 +123,14 @@ function _MarkerLayer ({
 
 interface _NextVertexProps {
   shape: Position[];
+  color: string;
   onAddVertex?: (pos: Position, isStroke: boolean) => void;
   onCompleteStroke?: () => void;
 }
 
 function _NextVertex ({
   shape,
+  color,
   onAddVertex,
   onCompleteStroke,
 }: _NextVertexProps) {
@@ -161,7 +168,7 @@ function _NextVertex ({
         GLT.gj.coord.leaflet(hoveredCoords)
       ]}
       dashArray="7, 8, 1, 8"
-      color={settings.colors.active}
+      color={color}
       weight={2}
     />}
     {hoveredCoords && <Marker

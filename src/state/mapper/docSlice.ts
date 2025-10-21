@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Position } from "geojson";
 import Logger from "Logger";
-import type { MapperDocument, MapperElement, MapperGroup, MapperPolygon } from "models/MapDocument";
+import { ContainerType, isContainer, isPseudoContainer, type MapperDocument, type MapperElement, type MapperGroup, type MapperPolygon } from "models/MapDocument";
 import { v4 as uuid } from 'uuid';
 
 interface MapperDocState {
@@ -128,25 +128,55 @@ function getSampleDocument () : MapperDocument {
       [12.0849609375, 47.724544549099676],
     ],
     holes: [
-      [
-        [12.139892578125002, 50.958426723359935],
-        [11.447753906250002, 51.15178610143037],
-        [11.392822265625, 51.37178037591739],
-        [10.656738281250002, 51.6521108615692],
-        [10.601806640625002, 51.998410382390325],
-        [11.008300781250002, 52.10650519075632],
-        [10.920410156250002, 52.44261787120725],
-        [10.78857421875, 52.8226825580693],
-        [11.634521484375, 53.04781795911469],
-        [12.205810546875002, 52.86249745970948],
-        [12.304687500000002, 52.0862573323384],
-        [13.128662109375002, 51.890053935216926],
-        [13.139648437500002, 51.66574141105715],
-        [12.54638671875, 51.6180165487737],
-        [12.260742187500002, 51.549751017014195],
-        [12.205810546875002, 51.41291212935532],
-        [12.293701171875002, 51.089722918116315],
-      ],
+      {
+        type: 'Polygon',
+        id: 'germany-h1',
+        name: "This is not visible",
+        properties: [],
+        isHidden: false,
+        vertices: [
+          [12.139892578125002, 50.958426723359935],
+          [11.447753906250002, 51.15178610143037],
+          [11.392822265625, 51.37178037591739],
+          [10.656738281250002, 51.6521108615692],
+          [10.601806640625002, 51.998410382390325],
+          [11.008300781250002, 52.10650519075632],
+          [10.920410156250002, 52.44261787120725],
+          [10.78857421875, 52.8226825580693],
+          [11.634521484375, 53.04781795911469],
+          [12.205810546875002, 52.86249745970948],
+          [12.304687500000002, 52.0862573323384],
+          [13.128662109375002, 51.890053935216926],
+          [13.139648437500002, 51.66574141105715],
+          [12.54638671875, 51.6180165487737],
+          [12.260742187500002, 51.549751017014195],
+          [12.205810546875002, 51.41291212935532],
+          [12.293701171875002, 51.089722918116315],
+        ],
+        holes: [],
+      },
+      {
+        type: 'Polygon',
+        id: 'germany-h2',
+        name: "",
+        properties: [],
+        isHidden: false,
+        vertices: [
+          [8.745117187500002, 50.21909462044748],
+          [8.283691406250002, 49.809631563563094],
+          [8.767089843750002, 49.52520834197442],
+          [9.052734375000002, 49.28214015975995],
+          [9.118652343750002, 49.095452162534826],
+          [9.42626953125, 49.196064000723794],
+          [9.514160156250002, 49.38237278700955],
+          [9.667968750000002, 49.51094351526262],
+          [9.865722656250002, 49.49667452747045],
+          [9.843750000000002, 49.69606181911566],
+          [9.602050781250002, 49.809631563563094],
+          [9.162597656250002, 49.738681639280024],
+        ],
+        holes: [],
+      },
     ],
   });
 
@@ -253,7 +283,7 @@ const mapperDocSlice = createSlice({
       else {
         const group = getElement(state.content, groupId, true);
 
-        if (group?.type !== 'Group') {
+        if (!group || ContainerType.has(group.type) === false) {
           Logger.error(
             `Element with id '${groupId}' either doesn't exist, or isn't a group.`
           )
@@ -439,19 +469,22 @@ export const MapperDocActions = mapperDocSlice.actions;
 
 // #region Helper functions
 /**
- * Retrieves the element with the id given from the group given, if it exists
- * there.
- * @param group The group to search in.
+ * Retrieves the element with the id given from the container given, if it
+ * exists there.
+ * @param container The container to search in.
  * @param elementId The element to look for.
  * @param recursive If true, subgroups will also be searched.
  */
 export function getElement (
-  group: MapperGroup, elementId: string, recursive: boolean
+  container: MapperElement, elementId: string, recursive: boolean
 ) : MapperElement | null {
-  for (const el of group.elements) {
+  const children = getChildrenArray(container);
+  if (!children) return null;
+
+  for (const el of children) {
     if (el.id === elementId) return el;
 
-    if (recursive && el.type === 'Group') {
+    if (recursive && isContainer(el)) {
       const found = getElement(el, elementId, true);
       if (found !== null) return found;
     }
@@ -462,17 +495,20 @@ export function getElement (
 
 /**
  * Locates the group the element with the id given belongs to.
- * @param group 
+ * @param container 
  * @param elementId 
  * @returns 
  */
 export function getElementParent (
-  group: MapperGroup, elementId: string
-) : MapperGroup | null {
-  for (const el of group.elements) {
-    if (el.id === elementId) return group;
+  container: MapperElement, elementId: string
+) : MapperElement | null {
+  const children = getChildrenArray(container);
+  if (!children) return null;
 
-    if (el.type === 'Group') {
+  for (const el of children) {
+    if (el.id === elementId) return container;
+
+    if (isContainer(el)) {
       const found = getElementParent(el, elementId);
       if (found !== null) return found;
     }
@@ -483,18 +519,21 @@ export function getElementParent (
 
 /**
  * Locates the position of the element with the id given in its group.
- * @param group 
+ * @param container 
  * @param elementId 
  * @returns 
  */
 export function getElementIndex (
-  group: MapperGroup, elementId: string
+  container: MapperElement, elementId: string
 ) : number | null {
-  const groupEl = getElementParent(group, elementId);
-  if (!groupEl) return null;
+  const parent = getElementParent(container, elementId);
+  if (!parent) return null;
 
-  for (let i = 0; i < groupEl.elements.length; i++) {
-    if (groupEl.elements[i].id === elementId) return i;
+  const children = getChildrenArray(parent);
+  if (!children) return null;
+
+  for (let i = 0; i < children.length; i++) {
+    if (children[i].id === elementId) return i;
   }
 
   return null;
@@ -503,19 +542,22 @@ export function getElementIndex (
 /**
  * Return whether the element with the id given is hidden, either by itself or
  * by being in a group that is hidden altogether.
- * @param group The group from which to start searching.
+ * @param container The group from which to start searching.
  * @param elementId The id of the element to check.
  * @param isParentHidden True if the group from which we are searching is hidden,
  * either by itself or by its parent.
  * @returns 
  */
 export function isElementHidden (
-  group: MapperGroup, elementId: string, isParentHidden: boolean = false
+  container: MapperElement, elementId: string, isParentHidden: boolean = false
 ) : boolean | null {
-  for (const el of group.elements) {
+  const children = getChildrenArray(container);
+  if (!children) return null;
+
+  for (const el of children) {
     if (el.id === elementId) return isParentHidden || el.isHidden;
 
-    if (el.type === 'Group') {
+    if (isContainer(el)) {
       const found = isElementHidden(el, elementId, isParentHidden || el.isHidden);
       if (found !== null) return found;
     }
@@ -527,16 +569,19 @@ export function isElementHidden (
 /**
  * Removes an element from the group given and returns it. Returns `null` if an
  * element is not found. This function is not recursive.
- * @param group The group where the element is.
+ * @param container The group where the element is.
  * @param elementId The id of the element to remove.
  */
-export function removeElement (group: MapperGroup, elementId: string) {
-  for (let i = 0; i < group.elements.length; i++) {
-    const el = group.elements[i];
+export function removeElement (container: MapperElement, elementId: string) {
+  const children = getChildrenArray(container);
+  if (!children) return null;
+
+  for (let i = 0; i < children.length; i++) {
+    const el = children[i];
 
     if (el.id !== elementId) continue;
 
-    group.elements.splice(i, 1);
+    children.splice(i, 1);
     return el;
   }
 
@@ -546,20 +591,23 @@ export function removeElement (group: MapperGroup, elementId: string) {
 /**
  * Adds an element to the group given, either as the first or the last element
  * of the group.
- * @param group The group to add the element to.
+ * @param container The group to add the element to.
  * @param element The element to add.
  * @param index The index at which the element will be in the group.
  */
 export function insertElement (
-  group: MapperGroup,
+  container: MapperElement,
   element: MapperElement,
   index: number | null,
 ) {
+  const children = getChildrenArray(container);
+  if (!children) return;
+
   if (index === null) {
-    group.elements.push(element);
+    children.push(element);
   }
   else {
-    group.elements.splice(index, 0, element);
+    children.splice(index, 0, element);
   }
 }
 
@@ -567,43 +615,53 @@ export function insertElement (
  * Adds an element to the group given, before or after the element given. If the
  * reference element given is not found, the element to append will be added at
  * the end of the group.
- * @param group The group to add the element to.
+ * @param container The group to add the element to.
  * @param element The element to add.
  * @param referenceId The id of the element to use as reference.
  * @param position Whether the element will be added before or after that one.
  */
 export function insertElementBetween (
-  group: MapperGroup,
+  container: MapperElement,
   element: MapperElement,
   referenceId: string,
   position: 'before' | 'after',
 ) {
-  let index = group.elements.findIndex(el => el.id === referenceId);
+  const children = getChildrenArray(container);
+  if (!children) return;
+
+  let index = children.findIndex(el => el.id === referenceId);
 
   if (index === -1) {
-    group.elements.push(element);
+    children.push(element);
     return;
   }
 
   if (position === 'after') index++;
   
-  group.elements.splice(index, 0, element);
+  children.splice(index, 0, element);
 }
 
 /**
  * Returns a flat array containing all elements in the given group, including
  * elements in all of its subgroups. This array also contains the subgroups
  * themselves as elements.
- * @param group The group from which to retrieve elements.
+ * @param container The group from which to retrieve elements.
+ * @param includePseudo Include elements that don't map to GeoJson elements
+ * (that is, holes in shapes).
  */
-export function getAllElements (group: MapperGroup) : MapperElement[] {  
+export function getAllElements (
+  container: MapperElement, includePseudo: boolean
+) : MapperElement[] {  
+  let children = getChildrenArray(container);
+  if (!children) return [];
+
   const arr = [] as MapperElement[];
 
-  for (const f of group.elements) {
-    arr.push(f);
+  for (const el of children) {
+    arr.push(el);
 
-    if (f.type === 'Group') {
-      arr.push(...getAllElements(f));
+    if (isContainer(el) && (includePseudo || isPseudoContainer(el) === false)) {
+      arr.push(...getAllElements(el, includePseudo));
     }
   }
   
@@ -612,23 +670,44 @@ export function getAllElements (group: MapperGroup) : MapperElement[] {
 
 /**
  * Returns true if an element with the id given exists in the group given.
- * @param group The group in which the element may exist.
+ * @param container The group in which the element may exist.
  * @param elementId The id of the element to look for.
  * @param recursive If true, subgroups will also be searched.
  * @returns 
  */
 export function idExists (
-  group: MapperGroup, elementId: string, recursive: boolean
+  container: MapperElement, elementId: string, recursive: boolean
 ) : boolean {
-  for (const el of group.elements) {
+  let children = getChildrenArray(container);
+  if (!children) return false;
+
+  for (const el of children) {
     if (el.id === elementId) return true;
 
-    if (recursive && el.type === 'Group') {
+    if (recursive && isContainer(el)) {
       if (idExists(el, elementId, true)) return true;
     }
   }
 
   return false;
+}
+
+/**
+ * Given an element, returns the ORIGINAL ARRAY with its children. Modifying
+ * this array will modify the children of the element.
+ * If the element cannot have children (is not a container), this will return
+ * `null`.
+ * @param container The container element.
+ * @returns 
+ */
+function getChildrenArray (container: MapperElement) : MapperElement[] | null {
+  if (container.type === 'Group') return container.elements;
+  if (container.type === 'Collection') return container.elements;
+  if (container.type === 'Polygon') return container.holes;
+  if (container.type === 'Rectangle') return container.holes;
+  if (container.type === 'Circle') return container.holes;
+
+  return null;
 }
 
 // #endregion Helper functions

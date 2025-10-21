@@ -9,8 +9,8 @@ export default function useMapperDoc () {
   return {
     ...doc,
 
-    getAllElements: (group?: MapperGroup) =>
-      getAllElements(group ?? doc.content),
+    getAllElements: (includePseudo: boolean, group?: MapperGroup) =>
+      getAllElements(group ?? doc.content, includePseudo),
 
     getElement: (elementId: string) =>
       getElement(doc.content, elementId, true),
