@@ -14,8 +14,12 @@ export interface MapperProperty {
  * The prefix used for Leaflys-defined GeoJson properties.
  */
 export const LEAFLYS_PROP_PREFIX = "_leaflys_";
+export const LEAFLYS_DIR_SEPARATOR = "\\";
 
-interface BaseMapperElement {
+export const LEAFLYS_PROP_HIDDEN = LEAFLYS_PROP_PREFIX + "hidden";
+export const LEAFLYS_PROP_GROUP = LEAFLYS_PROP_PREFIX + "group";
+
+export interface BaseMapperElement {
   /**
    * An id that uniquely identifies this element. This id will be saved in
    * GeoJson's property collection under the reserved key 'id'.
@@ -46,23 +50,36 @@ export interface MapperGroup extends BaseMapperElement {
   elements: MapperElement[];
 }
 
-export interface MapperPoint extends BaseMapperElement {
+export interface MapperPointData {
   type: 'Point';
   position: Position;
 }
 
-export interface MapperLine extends BaseMapperElement {
+export interface MapperPoint extends BaseMapperElement, MapperPointData {
+}
+
+export interface MapperLineData {
   type: 'LineString';
   positions: Position[];
 }
 
-export interface MapperPolygon extends BaseMapperElement {
+export interface MapperLine extends BaseMapperElement, MapperLineData {
+}
+
+export interface MapperPolygonData {
   type: 'Polygon';
   vertices: Position[];
   holes: MapperShape[];
 }
 
-export interface MapperRectangle extends BaseMapperElement {
+export interface MapperPolygon extends BaseMapperElement, MapperPolygonData {
+}
+
+export interface MapperRegularPolygon extends MapperPolygon {
+  holes: MapperPolygon[];
+}
+
+export interface MapperRectangleData {
   type: 'Rectangle';
   north: number;
   south: number;
@@ -71,14 +88,20 @@ export interface MapperRectangle extends BaseMapperElement {
   holes: MapperShape[];
 }
 
-export interface MapperCircle extends BaseMapperElement {
+export interface MapperRectangle extends BaseMapperElement, MapperRectangleData {
+}
+
+export interface MapperCircleData {
   type: 'Circle';
   center: Position;
   radius: number;
   holes: MapperShape[];
 }
 
-export interface MapperImage extends BaseMapperElement {
+export interface MapperCircle extends BaseMapperElement, MapperCircleData {
+}
+
+export interface MapperImageData {
   type: 'Image';
   north: number;
   south: number;
@@ -86,6 +109,9 @@ export interface MapperImage extends BaseMapperElement {
   east: number;
   image: string;
   isBackgroundImage: boolean;
+}
+
+export interface MapperImage extends BaseMapperElement, MapperImageData {
 }
 
 /**
@@ -153,16 +179,31 @@ export function isPseudoContainer (element: MapperElement)
   return PseudoContainerType.has(element.type);
 }
 
-export function rectangleToPolygon (rect: MapperRectangle) : MapperPolygon {
+/**
+ * Converts a polygon and all of its holes into polygons.
+ * @param poly The polygon to convert.
+ */
+export function polygonToPolygon (poly: MapperPolygon) : MapperRegularPolygon {
+  return {
+    ...poly,
+    holes: poly.holes.map(h => shapeToPolygon(h)),
+  };
+}
+
+export function rectangleToPolygon (rect: MapperRectangle) : MapperRegularPolygon {
   throw "Not yet implemented";
 }
 
-export function circleToPolygon (circle: MapperCircle) : MapperPolygon {
+export function circleToPolygon (circle: MapperCircle) : MapperRegularPolygon {
   throw "Not yet implemented";
 }
 
-export function shapeToPolygon (shape: MapperShape) : MapperPolygon {
-  if (shape.type === 'Polygon') return shape;
+/**
+ * Converts a shape and all of its holes into polygons.
+ * @param shape The shape to convert.
+ */
+export function shapeToPolygon (shape: MapperShape) : MapperRegularPolygon {
+  if (shape.type === 'Polygon') return polygonToPolygon(shape);
   if (shape.type === 'Rectangle') return rectangleToPolygon(shape);
   if (shape.type === 'Circle') return circleToPolygon(shape);
 

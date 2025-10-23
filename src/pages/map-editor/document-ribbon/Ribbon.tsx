@@ -8,7 +8,9 @@ import { useTranslation } from 'react-i18next';
 import { isEventTargetEditable } from 'utils';
 import { MapperHistory } from '../MapperHistory';
 import styles from './Ribbon.module.scss';
+import useOpen from './buttons/useOpen';
 import useRedo from './buttons/useRedo';
+import useSave from './buttons/useSave';
 import useUndo from './buttons/useUndo';
 
 export interface EditorRibbonProps {
@@ -16,9 +18,12 @@ export interface EditorRibbonProps {
 }
 
 function DocumentRibbon (props: EditorRibbonProps) {
+  const { t } = useTranslation();
+
   const { handleUndo } = useUndo();
   const { handleRedo } = useRedo();
-  const { t } = useTranslation();
+  const { handleOpen } = useOpen();
+  const { handleSave } = useSave();
 
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -67,7 +72,9 @@ function DocumentRibbon (props: EditorRibbonProps) {
           label={t("ribbon.open.name")}
           description={t("ribbon.open.desc")}
         >
-          <Button>
+          <Button
+            onClick={handleOpen}
+          >
             <FolderOpenIcon size={24} weight='thin' />
           </Button>
         </DescriptiveTooltip>
@@ -76,7 +83,9 @@ function DocumentRibbon (props: EditorRibbonProps) {
           label={t("ribbon.save.name")}
           description={t("ribbon.save.desc")}
         >
-          <Button>
+          <Button
+            onClick={handleSave}
+          >
             <FloppyDiskIcon size={24} weight='thin' />
           </Button>
         </DescriptiveTooltip>

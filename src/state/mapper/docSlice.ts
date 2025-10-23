@@ -261,6 +261,12 @@ const mapperDocSlice = createSlice({
   name: 'mapperDoc',
   initialState,
   reducers: {
+    setDocument (state, action: PayloadAction<MapperDocument>) {
+      const doc = action.payload;
+
+      state.content = doc;
+    },
+
     addElement (state, action: PayloadAction<{
       element: MapperElement,
       groupId: string | null,
