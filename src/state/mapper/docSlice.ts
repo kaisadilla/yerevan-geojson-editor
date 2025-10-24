@@ -324,7 +324,8 @@ const mapperDocSlice = createSlice({
       containerId: string,
       index: number | null,
     }>) {
-      const { elementId, containerId, index } = action.payload;
+      const { elementId, containerId } = action.payload;
+      let { index } = action.payload;
 
       const element = getElement(state.content, elementId, true);
       const elParent = getElementParent(state.content, elementId);
@@ -343,6 +344,17 @@ const mapperDocSlice = createSlice({
           container
         );
         return;
+      }
+
+      // When the element is being moved to the same parent it's already in.
+      if (index !== null && elParent.id === container.id) {
+        const currentIndex = getElementIndex(elParent, element.id);
+
+        // If its current index is lower than its targeted index, we have to
+        // account for its removal.
+        if (currentIndex !== null && currentIndex < index) {
+          index--;
+        }
       }
 
       if (container.type === 'Group' || container.type === 'Collection') {

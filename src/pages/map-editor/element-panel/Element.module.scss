@@ -41,7 +41,7 @@
     border: 1px solid var(--color-primary-d2);
   }
 
-  &[data-valid-drop-target=false] {
+  &[data-invalid-drop-target=true] {
     --col-bg: var(--color-secondary-l4);
     --col-hierarchy-bar: var(--color-secondary-l2);
     --col-icon: var(--color-secondary-l2);

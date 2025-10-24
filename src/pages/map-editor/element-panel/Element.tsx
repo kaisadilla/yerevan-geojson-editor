@@ -1,7 +1,7 @@
 import { Text } from '@mantine/core';
 import { useActiveElement } from "context/useActiveElement";
 import { Boxes, Eye, EyeOff, Folder, MapPin, Pentagon, Waypoints } from 'lucide-react';
-import { isPseudoContainer, type MapperElement } from "models/MapDocument";
+import { isPseudoContainer, isShape, type MapperElement } from "models/MapDocument";
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { MapperDocActions } from 'state/mapper/docSlice';
@@ -80,7 +80,19 @@ function Element ({
     name = "(" + element.type + ")";
   }
 
-  const validDropTarget = !ctx.isNestedElement(element.id);
+  let invalidTarget = false;
+
+  if (ctx.element) {
+    // If this is part of the dragged target's tree, then it's not a drop target.
+    if (ctx.isNestedElement(element.id)) {
+      invalidTarget = true;
+    }
+    // If the element being dragged is not a shape, and this element is a pseudo
+    // element (i.e. one that is part of a shape), then it's not a drop target.
+    else if (isShape(ctx.element) === false && isPseudo) {
+      invalidTarget = true;
+    }
+  }
 
   return (<>
     {depth >= 0 && <div
@@ -94,18 +106,21 @@ function Element ({
       data-selected={active.id === element.id}
       data-dragged={ctx.element?.id === element.id}
       data-drop-target={dropTarget}
-      data-valid-drop-target={validDropTarget}
+      data-invalid-drop-target={invalidTarget}
       data-hidden={isHidden}
     >
-      {validDropTarget && (dropTarget === 'before' || dropTarget === 'after') && <div
-        className={styles.dropTarget}
-        style={{
-          width: `calc(100% - ${hierarchyIndent})`,
-          left: hierarchyIndent,
-          top: dropTarget === 'before' ? -2 : undefined,
-          bottom: dropTarget === 'after' ? -2 : undefined,
-        }}
-      />}
+      {invalidTarget === false
+        && (dropTarget === 'before' || dropTarget === 'after')
+        && <div
+          className={styles.dropTarget}
+          style={{
+            width: `calc(100% - ${hierarchyIndent})`,
+            left: hierarchyIndent,
+            top: dropTarget === 'before' ? -2 : undefined,
+            bottom: dropTarget === 'after' ? -2 : undefined,
+          }}
+        />
+      }
 
       <div
         className={styles.hierarchy}
@@ -157,7 +172,7 @@ function Element ({
         element={c}
         parent={element}
         depth={depth + 1}
-        validDropTarget={validDropTarget}
+        validDropTarget={invalidTarget}
       />)}
     </div>}
   </>)
