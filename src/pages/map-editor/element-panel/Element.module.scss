@@ -28,6 +28,17 @@
     color: var(--color-secondary-l2);
   }
 
+  &[data-pseudo=true] {
+    >.type :global(.lucide) {
+      stroke-dasharray: 4;
+      opacity: 0.6;
+    }
+
+    > .name {
+      opacity: 0.6;
+    }
+  }
+
   &[data-selected=true] {
     --col-bg: var(--color-primary-l2);
     --col-hierarchy-bar: var(--color-primary-l1);

@@ -6,6 +6,11 @@ import styles from './useMarkers.module.scss';
 export default function useMarkers () {
   const ui = useMapperUi();
 
+  const point = L.divIcon({
+    className: styles.point,
+    iconSize: [10, 10],
+  });
+
   const vertex = L.divIcon({
     className: styles.vertex,
     iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
@@ -32,20 +37,29 @@ export default function useMarkers () {
       iconSize: [ui.toolSettings.deleteVertexSize, ui.toolSettings.deleteVertexSize],
   });
 
-  function labelIcon (label: string) {
+  function pointLabel (label: string) {
     return L.divIcon({
-      className: styles.label,
-      html: `<div>${label}</div>`,
+      className: styles.pointLabel,
+      html: `<div><div>${label}</div><div>${label}</div></div>`,
+    });
+  }
+
+  function polygonLabel (label: string) {
+    return L.divIcon({
+      className: styles.polygonLabel,
+      html: `<div><div>${label}</div><div>${label}</div></div>`,
     });
   }
 
   return {
+    point,
     vertex,
     firstVertex,
     volatileVertex,
     noIcon,
     deleteVertex,
     selectedDeleteVertex,
-    labelIcon,
+    pointLabel,
+    polygonLabel,
   }
 }

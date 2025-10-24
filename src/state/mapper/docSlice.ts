@@ -20,7 +20,7 @@ function getSampleDocument () : MapperDocument {
 
   doc.elements.push({
     type: 'Point',
-    id: 'f1',
+    id: uuid(),
     name: 'Lonely dot',
     properties: [
       {
@@ -34,8 +34,23 @@ function getSampleDocument () : MapperDocument {
   });
 
   doc.elements.push({
+    type: 'Point',
+    id: uuid(),
+    name: 'Gibraltar',
+    properties: [
+      {
+        id: "prop1",
+        name: "interesting",
+        value: "yes"
+      }
+    ],
+    isHidden: false,
+    position: [-5.3459155, 36.1089314],
+  });
+
+  doc.elements.push({
     type: 'LineString',
-    id: 'f2',
+    id: uuid(),
     name: 'Straight line',
     properties: [],
     isHidden: false,
@@ -47,7 +62,7 @@ function getSampleDocument () : MapperDocument {
 
   const someGroup: MapperGroup = {
     type: 'Group',
-    id: 'group1',
+    id: uuid(),
     name: "Some group",
     properties: [],
     isHidden: false,
@@ -57,7 +72,7 @@ function getSampleDocument () : MapperDocument {
 
   someGroup.elements.push({
     type: 'Point',
-    id: 'f3',
+    id: uuid(),
     name: "Dot inside a group",
     properties: [],
     isHidden: false,
@@ -66,7 +81,7 @@ function getSampleDocument () : MapperDocument {
 
   const innerGroup: MapperGroup = {
     type: 'Group',
-    id: 'group2',
+    id: uuid(),
     name: "Inner group",
     properties: [],
     isHidden: false,
@@ -76,7 +91,7 @@ function getSampleDocument () : MapperDocument {
 
   innerGroup.elements.push({
     type: 'Point',
-    id: 'f4',
+    id: uuid(),
     name: "Nested dot",
     properties: [],
     isHidden: false,
@@ -85,7 +100,7 @@ function getSampleDocument () : MapperDocument {
 
   doc.elements.push({
     type: 'Polygon',
-    id: 'germany',
+    id: uuid(),
     name: "Germany",
     properties: [],
     isHidden: false,
@@ -130,7 +145,7 @@ function getSampleDocument () : MapperDocument {
     holes: [
       {
         type: 'Polygon',
-        id: 'germany-h1',
+        id: uuid(),
         name: "This is not visible",
         properties: [],
         isHidden: false,
@@ -157,7 +172,7 @@ function getSampleDocument () : MapperDocument {
       },
       {
         type: 'Polygon',
-        id: 'germany-h2',
+        id: uuid(),
         name: "",
         properties: [],
         isHidden: false,
@@ -182,7 +197,7 @@ function getSampleDocument () : MapperDocument {
 
   doc.elements.push({
     type: 'Polygon',
-    id: 'poulan',
+    id: uuid(),
     name: "Poland",
     properties: [],
     isHidden: false,
@@ -235,7 +250,7 @@ function getSampleDocument () : MapperDocument {
 
   doc.elements.push({
     type: 'Polygon',
-    id: 'easypeasy',
+    id: uuid(),
     name: "Sample feature",
     properties: [],
     isHidden: false,

@@ -108,6 +108,7 @@ function Element ({
       data-drop-target={dropTarget}
       data-invalid-drop-target={invalidTarget}
       data-hidden={isHidden}
+      data-pseudo={isPseudo}
     >
       {invalidTarget === false
         && (dropTarget === 'before' || dropTarget === 'after')
@@ -151,15 +152,15 @@ function Element ({
         <Text lineClamp={1}>{name}</Text>
       </div>
 
-      <div
-        className={$cl(styles.ribbon, styles.hoverOnly)}
+      {isPseudo === false && <div
+        className={$cl(styles.ribbon, "hoverOnly")}
         onClick={e => e.stopPropagation()}
       >
         <button onClick={handleToggleVisibility}>
           {element.isHidden === false && <Eye />}
           {element.isHidden && <EyeOff />}
         </button>
-      </div>
+      </div>}
     </div>}
 
     {children !== null && <div

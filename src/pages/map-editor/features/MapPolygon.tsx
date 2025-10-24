@@ -48,7 +48,7 @@ function MapPolygon ({
     />
     {settings.showLabels && !isSibling && !isParent && <Marker
       position={GLT.gj.coord.leaflet(centroid)}
-      icon={markers.labelIcon(polygon.name)}
+      icon={markers.polygonLabel(polygon.name)}
       eventHandlers={{
         click: handleClick,
       }}
