@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Position } from "geojson";
 import Logger from "Logger";
-import { ContainerType, isContainer, isPseudoContainer, type MapperDocument, type MapperElement, type MapperGroup, type MapperPolygon } from "models/MapDocument";
+import { ContainerType, isContainer, isPseudoContainer, isShape, type MapperDocument, type MapperElement, type MapperGroup, type MapperPolygon } from "models/MapDocument";
 import { v4 as uuid } from 'uuid';
 
 interface MapperDocState {
@@ -321,44 +321,56 @@ const mapperDocSlice = createSlice({
 
     moveElement (state, action: PayloadAction<{
       elementId: string,
-      targetId: string,
-      position: 'before' | 'inside' | 'after',
+      containerId: string,
+      index: number | null,
     }>) {
-      const { elementId, targetId, position } = action.payload;
+      const { elementId, containerId, index } = action.payload;
 
-      const origin = getElement(state.content, elementId, true);
-      const target = getElement(state.content, targetId, true);
-      const originParent = getElementParent(state.content, elementId);
-      const targetParent = getElementParent(state.content, targetId);
+      const element = getElement(state.content, elementId, true);
+      const elParent = getElementParent(state.content, elementId);
 
-      if (origin === null || originParent === null) {
-        Logger.error(`Can't find element with id '${elementId}'.`);
+      const container = getElement(state.content, containerId, true);
+      const containerParent = getElementParent(state.content, containerId);
+
+      if (element === null || elParent === null) {
+        Logger.error(`Can't find element with id '${elementId}'.`,
+          element, elParent
+        );
         return;
       }
-      if (target === null || targetParent === null) {
-        Logger.error(`Can't find element with id '${targetId}'.`);
+      if (container === null) {
+        Logger.error(`Can't find element with id '${containerId}'.`,
+          container
+        );
         return;
       }
 
-      const removedEl = removeElement(originParent, elementId);
-      if (removedEl === null) {
-        Logger.error("Error while moving element.");
-        return;
+      if (container.type === 'Group' || container.type === 'Collection') {
+        _remove();
+        insertElement(container, element, index);
       }
-
-      if (position === 'inside') {
-        if (target.type === 'Group') {
-          target.elements.push(origin);
+      else if (isShape(container)) {
+        if (containerParent && isShape(containerParent)) {
+          Logger.warn("Holes cannot receive children.");
         }
-        else if (target.type === 'Collection') {
-          throw "Not yet implemented."; // TODO: Implement.
+        else if (isShape(element) === false) {
+          Logger.warn("Shapes can only receive other shapes as children.");
+        }
+        else if (element.holes.length > 0) {
+          Logger.warn("Shapes cannot receive shapes with holes as children.");
         }
         else {
-          Logger.warn("Target element cannot contain children.");
+          _remove();
+          insertElement(container, element, index);
         }
       }
       else {
-        insertElementBetween(targetParent, origin, targetId, position);
+        Logger.warn(`Element of type '${element.type}' cannot receive children.`);
+      }
+
+      function _remove () {
+        const removed = removeElement(elParent!, element!.id);
+        if (!removed) Logger.error("Error while removing element.");
       }
     },
 
@@ -484,6 +496,8 @@ export const MapperDocActions = mapperDocSlice.actions;
 export function getElement (
   container: MapperElement, elementId: string, recursive: boolean
 ) : MapperElement | null {
+  if (container.id === elementId) return container;
+
   const children = getChildrenArray(container);
   if (!children) return null;
 

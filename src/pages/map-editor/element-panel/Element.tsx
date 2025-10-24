@@ -1,16 +1,16 @@
-import type { BaseEventPayload, DropTargetLocalizedData, ElementDragType } from "@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types";
-import { draggable, dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
 import { Text } from '@mantine/core';
 import { useActiveElement } from "context/useActiveElement";
 import { Boxes, Eye, EyeOff, Folder, MapPin, Pentagon, Waypoints } from 'lucide-react';
-import type { MapperElement } from "models/MapDocument";
-import { useEffect, useRef, useState } from 'react';
+import { isPseudoContainer, type MapperElement } from "models/MapDocument";
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { MapperDocActions } from 'state/mapper/docSlice';
 import useMapperDoc from "state/mapper/useDoc";
 import { $cl } from 'utils';
 import MaterialSymbol from '../../../components/MaterialSymbol';
-import styles from './ElementPanel.module.scss';
+import styles from './Element.module.scss';
+import useElementDrag from "./useElementDrag";
+import { useElementDragCtx } from "./useElementDragContext";
 
 type DropTarget = 'before' | 'inside' | 'after'
 
@@ -27,61 +27,27 @@ function Element ({
   element,
   parent = null,
   depth,
-  validDropTarget = true,
 }: ElementProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
   const [expanded, setExpanded] = useState(
     element.type === 'Group' || element.type === 'Collection'
   );
-  const [isDragged, setDragged] = useState(false);
-  const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
 
   const doc = useMapperDoc();
   const active = useActiveElement();
+  const ctx = useElementDragCtx();
   const dispatch = useDispatch();
 
-  validDropTarget = validDropTarget && isDragged === false;
+  const { ref, dropTarget } = useElementDrag(element, parent, expanded);
 
-  // Drag & Drop
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const cleanupDrag = draggable({
-      element: el,
-      onDragStart: () => setDragged(true),
-      onDrop: () => setDragged(false),
-      getInitialData: () => ({
-        id: element.id,
-        name: element.name,
-        type: element.type,
-      }),
-    });
-
-    const cleanupDrop = dropTargetForElements({
-      element: el,
-      getData: () => ({
-        id: element.id,
-        name: element.name,
-        type: element.type,
-      }),
-      onDragEnter: handleDrag,
-      onDrag: handleDrag,
-      onDragLeave: () => setDropTarget(null),
-      onDrop: handleDrop,
-    });
-
-    return () => {
-      cleanupDrag();
-      cleanupDrop();
-    }
-  }, [element, dispatch, dropTarget]);
-
+  const isPseudo = !!parent && isPseudoContainer(parent);
+  
   let children = null as MapperElement[] | null;
   let type = element.type;
 
   if (element.type === 'Group') {
+    children = element.elements;
+  }
+  else if (element.type === 'Collection') {
     children = element.elements;
   }
   else if (
@@ -109,6 +75,13 @@ function Element ({
   const hierarchyIndent = HIERARCHY_INDENT_WIDTH * depth;
   const isHidden = doc.isElementHidden(element.id) ?? false;
 
+  let name = element.name;
+  if (!name) {
+    name = "(" + element.type + ")";
+  }
+
+  const validDropTarget = !ctx.isNestedElement(element.id);
+
   return (<>
     {depth >= 0 && <div
       ref={ref}
@@ -119,7 +92,7 @@ function Element ({
       role='button'
       onClick={handleClick}
       data-selected={active.id === element.id}
-      data-dragged={isDragged}
+      data-dragged={ctx.element?.id === element.id}
       data-drop-target={dropTarget}
       data-valid-drop-target={validDropTarget}
       data-hidden={isHidden}
@@ -160,7 +133,7 @@ function Element ({
       </div>
 
       <div className={styles.name}>
-        <Text lineClamp={1}>{element.name}</Text>
+        <Text lineClamp={1}>{name}</Text>
       </div>
 
       <div
@@ -193,47 +166,6 @@ function Element ({
     if (active.id === element.id) return;
 
     active.setElement(element.id, true);
-  }
-  
-  function handleDrag ({
-    source,
-    location
-  }: BaseEventPayload<ElementDragType> & DropTargetLocalizedData) {
-    if (validDropTarget === false) return;
-    if (source.data.id === element.id) return;
-    if (ref.current === null) return;
-
-    const rect = ref.current.getBoundingClientRect();
-    const y = location.current.input.clientY;
-    const ratio = (y - rect.top) / rect.height;
-
-    if (element.type === 'Group' || element.type === 'Collection') {
-      if (ratio < 0.33) setDropTarget('before');
-      else if (ratio < 0.67) setDropTarget('inside');
-      else if (expanded) setDropTarget('inside');
-      else setDropTarget('after');
-    }
-    else {
-      if (ratio < 0.5) setDropTarget('before');
-      else setDropTarget('after');
-    }
-  };
-
-  function handleDrop ({
-    source
-  }: BaseEventPayload<ElementDragType> & DropTargetLocalizedData) {
-    const target = dropTarget;
-    setDropTarget(null);
-
-    if (validDropTarget === false) return;
-    if (source.data.id === element.id) return;
-    if (target === null) return;
-
-    dispatch(MapperDocActions.moveElement({
-      elementId: source.data.id as string,
-      targetId: element.id,
-      position: target,
-    }));
   }
 
   function handleToggleVisibility () {

@@ -4,6 +4,7 @@ import type { RootState } from 'state/store';
 import Element from './Element';
 import styles from './ElementPanel.module.scss';
 import Ribbon from "./Ribbon";
+import { ElementDragProvider } from './useElementDragContext';
 
 export interface ElementPanelProps {
   
@@ -19,7 +20,9 @@ function ElementPanel (props: ElementPanelProps) {
       </div>
       <Ribbon />
       <div className={styles.treeContainer}>
-        <Element element={doc.content} depth={-1} />
+        <ElementDragProvider>
+          <Element element={doc.content} depth={-1} />
+        </ElementDragProvider>
       </div>
     </div>
   );

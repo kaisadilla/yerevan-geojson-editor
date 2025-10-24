@@ -1,4 +1,4 @@
-import type { MapperGroup } from "models/MapDocument";
+import type { MapperElement } from "models/MapDocument";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store";
 import { getAllElements, getElement, getElementIndex, getElementParent, idExists, isElementHidden } from "./docSlice";
@@ -9,8 +9,8 @@ export default function useMapperDoc () {
   return {
     ...doc,
 
-    getAllElements: (includePseudo: boolean, group?: MapperGroup) =>
-      getAllElements(group ?? doc.content, includePseudo),
+    getAllElements: (includePseudo: boolean, container?: MapperElement) =>
+      getAllElements(container ?? doc.content, includePseudo),
 
     getElement: (elementId: string) =>
       getElement(doc.content, elementId, true),

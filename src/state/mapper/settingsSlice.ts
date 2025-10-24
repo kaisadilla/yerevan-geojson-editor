@@ -10,6 +10,7 @@ interface MapperSettingsSlice {
     delete: string;
   };
   lineWidth: number;
+  showLabels: boolean;
 };
 
 const initialState: MapperSettingsSlice = {
@@ -22,6 +23,7 @@ const initialState: MapperSettingsSlice = {
     delete: "#ff0000",
   },
   lineWidth: 2,
+  showLabels: true,
 };
 
 const mapperSettingsSlice = createSlice({

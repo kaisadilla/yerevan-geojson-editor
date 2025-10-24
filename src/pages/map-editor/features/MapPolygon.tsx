@@ -1,11 +1,13 @@
 import { useActiveElement } from "context/useActiveElement";
 import GLT from "GLT";
-import type { LeafletMouseEvent } from "leaflet";
+import { type LeafletMouseEvent } from "leaflet";
 import { shapeToPolygon, type MapperPolygon } from "models/MapDocument";
-import { Polygon } from "react-leaflet";
+import Ops from "Ops";
+import { Marker, Polygon } from "react-leaflet";
 import { useDispatch } from "react-redux";
 import useMapperSettings from "state/mapper/useSettings";
 import useMapperUi from "state/mapper/useUi";
+import useMarkers from "./useMarkers";
 
 export interface MapPolygonProps {
   polygon: MapperPolygon;
@@ -21,13 +23,16 @@ function MapPolygon ({
   const active = useActiveElement();
   const ui = useMapperUi();
   const settings = useMapperSettings();
+  const markers = useMarkers();
   const dispatch = useDispatch();
 
   let color = settings.colors.default;
   if (isSibling) color = settings.colors.activeSibling;
   else if (isParent) color = settings.colors.activeParent;
 
-  return (
+  const centroid = Ops.polygonCentroid(polygon);
+
+  return (<>
     <Polygon
       positions={[
         GLT.gj.coords.leaflet(polygon.vertices),
@@ -41,7 +46,14 @@ function MapPolygon ({
         click: handleClick,
       }}
     />
-  );
+    {settings.showLabels && !isSibling && !isParent && <Marker
+      position={GLT.gj.coord.leaflet(centroid)}
+      icon={markers.labelIcon(polygon.name)}
+      eventHandlers={{
+        click: handleClick,
+      }}
+    />}
+  </>);
 
   function handleClick (evt: LeafletMouseEvent) {
     if (evt.originalEvent.ctrlKey) {

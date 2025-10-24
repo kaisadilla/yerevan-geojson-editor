@@ -2,6 +2,7 @@ import type { Feature, FeatureCollection, GeoJSON, GeoJsonProperties, Geometry, 
 import * as gValidator from 'geojson-validation';
 import Logger from "Logger";
 import { LEAFLYS_DIR_SEPARATOR, LEAFLYS_PROP_GROUP, LEAFLYS_PROP_HIDDEN, LEAFLYS_PROP_PREFIX, type MapperDocument, type MapperElement, type MapperFeature, type MapperGroup, type MapperLine, type MapperLineData, type MapperPoint, type MapperPointData, type MapperPolygon, type MapperPolygonData } from "models/MapDocument";
+import { stripExtension } from "utils";
 import { v4 as uuid } from "uuid";
 
 export function loadMapperFile (
@@ -28,7 +29,7 @@ export function loadMapperFile (
   const doc: MapperDocument = {
     type: 'Group',
     id: uuid(),
-    name: filename,
+    name: stripExtension(filename),
     isHidden: false,
     properties: [],
     elements: [],

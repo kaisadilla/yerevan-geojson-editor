@@ -8,13 +8,13 @@ open.name = "Open document"
 open.desc = "Opens a different Leaflys document. For GeoJson documents from other origins, use 'Import' instead."
 
 save.name = "Save document"
-save.desc = "Saves this document as a GeoJson file, encoding all Leaflys-related metadata for future use inside this app."
+save.desc = "Saves this document as a GeoJson file, encoding all Leaflys-related metadata for future use inside this app. Use this option if you intend to open the document in this app in the future."
 
 import.name = "Import GeoJSON"
 import.desc = "Add the contents of a GeoJson file (partially or completely) to this document."
 
 export.name = "Export GeoJSON"
-export.desc = "Save this document as a regular GeoJson file, stripping all Leaflys-related metadata. If you want to use this file in Leaflys later, use 'Save' instead."
+export.desc = "Save this document as a GeoJson file, without encoding any Leaflys-related metadata. Use this option if you don't intend to reopen it in this app."
 
 undo.name = "Undo"
 
@@ -25,7 +25,7 @@ settings.desc = "Edit settings and properties related to this document and the a
 
 [element_panel.ribbon]
 group.name = "Group"
-group.desc = "A folder to group features together. This is a Leaflys-only feature: the document will be flattened when saved."
+group.desc = "A folder to group features together. This is a Leaflys-only feature: the document will be saved as a valid (flat) GeoJson FeatureCollection, with metadata to reconstruct the groups later on."
 
 point.name = "Point"
 

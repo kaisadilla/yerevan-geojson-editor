@@ -1,5 +1,5 @@
 import * as turf from "@turf/turf";
-import type { Feature, GeoJsonProperties, MultiPolygon, Polygon } from "geojson";
+import type { Feature, GeoJsonProperties, MultiPolygon, Polygon, Position } from "geojson";
 import GLT from "GLT";
 import { shapeToPolygon, type MapperPolygon, type MapperShape } from "models/MapDocument";
 import { v4 as uuid } from "uuid";
@@ -43,7 +43,14 @@ const Ops = {
     const fusion = turf.intersect(turf.featureCollection([poly1, poly2]));
     return fusion ? getMapperPolygons(receiver, fusion) : receiver;
   },
-}
+
+  polygonCentroid (shape: MapperShape) : Position {
+    shape = shapeToPolygon(shape);
+
+    const poly = GLT.mapper.polygon.turf(shape);
+    return turf.centerOfMass(poly).geometry.coordinates;
+  },
+};
 
 function getMapperPolygons (
   base: MapperPolygon,

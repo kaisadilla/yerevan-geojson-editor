@@ -32,6 +32,13 @@ export default function useMarkers () {
       iconSize: [ui.toolSettings.deleteVertexSize, ui.toolSettings.deleteVertexSize],
   });
 
+  function labelIcon (label: string) {
+    return L.divIcon({
+      className: styles.label,
+      html: `<div>${label}</div>`,
+    });
+  }
+
   return {
     vertex,
     firstVertex,
@@ -39,5 +46,6 @@ export default function useMarkers () {
     noIcon,
     deleteVertex,
     selectedDeleteVertex,
+    labelIcon,
   }
 }

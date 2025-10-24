@@ -197,3 +197,7 @@ export function allowLabelShiftClick (evt: MouseEvent) {
   evt.preventDefault();
   input.click();
 }
+
+export function stripExtension (filename: string) {
+  return filename.replace(/\.[^/.]+$/, "");
+}
