@@ -1,0 +1,27 @@
+.inputRoot {
+  width: 100%;
+  flex-grow: 0;
+  flex-shrink: 0;
+  font-size: inherit;
+
+  .wrapper,
+  .input {
+    font-size: inherit;
+  }
+
+  .input {
+    padding: 0;
+    //border: 0;
+    //outline: 1px solid var(--color-primary);
+  }
+}
+
+.textRoot {
+  border: 1px solid transparent !important;
+  height: 100% !important;
+}
+
+.textRoot,
+.inputRoot .input {
+  padding: 0 4px !important;
+}

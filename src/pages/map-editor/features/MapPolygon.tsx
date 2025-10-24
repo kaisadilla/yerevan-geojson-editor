@@ -72,7 +72,7 @@ function MapPolygon ({
       }
     }
     else {
-      active.setElement(polygon.id, true);
+      active.setElement(polygon.id);
     }
   }
 }

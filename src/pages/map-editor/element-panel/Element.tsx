@@ -1,8 +1,8 @@
-import { Text } from '@mantine/core';
+import DormantTextbox from 'components/DormantTextbox';
 import { useActiveElement } from "context/useActiveElement";
 import { Boxes, Eye, EyeOff, Folder, MapPin, Pentagon, Waypoints } from 'lucide-react';
 import { isPseudoContainer, isShape, type MapperElement } from "models/MapDocument";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { MapperDocActions } from 'state/mapper/docSlice';
 import useMapperDoc from "state/mapper/useDoc";
@@ -31,13 +31,24 @@ function Element ({
   const [expanded, setExpanded] = useState(
     element.type === 'Group' || element.type === 'Collection'
   );
+  const [isNameActive, setNameActive] = useState(false);
 
   const doc = useMapperDoc();
   const active = useActiveElement();
   const ctx = useElementDragCtx();
   const dispatch = useDispatch();
 
-  const { ref, dropTarget } = useElementDrag(element, parent, expanded);
+  const { ref, dropTarget } = useElementDrag(
+    element, parent, expanded, isNameActive
+  );
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleDocumentKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleDocumentKeyDown);
+    }
+  }, [handleDocumentKeyDown]);
 
   const isPseudo = !!parent && isPseudoContainer(parent);
   
@@ -61,7 +72,7 @@ function Element ({
           ...element.holes.map((h, i) => ({
             type: 'Polygon',
             id: h.id,
-            name: `Hole #${i}`,
+            name: `< Hole #${i} >`,
             properties: [],
             isHidden: false,
             vertices: [],
@@ -149,10 +160,17 @@ function Element ({
       </div>
 
       <div className={styles.name}>
-        <Text lineClamp={1}>{name}</Text>
+        <DormantTextbox
+          value={name}
+          isActive={isNameActive}
+          onChange={handleChangeName}
+          onActivate={handleActivateName}
+          onSubmit={() => setNameActive(false)}
+          onCancel={() => setNameActive(false)}
+        />
       </div>
 
-      {isPseudo === false && <div
+      {isPseudo === false && isNameActive === false && <div
         className={$cl(styles.ribbon, "hoverOnly")}
         onClick={e => e.stopPropagation()}
       >
@@ -178,10 +196,12 @@ function Element ({
     </div>}
   </>)
 
-  function handleClick () {
+  function handleClick (evt: React.MouseEvent) {
+    evt.stopPropagation();
+
     if (active.id === element.id) return;
 
-    active.setElement(element.id, true);
+    active.setElement(element.id);
   }
 
   function handleToggleVisibility () {
@@ -189,6 +209,32 @@ function Element ({
       elementId: element.id,
       value: !element.isHidden,
     }));
+  }
+
+  function handleActivateName (active: boolean) {
+    if (isPseudo) return;
+
+    setNameActive(active);
+  }
+
+  function handleChangeName (name: string) {
+    dispatch(MapperDocActions.setElementName({
+      elementId: element.id,
+      name,
+    }));
+  }
+
+  function handleDocumentKeyDown (evt: KeyboardEvent) {
+    if (isNameActive) return;
+    if (active.id !== element.id) return;
+    if (isPseudo) return;
+
+    if (evt.key === 'F2') {
+      setNameActive(true);
+    }
+    else if (evt.ctrlKey && evt.key === 'Enter') {
+      setNameActive(true);
+    }
   }
 }
 

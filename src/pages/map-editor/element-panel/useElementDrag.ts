@@ -14,6 +14,7 @@ export default function useElementDrag (
   element: MapperElement,
   parent: MapperElement | null,
   expanded: boolean,
+  disabled: boolean,
 ) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -26,6 +27,8 @@ export default function useElementDrag (
   const isPseudo = !!parent && isShape(parent);
 
   useEffect(() => {
+    if (disabled) return;
+    
     const el = ref.current;
     if (!el) return;
 

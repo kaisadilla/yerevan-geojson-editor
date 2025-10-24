@@ -26,7 +26,7 @@ interface InternalState {
 interface ActiveElementValue extends InternalState {
   getElement: () => MapperElement | null;
   getPolygon: () => MapperPolygon | null;
-  setElement: (elementId: string | null, commitChanges: boolean) => void;
+  setElement: (elementId: string | null) => void;
   setVertices: (verts: StateSetter<Position[]>) => void;
   setStroke: (verts: StateSetter<Position[]>) => void;
   commitStroke: () => void;
@@ -63,11 +63,7 @@ export const ActiveElementProvider = ({ children }: any) => {
     return null;
   }
 
-  function setElement (elementId: string | null, commit: boolean) {
-    if (commit) {
-      commitStroke();
-    }
-
+  function setElement (elementId: string | null) {
     dispatch(MapperUiActions.setTool(null));
 
     setState(prev => ({

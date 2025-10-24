@@ -1,4 +1,5 @@
-import { Text } from '@mantine/core';
+import { ScrollArea, Text } from '@mantine/core';
+import { useActiveElement } from 'context/useActiveElement';
 import { useSelector } from 'react-redux';
 import type { RootState } from 'state/store';
 import Element from './Element';
@@ -12,6 +13,7 @@ export interface ElementPanelProps {
 
 function ElementPanel (props: ElementPanelProps) {
   const doc = useSelector((state: RootState) => state.mapEditorDoc);
+  const active = useActiveElement();
 
   return (
     <div className={styles.panel}>
@@ -19,13 +21,23 @@ function ElementPanel (props: ElementPanelProps) {
         <Text lineClamp={1}>{doc.content.name}</Text>
       </div>
       <Ribbon />
-      <div className={styles.treeContainer}>
+      <ScrollArea
+        classNames={{
+          root: styles.treeContainer,
+          content: styles.content,
+        }}
+        onClick={handleClick}
+      >
         <ElementDragProvider>
           <Element element={doc.content} depth={-1} />
         </ElementDragProvider>
-      </div>
+      </ScrollArea>
     </div>
   );
+
+  function handleClick () {
+    active.setElement(null);
+  }
 }
 
 export default ElementPanel;
