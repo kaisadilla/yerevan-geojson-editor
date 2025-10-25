@@ -230,6 +230,17 @@ export const ElementFactory = {
     };
   },
 
+  point (position: Position, name: string = "") : MapperPoint {
+    return {
+      type: 'Point',
+      id: uuid(),
+      name,
+      properties: [],
+      isHidden: false,
+      position,
+    };
+  },
+
   polygon (name: string = "") : MapperPolygon {
     return {
       type: 'Polygon',

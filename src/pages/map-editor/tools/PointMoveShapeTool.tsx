@@ -16,7 +16,7 @@ function PointMoveShapeTool (props: PointMoveShapeToolProps) {
   const active = useActiveElement();
   const dispatch = useDispatch();
 
-  const { activePoint } = useMarkers();
+  const { activeMovablePoint } = useMarkers();
 
   const point = active.getPoint();
   if (!point) return null;
@@ -24,7 +24,7 @@ function PointMoveShapeTool (props: PointMoveShapeToolProps) {
   return (
     <Marker
       position={GLT.gj.coord.leaflet(point.position)}
-      icon={activePoint}
+      icon={activeMovablePoint}
       draggable={true}
       eventHandlers={{
         dragend: handleDragEnd,

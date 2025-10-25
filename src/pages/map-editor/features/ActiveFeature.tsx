@@ -2,6 +2,7 @@
 import { useActiveElement } from 'context/useActiveElement';
 import useMapperDoc from 'state/mapper/useDoc';
 import useMapperUi from 'state/mapper/useUi';
+import NewPointTool from '../tools/NewPointTool';
 import NewPolygonTool from '../tools/NewPolygonTool';
 import NoTool from '../tools/NoTool';
 import PointMoveShapeTool from '../tools/PointMoveShapeTool';
@@ -23,7 +24,7 @@ function ActiveFeature ({
   const feature = active.getElement();
   
   if (ui.tool === 'new_point') return (
-    null
+    <NewPointTool />
   );
   if (ui.tool === 'new_line') return (
     null

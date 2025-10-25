@@ -14,6 +14,7 @@ interface MapperUiState {
   tool: MapperTool | null;
   isSettingsPanelExpanded: boolean;
   toolSettings: {
+    newPointMode: NewPointToolMode;
     snap: boolean;
     snapDistance: number;
     pencilStep: number;
@@ -23,12 +24,18 @@ interface MapperUiState {
     deleteFeaturesUsedByCombine: boolean;
     deleteFeaturesUsedByDifference: boolean;
   };
+  /**
+   * The container where elements will be added when created with the creation
+   * tools (new_point, new_polygon, etc).
+   */
+  targetContainerId: string | null;
 }
 
 const initialState: MapperUiState = {
   tool: null,
   isSettingsPanelExpanded: false,
   toolSettings: {
+    newPointMode: 'single',
     snap: false,
     snapDistance: 20,
     pencilStep: 10,
@@ -38,6 +45,7 @@ const initialState: MapperUiState = {
     deleteFeaturesUsedByCombine: false,
     deleteFeaturesUsedByDifference: false,
   },
+  targetContainerId: null,
 }
 
 const mapperUiSlice = createSlice({
@@ -70,6 +78,10 @@ const mapperUiSlice = createSlice({
 
       state.toolSettings[key] = value;
     },
+
+    setTargetContainer(state, action: PayloadAction<string>) {
+      state.targetContainerId = action.payload;
+    }
   },
 });
 
@@ -101,3 +113,5 @@ export type MapperTool = MapperDocumentTool
   | MapperPointTool
   | MapperPolygonTool
   ;
+
+export type NewPointToolMode = 'single' | 'multi' | 'named';

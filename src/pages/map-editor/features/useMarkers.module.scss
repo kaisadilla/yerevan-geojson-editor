@@ -4,10 +4,15 @@
   box-shadow: 0 0 0 1px var(--color-primary-d1);
 }
 
-.activePoint {
+.activePoint,
+.activeMovablePoint {
   background-color: var(--col-gj-active);
   border: 2px solid white;
   box-shadow: 0 0 0 2px var(--col-gj-active-d1);
+}
+
+.activeMovablePoint {
+  cursor: move !important;
 }
 
 .vertex,

@@ -48,3 +48,17 @@
   --slider-size: 48px;
   }
 }
+
+.mantine-RadioGroup-root {
+  .mantine-RadioGroup-label {
+    font-weight: 600;
+  }
+
+  .mantine-RadioGroup-description {
+    margin-bottom: 0.75em;
+  }
+
+  .mantine-Radio-root:not(:last-child) {
+    margin-bottom: 0.35em;
+  }
+}

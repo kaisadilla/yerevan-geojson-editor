@@ -4,25 +4,28 @@ import ToggleButton from "components/ToggleButton";
 import { useActiveElement } from "context/useActiveElement";
 import useKeyboardShortcut from "hook/useKeyboardShortcut";
 import { Boxes, Circle, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
-import { ElementFactory } from "models/MapDocument";
+import { ElementFactory, type MapperGroup } from "models/MapDocument";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { MapperDocActions } from "state/mapper/docSlice";
 import { MapperUiActions, type MapperDocumentTool } from "state/mapper/uiSlice";
+import useMapperDoc from "state/mapper/useDoc";
 import useMapperUi from "state/mapper/useUi";
 import styles from './Ribbon.module.scss';
 
 function Ribbon () {
+  const doc = useMapperDoc();
   const ui = useMapperUi();
   const active = useActiveElement();
   const dispatch = useDispatch();
 
   const { t } = useTranslation();
-  const { alt } = useKeyboardShortcut();
+  const { alt, standalone } = useKeyboardShortcut();
 
   alt['1'] = handleNewGroup;
-  alt['2'] = () => handleTool('new_point')
-  alt['4'] = () => handleTool('new_polygon')
+  alt['2'] = () => handleTool('new_point');
+  alt['4'] = () => handleTool('new_polygon');
+  standalone['Escape'] = () => dispatch(MapperUiActions.setTool(null));
 
   return (
     <div className={styles.ribbon}>
@@ -110,8 +113,24 @@ function Ribbon () {
   }
 
   function handleTool (tool: MapperDocumentTool) {
+    const targetContainer = getActiveGroup();
+
+    dispatch(MapperUiActions.setTool(ui.tool === tool ? null : tool));
+    dispatch(MapperUiActions.setTargetContainer(targetContainer.id));
     active.setElement(null, false);
-    dispatch(MapperUiActions.setTool(tool));
+  }
+
+  function getActiveGroup () : MapperGroup {
+    const el = active.getElement();
+    if (!el) return doc.content;
+
+    if (el.type === 'Group') return el;
+
+    const parent = doc.getParent(el.id);
+    if (!parent) return doc.content;
+    if (parent.type !== 'Group') return doc.content;
+
+    return parent;
   }
 }
 

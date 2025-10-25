@@ -44,6 +44,17 @@ collection.desc = "A GeoJson collection of features. Leaflys will automatically 
 point.title = "Point"
 polygon.title = "Polygon"
 
+[tool.new.point.settings]
+name = "New point"
+desc = "Add new points to the document."
+
+mode.name = "Addition mode"
+mode.desc = "Choose what happens when you create a new point."
+
+mode.single.name = "Select the point after adding it."
+mode.multi.name = "Keep adding more points."
+mode.named.name = "Ask for a name and keep adding more points."
+
 [tool.point.move_shape]
 name = "Move point"
 desc = "Move the point around the map."
@@ -135,7 +146,7 @@ desc = "Move the polygon itself around the map."
 
 [tool.settings]
 expand.name = "Expand settings for {{name}}."
-expand.desc = "🛈 You can use 'shift' to temporarily expand the panel or 'ctrl + shift' to leave it expanded."
+expand.desc = "🛈 You can hold 'shift' to temporarily expand the panel or press 'ctrl + shift' to leave it expanded."
 
 collapse.name = "Collapse"
 

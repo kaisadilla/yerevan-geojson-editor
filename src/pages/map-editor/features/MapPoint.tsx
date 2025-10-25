@@ -31,7 +31,7 @@ function MapPoint ({
     />}
   </>);
 
-  function handleClick (evt: LeafletMouseEvent) {
+  function handleClick (evt: LeafletMouseEvent) {    
     active.setElement(point.id);
   }
 }
