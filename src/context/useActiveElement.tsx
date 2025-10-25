@@ -1,5 +1,5 @@
 import type { Position } from "geojson";
-import { type MapperElement, type MapperPolygon } from "models/MapDocument";
+import { type MapperElement, type MapperPoint, type MapperPolygon } from "models/MapDocument";
 import Ops from "Ops";
 import { MapperActions, MapperHistory, type MapperAction } from "pages/map-editor/MapperHistory";
 import { createContext, useContext, useState } from "react";
@@ -25,8 +25,9 @@ interface InternalState {
 
 interface ActiveElementValue extends InternalState {
   getElement: () => MapperElement | null;
+  getPoint: () => MapperPoint | null;
   getPolygon: () => MapperPolygon | null;
-  setElement: (elementId: string | null) => void;
+  setElement: (elementId: string | null, resetTool?: boolean) => void;
   setVertices: (verts: StateSetter<Position[]>) => void;
   setStroke: (verts: StateSetter<Position[]>) => void;
   commitStroke: () => void;
@@ -56,6 +57,13 @@ export const ActiveElementProvider = ({ children }: any) => {
     return doc.getElement(state.id);
   }
 
+  function getPoint () : MapperPoint | null {
+    const el = getElement();
+
+    if (el?.type === 'Point') return el;
+    return null;
+  }
+
   function getPolygon () : MapperPolygon | null {
     const el = getElement();
 
@@ -63,8 +71,8 @@ export const ActiveElementProvider = ({ children }: any) => {
     return null;
   }
 
-  function setElement (elementId: string | null) {
-    dispatch(MapperUiActions.setTool(null));
+  function setElement (elementId: string | null, resetTool: boolean = true) {
+    if (resetTool) dispatch(MapperUiActions.setTool(null));
 
     setState(prev => ({
       ...prev,
@@ -185,6 +193,7 @@ export const ActiveElementProvider = ({ children }: any) => {
     <ActiveElementContext.Provider value={{
       ...state,
       getElement,
+      getPoint,
       getPolygon,
       setElement,
       setVertices,

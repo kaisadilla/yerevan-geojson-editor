@@ -33,7 +33,7 @@ line.name = "Line"
 
 polygon.name = "Polygon"
 
-square.name = "Square"
+rectangle.name = "Rectangle"
 
 circle.name = "Circle"
 
@@ -41,7 +41,12 @@ collection.name = "Geometry collection"
 collection.desc = "A GeoJson collection of features. Leaflys will automatically pick the correct collection type on save. As per GeoJson standard, the contents of a GeoJson collection are not independent and will not retain their individual properties."
 
 [tool_ribbon]
-title.polygon = "Polygon"
+point.title = "Point"
+polygon.title = "Polygon"
+
+[tool.point.move_shape]
+name = "Move point"
+desc = "Move the point around the map."
 
 [tool.polygon.draw_vertices]
 name = "Draw vertices"

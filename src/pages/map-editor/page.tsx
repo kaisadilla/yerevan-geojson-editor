@@ -3,7 +3,7 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import useMapperSettings from "state/mapper/useSettings";
 import Details from "./details-panel/Details";
 import DocumentRibbon from "./document-ribbon/Ribbon";
-import EditRibbon from "./edit-ribbon/Ribbon";
+import Ribbon from "./edit-ribbon/Ribbon";
 import SettingsPanel from "./edit-ribbon/SettingsPanel";
 import ElementPanel from "./element-panel/ElementPanel";
 import Map from "./Map";
@@ -38,7 +38,7 @@ function MapEditorPage (props: MapEditorPageProps) {
         <PanelResizeHandle><div /></PanelResizeHandle>
         <Panel className={styles.mapPanel} minSize={20}>
           <div className={styles.editRibbon}>
-            <EditRibbon />
+            <Ribbon />
           </div>
           <div className={styles.mapFrame}>
             <Map />

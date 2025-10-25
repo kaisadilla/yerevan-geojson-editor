@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 
 export interface DormantTextboxProps {
   value: string;
+  placeholder?: string;
   isActive: boolean;
   onChange?: (value: string) => void;
   onActivate?: (active: boolean) => void;
@@ -14,6 +15,7 @@ export interface DormantTextboxProps {
 
 function DormantTextbox ({
   value,
+  placeholder = "",
   isActive,
   onChange,
   onActivate,
@@ -46,6 +48,7 @@ function DormantTextbox ({
         input: styles.input,
       }}
       value={value}
+      placeholder={placeholder}
       onChange={evt => onChange?.(evt.target.value)}
       size='xs'
       onClick={evt => evt.stopPropagation()}
@@ -60,7 +63,7 @@ function DormantTextbox ({
       lineClamp={1}
       onClick={handleTextClick}
     >
-      {value}
+      {value === "" ? placeholder : value}
     </Text>
   );
 

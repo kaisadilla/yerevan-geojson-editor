@@ -52,23 +52,23 @@ function PolygonDraw ({
     {ui.toolSettings.showVertices && <_MarkerLayer
       latlngVertices={latlngVertices}
     />}
-    <Polygon
+    {latlngVertices.length > 0 && <Polygon
       className={styles.polygon}
       positions={latlngVertices}
       weight={0}
       color={color}
-    />
-    <Polyline
+    />}
+    {latlngVertices.length > 0 && <Polyline
       positions={[latlngVertices]}
       weight={settings.lineWidth}
       color={color}
-    />
-    <Marker
+    />}
+    {latlngVertices.length > 0 && <Marker
       position={latlngVertices[0]}
       icon={firstVertex}
-    />
+    />}
     <_NextVertex
-      shape={vertices}
+      vertices={vertices}
       color={color}
       onAddVertex={onAddVertex}
       onCompleteStroke={onCompleteStroke}
@@ -122,14 +122,14 @@ function _MarkerLayer ({
 }
 
 interface _NextVertexProps {
-  shape: Position[];
+  vertices: Position[];
   color: string;
   onAddVertex?: (pos: Position, isStroke: boolean) => void;
   onCompleteStroke?: () => void;
 }
 
 function _NextVertex ({
-  shape,
+  vertices: shape,
   color,
   onAddVertex,
   onCompleteStroke,

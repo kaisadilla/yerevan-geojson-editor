@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction, type WritableDraft } from "@reduxjs/toolkit";
 
 const TOOLS_THAT_AUTO_EXPAND_SETTINGS = new Set<MapperTool>([
+  'delete_vertices',
   'union',
   'difference',
   'intersection',
@@ -75,11 +76,14 @@ const mapperUiSlice = createSlice({
 export const mapperUiReducer = mapperUiSlice.reducer;
 export const MapperUiActions = mapperUiSlice.actions;
 
-export type MapperDocumentTool = 'new-point'
-  | 'new-line'
-  | 'new-polygon'
-  | 'new-square'
+export type MapperDocumentTool = 'new_point'
+  | 'new_line'
+  | 'new_polygon'
+  | 'new_rectangle'
   | 'new_circle'
+  ;
+
+export type MapperPointTool = 'move_shape'
   ;
 
 export type MapperPolygonTool = 'draw_vertices'
@@ -93,4 +97,7 @@ export type MapperPolygonTool = 'draw_vertices'
   | 'move_shape'
   ;
 
-export type MapperTool = MapperDocumentTool | MapperPolygonTool;
+export type MapperTool = MapperDocumentTool
+  | MapperPointTool
+  | MapperPolygonTool
+  ;

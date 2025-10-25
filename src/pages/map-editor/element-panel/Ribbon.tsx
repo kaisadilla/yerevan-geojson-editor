@@ -1,72 +1,118 @@
+import Button from "components/Button";
 import DescriptiveTooltip from "components/DescriptiveTooltip";
+import ToggleButton from "components/ToggleButton";
+import { useActiveElement } from "context/useActiveElement";
+import useKeyboardShortcut from "hook/useKeyboardShortcut";
 import { Boxes, Circle, FolderPlus, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
+import { ElementFactory } from "models/MapDocument";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { MapperDocActions } from "state/mapper/docSlice";
+import { MapperUiActions, type MapperDocumentTool } from "state/mapper/uiSlice";
+import useMapperUi from "state/mapper/useUi";
 import styles from './Ribbon.module.scss';
 
 function Ribbon () {
+  const ui = useMapperUi();
+  const active = useActiveElement();
+  const dispatch = useDispatch();
+
   const { t } = useTranslation();
+  const { alt } = useKeyboardShortcut();
+
+  alt['1'] = handleNewGroup;
+  alt['2'] = () => handleTool('new_point')
+  alt['4'] = () => handleTool('new_polygon')
 
   return (
     <div className={styles.ribbon}>
       <DescriptiveTooltip
         label={t("element_panel.ribbon.group.name")}
         description={t("element_panel.ribbon.group.desc")}
+        shortcut="Alt + 1"
       >
-        <button>
+        <Button onClick={handleNewGroup}>
           <FolderPlus />
-        </button>
+        </Button>
       </DescriptiveTooltip>
 
       <DescriptiveTooltip
         label={t("element_panel.ribbon.point.name")}
+        shortcut="Alt + 2"
       >
-        <button>
+        <ToggleButton
+          active={ui.tool === 'new_point'}
+          onChange={() => handleTool('new_point')}
+        >
           <MapPin />
-        </button>
+        </ToggleButton>
       </DescriptiveTooltip>
 
       <DescriptiveTooltip
         label={t("element_panel.ribbon.line.name")}
+        shortcut="Alt + 3"
       >
-        <button>
+        <Button>
           <Waypoints />
-        </button>
+        </Button>
       </DescriptiveTooltip>
 
       <DescriptiveTooltip
         label={t("element_panel.ribbon.polygon.name")}
+        shortcut="Alt + 4"
       >
-        <button>
+        <ToggleButton
+          active={ui.tool === 'new_polygon'}
+          onChange={() => handleTool('new_polygon')}
+        >
           <Pentagon />
-        </button>
+        </ToggleButton>
       </DescriptiveTooltip>
 
       <DescriptiveTooltip
-        label={t("element_panel.ribbon.square.name")}
+        label={t("element_panel.ribbon.rectangle.name")}
+        shortcut="Alt + 5"
       >
-        <button>
+        <Button>
           <Square />
-        </button>
+        </Button>
       </DescriptiveTooltip>
 
       <DescriptiveTooltip
         label={t("element_panel.ribbon.circle.name")}
+        shortcut="Alt + 6"
       >
-        <button>
+        <Button>
           <Circle />
-        </button>
+        </Button>
       </DescriptiveTooltip>
 
       <DescriptiveTooltip
         label={t("element_panel.ribbon.collection.name")}
         description={t("element_panel.ribbon.collection.desc")}
+        shortcut="Alt + 7"
       >
-        <button>
+        <Button>
           <Boxes />
-        </button>
+        </Button>
       </DescriptiveTooltip>
     </div>
   );
+
+  function handleNewGroup () {
+    const element = ElementFactory.group("New group");
+
+    dispatch(MapperDocActions.addElement({
+      element,
+    }));
+
+    active.setElement(element.id);
+  }
+
+  function handleTool (tool: MapperDocumentTool) {
+    active.setElement(null, false);
+    dispatch(MapperUiActions.setTool(tool));
+  }
 }
 
 export default Ribbon;

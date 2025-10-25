@@ -1,5 +1,5 @@
 import { useActiveElement } from 'context/useActiveElement';
-import { isPseudoContainer, shapeToPolygon, type MapperElement, type MapperElementType, type MapperPoint, type MapperPolygon } from 'models/MapDocument';
+import { isPseudoContainer, shapeToPolygon, type MapperElement, type MapperElementType, type MapperLine, type MapperPoint, type MapperPolygon } from 'models/MapDocument';
 import useMapperDoc from 'state/mapper/useDoc';
 import ActiveFeature from './features/ActiveFeature';
 import MapPoint from './features/MapPoint';
@@ -16,6 +16,7 @@ function LeafletElementMap (props: LeafletElementMapProps) {
   const elements = doc.getAllElements(false);
 
   const points = getFeaturesOfType('Point');
+  const lines = getFeaturesOfType('LineString');
   const polygons = getFeaturesOfType('Polygon');
 
   const selected = active.getElement();
@@ -58,16 +59,13 @@ function LeafletElementMap (props: LeafletElementMapProps) {
         polygon={shapeToPolygon(s as any)}
         isSibling
       />)}
-      
-      {selected
-        && selected.type !== 'Group'
-        && selected.type !== 'Collection'
-        && doc.isElementHidden(selected.id) === false
-        && <ActiveFeature feature={selected} />}
+
+      <ActiveFeature />
     </>
   );
 
   function getFeaturesOfType (type: 'Point') : MapperPoint[];
+  function getFeaturesOfType (type: 'LineString') : MapperLine[];
   function getFeaturesOfType (type: 'Polygon') : MapperPolygon[];
   function getFeaturesOfType (type: MapperElementType) {
     return elements.filter(e => doc.isElementHidden(e.id) === false

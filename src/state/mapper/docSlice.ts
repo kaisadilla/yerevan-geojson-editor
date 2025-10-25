@@ -284,10 +284,13 @@ const mapperDocSlice = createSlice({
 
     addElement (state, action: PayloadAction<{
       element: MapperElement,
-      groupId: string | null,
-      index: number | null,
+      groupId?: string | null,
+      index?: number | null,
     }>) {
-      const { element, groupId, index } = action.payload;
+      const { element } = action.payload;
+      let { groupId, index } = action.payload;
+      groupId ??= null;
+      index ??= null;
 
       const existingEl = getElement(state.content, element.id, true);
       if (existingEl) {
@@ -477,6 +480,20 @@ const mapperDocSlice = createSlice({
         name,
         value,
       });
+    },
+
+    updatePointPosition (state, action: PayloadAction<{
+      elementId: string;
+      position: Position;
+    }>) {
+      const { elementId, position } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+
+      if (el.type !== 'Point') return;
+
+      el.position = position;
     },
 
     updatePolygon (state, action: PayloadAction<{

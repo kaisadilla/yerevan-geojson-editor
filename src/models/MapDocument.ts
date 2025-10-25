@@ -1,4 +1,5 @@
 import type { Position } from "geojson";
+import { v4 as uuid } from "uuid";
 
 /**
  * An entry in a GeoJson property object. The name will act as the key. The id
@@ -215,4 +216,29 @@ export function isShape (element: MapperElement) : element is MapperShape {
     || element.type === 'Rectangle'
     || element.type === 'Circle'
     ;
+}
+
+export const ElementFactory = {
+  group (name: string = "") : MapperGroup {
+    return {
+      type: 'Group',
+      id: uuid(),
+      name,
+      properties: [],
+      isHidden: false,
+      elements: [],
+    };
+  },
+
+  polygon (name: string = "") : MapperPolygon {
+    return {
+      type: 'Polygon',
+      id: uuid(),
+      name,
+      properties: [],
+      isHidden: false,
+      vertices: [],
+      holes: [],
+    };
+  },
 }

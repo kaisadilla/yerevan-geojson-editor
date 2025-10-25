@@ -30,6 +30,10 @@ function MapPolygon ({
   if (isSibling) color = settings.colors.activeSibling;
   else if (isParent) color = settings.colors.activeParent;
 
+  if (polygon.vertices.length < 3) {
+    return null;
+  }
+
   const centroid = Ops.polygonCentroid(polygon);
 
   return (<>

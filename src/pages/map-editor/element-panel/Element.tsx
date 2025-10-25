@@ -86,11 +86,6 @@ function Element ({
   const hierarchyIndent = HIERARCHY_INDENT_WIDTH * depth;
   const isHidden = doc.isElementHidden(element.id) ?? false;
 
-  let name = element.name;
-  if (!name) {
-    name = "(" + element.type + ")";
-  }
-
   let invalidTarget = false;
 
   if (ctx.element) {
@@ -161,7 +156,8 @@ function Element ({
 
       <div className={styles.name}>
         <DormantTextbox
-          value={name}
+          value={element.name}
+          placeholder={`(${element.type})`}
           isActive={isNameActive}
           onChange={handleChangeName}
           onActivate={handleActivateName}

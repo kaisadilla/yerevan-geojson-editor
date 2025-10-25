@@ -1,24 +1,15 @@
-/// <reference types="vite-plugin-svgr/client" />
-import { IntersectSquareIcon, PolygonIcon, SubtractSquareIcon, UniteSquareIcon } from "@phosphor-icons/react";
-import DescriptiveTooltip from "components/DescriptiveTooltip";
-import ToggleButton from "components/ToggleButton";
 import { useActiveElement } from "context/useActiveElement";
-import { Eraser, Goal, Move, Pencil, Scissors } from 'lucide-react';
-import type React from "react";
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
-import { MapperUiActions, type MapperTool } from "state/mapper/uiSlice";
 import useMapperDoc from "state/mapper/useDoc";
-import useMapperUi from "state/mapper/useUi";
-import { isEventTargetEditable } from "utils";
+import Point from "./Point";
+import Polygon from "./Polygon";
 import styles from './Ribbon.module.scss';
+import Ribbon_Toggle from "./Ribbon.Toggle";
 
-export interface EditRibbonProps {
+export interface RibbonProps {
   
 }
 
-function EditRibbon (props: EditRibbonProps) {
+function Ribbon (props: RibbonProps) {
   const doc = useMapperDoc();
   const active = useActiveElement();
 
@@ -27,178 +18,12 @@ function EditRibbon (props: EditRibbonProps) {
 
   return (
     <div className={styles.ribbon}>
-      {el.type === 'Polygon' && <_Polygon />}
+      {el.type === 'Point' && <Point />}
+      {el.type === 'Polygon' && <Polygon />}
     </div>
   );
 }
 
-interface _PolygonProps {
-  
-}
+Ribbon.Toggle = Ribbon_Toggle;
 
-function _Polygon (props: _PolygonProps) {
-  const ui = useMapperUi();
-  const dispatch = useDispatch();
-
-  const { t } = useTranslation("ui");
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    }
-  }, [handleKeyDown]);
-
-  return (
-    <div className={styles.toolset}>
-      <div className={styles.title}>{t("tool_ribbon.title.polygon")}</div>
-      <_Toggle
-        tool='draw_vertices'
-        shortcut="1"
-        label={t("tool.polygon.draw_vertices.name")}
-        description={t("tool.polygon.draw_vertices.desc")}
-      >
-        <Pencil />
-      </_Toggle>
-
-      <_Toggle
-        tool='move_vertices'
-        shortcut="2"
-        label={t("tool.polygon.move_vertices.name")}
-        description={t("tool.polygon.move_vertices.desc")}
-      >
-        <PolygonIcon width={24} height={24} weight='thin' />
-      </_Toggle>
-
-      <_Toggle
-        tool='cut'
-        shortcut="3"
-        label={t("tool.polygon.cut.name")}
-        description={t("tool.polygon.cut.desc")}
-      >
-        <Scissors />
-      </_Toggle>
-
-      <_Toggle
-        tool='delete_vertices'
-        shortcut="4"
-        label={t("tool.polygon.delete_vertices.name")}
-        description={t("tool.polygon.delete_vertices.desc")}
-      >
-        <Eraser />
-      </_Toggle>
-
-      <_Toggle
-        tool='union'
-        shortcut="5"
-        label={t("tool.polygon.union.name")}
-        description={t("tool.polygon.union.desc")}
-      >
-        <UniteSquareIcon width={24} height={24} weight='thin' />
-      </_Toggle>
-
-      <_Toggle
-        tool='difference'
-        shortcut="6"
-        label={t("tool.polygon.difference.name")}
-        description={t("tool.polygon.difference.desc")}
-      >
-        <SubtractSquareIcon width={24} height={24} weight='thin' />
-      </_Toggle>
-
-      <_Toggle
-        tool='intersection'
-        shortcut="7"
-        label={t("tool.polygon.intersection.name")}
-        description={t("tool.polygon.intersection.desc")}
-      >
-        <IntersectSquareIcon width={24} height={24} weight='thin' />
-      </_Toggle>
-
-      <_Toggle
-        tool='set_origin'
-        shortcut="8"
-        label={t("tool.polygon.set_origin.name")}
-        description={t("tool.polygon.set_origin.desc")}
-      >
-        <Goal />
-      </_Toggle>
-
-      <_Toggle
-        tool='move_shape'
-        shortcut="9"
-        label={t("tool.polygon.move_shape.name")}
-        description={t("tool.polygon.move_shape.desc")}
-      >
-        <Move />
-      </_Toggle>
-    </div>
-  );
-
-  function handleKeyDown (evt: KeyboardEvent) {
-    if (isEventTargetEditable(evt.target)) return;
-    
-    const tool: MapperTool | null = (() => {
-      if (evt.key === '1') return 'draw_vertices';
-      else if (evt.key === '2') return 'move_vertices';
-      else if (evt.key === '3') return 'cut';
-      else if (evt.key === '4') return 'delete_vertices';
-      else if (evt.key === '5') return 'union';
-      else if (evt.key === '6') return 'difference';
-      else if (evt.key === '7') return 'intersection';
-      else if (evt.key === '8') return 'set_origin';
-      else if (evt.key === '9') return 'move_shape';
-      return null;
-    })();
-
-    if (tool) {
-      dispatch(MapperUiActions.setTool(tool === ui.tool ? null : tool));
-    }
-  }
-}
-
-interface _ToggleProps {
-  tool: MapperTool;
-  label: string;
-  description?: string;
-  shortcut?: string;
-  children: React.ReactElement;
-}
-
-function _Toggle ({
-  tool,
-  label,
-  description,
-  shortcut,
-  children,
-}: _ToggleProps) {
-  const doc = useMapperDoc();
-  const ui = useMapperUi();
-  const dispatch = useDispatch();
-
-  return (
-    <DescriptiveTooltip
-      label={label}
-      description={description}
-      shortcut={shortcut}
-      position='bottom'
-      offset={16}
-    >
-      <ToggleButton
-        active={ui.tool === tool}
-        onChange={v => setTool(tool, v)}
-      >
-        {children}
-      </ToggleButton>
-    </DescriptiveTooltip>
-  );
-
-  function setTool (tool: MapperTool, value: boolean) {
-    dispatch(MapperUiActions.setTool(value ? tool : null));
-  }
-}
-
-
-
-export default EditRibbon;
+export default Ribbon;

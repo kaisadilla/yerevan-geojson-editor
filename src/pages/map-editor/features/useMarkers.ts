@@ -11,6 +11,11 @@ export default function useMarkers () {
     iconSize: [10, 10],
   });
 
+  const activePoint = L.divIcon({
+    className: styles.activePoint,
+    iconSize: [16, 16],
+  });
+
   const vertex = L.divIcon({
     className: styles.vertex,
     iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
@@ -53,6 +58,7 @@ export default function useMarkers () {
 
   return {
     point,
+    activePoint,
     vertex,
     firstVertex,
     volatileVertex,

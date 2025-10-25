@@ -1,8 +1,9 @@
 import GLT from 'GLT';
-import { isPseudoContainer, type MapperFeature, type MapperPolygon } from 'models/MapDocument';
-import { Polygon } from 'react-leaflet';
+import { isPseudoContainer, type MapperFeature, type MapperPoint, type MapperPolygon } from 'models/MapDocument';
+import { Marker, Polygon } from 'react-leaflet';
 import useMapperDoc from 'state/mapper/useDoc';
 import useMapperSettings from 'state/mapper/useSettings';
+import useMarkers from '../features/useMarkers';
 import styles from './NoTool.module.scss';
 
 export interface NoToolProps {
@@ -12,10 +13,31 @@ export interface NoToolProps {
 function NoTool ({
   feature,
 }: NoToolProps) {
+  if (feature.type === 'Point') return (
+    <_Point point={feature} />
+  );
   if (feature.type === 'Polygon') return (
     <_Polygon polygon={feature} />
   );
 }
+
+interface _PointProps {
+  point: MapperPoint;
+}
+
+function _Point ({
+  point,
+}: _PointProps) {
+  const { activePoint } = useMarkers();
+
+  return (<>
+    <Marker
+      position={GLT.gj.coord.leaflet(point.position)}
+      icon={activePoint}
+    />
+  </>);
+}
+
 
 interface _PolygonProps {
   polygon: MapperPolygon;
