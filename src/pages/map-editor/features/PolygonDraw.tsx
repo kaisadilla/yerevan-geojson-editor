@@ -1,6 +1,7 @@
-import { useKeyboard } from 'context/useKeyboard';
+import { useKeyboardCtx } from 'context/useKeyboard';
 import type { Position } from 'geojson';
 import GLT from 'GLT';
+import useKeyboard from 'hook/useKeyboard';
 import type { LatLngExpression, LeafletMouseEvent } from "leaflet";
 import MathExt from 'MathExt';
 import { useEffect, useRef, useState } from 'react';
@@ -129,22 +130,27 @@ interface _NextVertexProps {
 }
 
 function _NextVertex ({
-  vertices: shape,
+  vertices,
   color,
   onAddVertex,
   onCompleteStroke,
 }: _NextVertexProps) {
+  const [hoveredCoords, setHoveredCoords] = useState<Position | null>();
+  const [drawingLine, setDrawingLine] = useState(false);
+  const [straightLine, setStraightLine] = useState(false);
+  const lastVertex = useRef<Position>(vertices[vertices.length - 1]);
+
   const doc = useMapperDoc();
   const ui = useMapperUi();
   const settings = useMapperSettings();
-  const keyboard = useKeyboard();
+  const keyboard = useKeyboardCtx();
   const map = useMap();
-
-  const [hoveredCoords, setHoveredCoords] = useState<Position | null>();
-  const [drawingLine, setDrawingLine] = useState(false);
-  const lastVertex = useRef<Position>(shape[shape.length - 1]);
   
   const { volatileVertex } = useMarkers();
+  const { down, up } = useKeyboard();
+
+  down['z'] = () => setStraightLine(true);
+  up['z'] = () => setStraightLine(false);
 
   useEffect(() => {
     const removeMouseMove = MapEvents.mouseMove(handleMouseMove);
@@ -164,7 +170,7 @@ function _NextVertex ({
     <>
     {hoveredCoords && <Polyline
       positions={[
-        GLT.gj.coord.leaflet(shape[shape.length - 1]),
+        GLT.gj.coord.leaflet(vertices[vertices.length - 1]),
         GLT.gj.coord.leaflet(hoveredCoords)
       ]}
       dashArray="7, 8, 1, 8"
@@ -176,7 +182,7 @@ function _NextVertex ({
       icon={volatileVertex}
     >
       {
-        shape.length > 2 && keyboard.ctrl === false && <Tooltip
+        vertices.length > 2 && keyboard.ctrl === false && <Tooltip
           // @ts-ignore Tooltip's props interface is incorrect.
           permanent={true}
           direction='bottom'
@@ -194,20 +200,34 @@ function _NextVertex ({
     let cursorPos = evt.latlng;
 
     if (keyboard.ctrl === false) {
-      const pxStart = map.latLngToLayerPoint(GLT.gj.coord.leaflet(shape[0]));
+      const pxStart = map.latLngToLayerPoint(GLT.gj.coord.leaflet(vertices[0]));
       const pxCursor = map.latLngToLayerPoint(cursorPos);
 
       if (MathExt.vec2distance(pxStart, pxCursor) < 20) {
-        cursorPos = GLT.gj.coord.leafletObj(shape[0]);
+        cursorPos = GLT.gj.coord.leafletObj(vertices[0]);
       }
     }
 
     const hoveredCoords = GLT.leaflet.coord.gj(cursorPos);
+
+    if (straightLine) {
+      const lastVert = vertices[vertices.length - 1];
+      const distLng = hoveredCoords[0] - lastVert[0];
+      const distLat = hoveredCoords[1] - lastVert[1];
+
+      if (Math.abs(distLng) < Math.abs(distLat)) {
+        hoveredCoords[0] = lastVert[0];
+      }
+      else {
+        hoveredCoords[1] = lastVert[1];
+      }
+    }
+
     setHoveredCoords(hoveredCoords);
 
     if (drawingLine === false) return;
     if (!hoveredCoords) return;
-    if (shape.length < 2) return;
+    if (vertices.length < 2) return;
 
     const pxLast = map.latLngToLayerPoint(
       GLT.gj.coord.leaflet(lastVertex.current)

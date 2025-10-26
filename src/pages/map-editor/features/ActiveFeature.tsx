@@ -8,6 +8,7 @@ import NoTool from '../tools/NoTool';
 import PointMoveShapeTool from '../tools/PointMoveShapeTool';
 import PolygonDeleteVerticesTool from '../tools/PolygonDeleteVerticesTool';
 import PolygonDrawVerticesTool from '../tools/PolygonDrawVerticesTool';
+import PolygonMoveShapeTool from '../tools/PolygonMoveShapeTool';
 import PolygonSetOriginTool from '../tools/PolygonSetOriginTool';
 
 export interface ActiveFeatureProps {
@@ -60,6 +61,9 @@ function ActiveFeature ({
     );
     if (ui.tool === 'set_origin') return (
       <PolygonSetOriginTool />
+    );
+    if (ui.tool === 'move_shape') return (
+      <PolygonMoveShapeTool />
     );
   }
 

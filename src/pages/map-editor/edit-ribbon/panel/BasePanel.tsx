@@ -1,7 +1,7 @@
 import { CaretDoubleDownIcon, CaretDoubleUpIcon } from '@phosphor-icons/react';
 import Button from 'components/Button';
 import DescriptiveTooltip from 'components/DescriptiveTooltip';
-import { useKeyboard } from 'context/useKeyboard';
+import { useKeyboardCtx } from 'context/useKeyboard';
 import type React from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +28,7 @@ function BasePanel ({
   children,
 }: PanelProps) {
   const ui = useMapperUi();
-  const keyboard = useKeyboard();
+  const keyboard = useKeyboardCtx();
   const dispatch = useDispatch();
 
   const { t } = useTranslation();

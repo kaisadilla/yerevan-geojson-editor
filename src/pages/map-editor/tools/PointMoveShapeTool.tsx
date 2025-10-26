@@ -25,7 +25,7 @@ function PointMoveShapeTool (props: PointMoveShapeToolProps) {
     <Marker
       position={GLT.gj.coord.leaflet(point.position)}
       icon={activeMovablePoint}
-      draggable={true}
+      draggable
       eventHandlers={{
         dragend: handleDragEnd,
         click: handleClick

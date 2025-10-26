@@ -68,7 +68,7 @@ export const KeyboardProvider = ({ children }: any) => {
   )
 }
 
-export function useKeyboard () : KeyboardContextValue {
+export function useKeyboardCtx () : KeyboardContextValue {
   const ctx = useContext(KeyboardContext);
 
   if (!ctx) {

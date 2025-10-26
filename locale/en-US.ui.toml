@@ -63,7 +63,7 @@ desc = "Move the point around the map."
 name = "Draw vertices"
 desc = "Add new vertices to this polygon."
 [tool.polygon.draw_vertices.settings]
-desc = "Click anywhere on the map to add the next vertex of your polygon. When you are done, click on the first vertex to close it, or simply deselect the draw tool and it will close automatically."
+desc = "Click anywhere on the map to add the next vertex of your polygon. When you are done, click on the first vertex to close it, or simply deselect the draw tool and it will close automatically. Hold 'z' to force your lines to be straight."
 section.options = "Options"
 snap.name = "Snap to nearby features"
 snap.desc = "When enabled, the cursor will automatically snap to nearby features such as vertices or points, making it easy to draw the same line in different features."
