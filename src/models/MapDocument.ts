@@ -1,4 +1,5 @@
 import type { Position } from "geojson";
+import type { Immutable } from "types";
 import { v4 as uuid } from "uuid";
 
 /**
@@ -211,7 +212,7 @@ export function shapeToPolygon (shape: MapperShape) : MapperRegularPolygon {
   throw `Unknown shape type.`;
 }
 
-export function isShape (element: MapperElement) : element is MapperShape {
+export function isShape (element: Immutable<MapperElement>) : element is MapperShape {
   return element.type === 'Polygon'
     || element.type === 'Rectangle'
     || element.type === 'Circle'

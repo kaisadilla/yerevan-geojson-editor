@@ -1,15 +1,19 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { mapperDocMiddleware } from "./mapper/docMiddleware";
 import { mapperDocReducer } from "./mapper/docSlice";
 import { mapperSettingsReducer } from "./mapper/settingsSlice";
 import { mapperUiReducer } from "./mapper/uiSlice";
 
-export const store = configureStore({
-  reducer: {
-    mapEditorDoc: mapperDocReducer,
-    mapEditorUi: mapperUiReducer,
-    mapEditorSettings: mapperSettingsReducer,
-  },
+const rootReducer = combineReducers({
+  mapEditorDoc: mapperDocReducer,
+  mapEditorUi: mapperUiReducer,
+  mapEditorSettings: mapperSettingsReducer,
 });
 
-export type RootState = ReturnType<typeof store.getState>;
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware: getDefault => getDefault().concat(mapperDocMiddleware),
+});
+
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;

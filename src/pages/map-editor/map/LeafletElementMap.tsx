@@ -1,9 +1,10 @@
 import { useActiveElement } from 'context/useActiveElement';
 import { isPseudoContainer, shapeToPolygon, type MapperElement, type MapperElementType, type MapperLine, type MapperPoint, type MapperPolygon } from 'models/MapDocument';
 import useMapperDoc from 'state/mapper/useDoc';
-import ActiveFeature from './features/ActiveFeature';
-import MapPoint from './features/MapPoint';
-import MapPolygon from './features/MapPolygon';
+import ActiveFeature from '../features/ActiveFeature';
+import MapPoint from '../features/MapPoint';
+import MapPolygon from '../features/MapPolygon';
+import PolygonLayer from './PolygonLayer';
 
 export interface LeafletElementMapProps {
   
@@ -38,14 +39,14 @@ function LeafletElementMap (props: LeafletElementMapProps) {
     }
   }
 
-
   return (
     <>
+      <PolygonLayer group={doc.content} />
       {points.map(p => <MapPoint
         key={p.id + "_" + active.id}
         point={p}
       />)}
-      {polygons.map(p => <MapPolygon
+      {false && polygons.map(p => <MapPolygon
         key={p.id + "_" + active.id}
         polygon={p}
         isParent={

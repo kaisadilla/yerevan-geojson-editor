@@ -9,6 +9,7 @@ import PointMoveShapeTool from '../tools/PointMoveShapeTool';
 import PolygonDeleteVerticesTool from '../tools/PolygonDeleteVerticesTool';
 import PolygonDrawVerticesTool from '../tools/PolygonDrawVerticesTool';
 import PolygonMoveShapeTool from '../tools/PolygonMoveShapeTool';
+import PolygonMoveVerticesTool from '../tools/PolygonMoveVerticesTool';
 import PolygonSetOriginTool from '../tools/PolygonSetOriginTool';
 
 export interface ActiveFeatureProps {
@@ -55,6 +56,9 @@ function ActiveFeature ({
   if (feature.type === 'Polygon') {
     if (ui.tool === 'draw_vertices') return (
       <PolygonDrawVerticesTool />
+    );
+    if (ui.tool === 'move_vertices') return (
+      <PolygonMoveVerticesTool />
     );
     if (ui.tool === 'delete_vertices') return (
       <PolygonDeleteVerticesTool />

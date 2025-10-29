@@ -17,7 +17,8 @@
 
 .vertex,
 .firstVertex,
-.nextVertex {
+.nextVertex,
+.possibleVertex {
   border-radius: 50%;
   margin: -8px 0 0 -8px;
   width: 12px;
@@ -38,6 +39,11 @@
 
 .nextVertex {
   border-width: 2px;
+}
+
+.possibleVertex {
+  box-shadow: 0 0 0 1px white;
+  background-color: var(--col-gj-active-l1);
 }
 
 .pointLabel,

@@ -4,9 +4,9 @@ import styles from './Map.module.scss';
 
 import "leaflet/dist/leaflet.css";
 import { useEffect } from 'react';
+import MapEventHandler from '../MapEventHandler';
+import { MapEventEmitters } from '../MapEvents';
 import LeafletElementMap from './LeafletElementMap';
-import MapEventHandler from './MapEventHandler';
-import { MapEventEmitters } from './MapEvents';
 
 export const DEFAULT_ZOOM = 2;
 export const DEFAULT_MAP_CENTER = [18, 40];

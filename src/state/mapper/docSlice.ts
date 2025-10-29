@@ -248,7 +248,7 @@ function getSampleDocument () : MapperDocument {
     holes: [],
   });
 
-  doc.elements.push({
+  someGroup.elements.push({
     type: 'Polygon',
     id: uuid(),
     name: "Sample feature",

@@ -28,7 +28,7 @@ function PolygonDeleteVertices ({
   const { deleteVertex, selectedDeleteVertex } = useMarkers();
 
   return (<>
-    {latlngVertices.map((v, i) => <Marker
+    {true && latlngVertices.map((v, i) => <Marker
       key={i}
       position={v}
       icon={highlightSet?.has(i) ? selectedDeleteVertex : deleteVertex}

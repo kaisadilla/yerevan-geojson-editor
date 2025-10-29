@@ -33,6 +33,10 @@ export default function useMarkers () {
     className: styles.nextVertex,
     iconSize: [ui.toolSettings.vertexSize, ui.toolSettings.vertexSize],
   });
+  const possibleVertex = L.divIcon({
+    className: styles.possibleVertex,
+    iconSize: [ui.toolSettings.vertexSize / 1.5, ui.toolSettings.vertexSize / 1.5],
+  });
   const noIcon = L.divIcon({
     className:  styles.noIcon,
     iconSize: [0, 0],
@@ -66,6 +70,7 @@ export default function useMarkers () {
     activePoint,
     activeMovablePoint,
     vertex,
+    possibleVertex,
     firstVertex,
     volatileVertex,
     noIcon,

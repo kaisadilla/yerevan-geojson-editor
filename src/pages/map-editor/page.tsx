@@ -6,7 +6,7 @@ import DocumentRibbon from "./document-ribbon/Ribbon";
 import Ribbon from "./edit-ribbon/Ribbon";
 import SettingsPanel from "./edit-ribbon/SettingsPanel";
 import ElementPanel from "./element-panel/ElementPanel";
-import Map from "./Map";
+import Map from "./map/Map";
 import styles from "./page.module.scss";
 
 export interface MapEditorPageProps {

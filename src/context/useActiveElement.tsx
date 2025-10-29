@@ -5,6 +5,7 @@ import { MapperActions, MapperHistory, type MapperAction } from "pages/map-edito
 import { createContext, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
 import { MapperDocActions } from "state/mapper/docSlice";
+import Mapper from "state/mapper/events";
 import { MapperUiActions } from "state/mapper/uiSlice";
 import useMapperDoc from "state/mapper/useDoc";
 import { getStateSetterValue, type StateSetter } from "types";
@@ -73,6 +74,11 @@ export const ActiveElementProvider = ({ children }: any) => {
 
   function setElement (elementId: string | null, resetTool: boolean = true) {
     if (resetTool) dispatch(MapperUiActions.setTool(null));
+
+    Mapper.emit('activeElementChange', {
+      oldElementId: state.id,
+      newElementId: elementId,
+    });
 
     setState(prev => ({
       ...prev,
