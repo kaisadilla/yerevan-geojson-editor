@@ -27,7 +27,6 @@
     "@types/geojson": "^7946.0.16",
     "@types/geojson-validation": "^1.0.3",
     "@types/leaflet": "^0.7.39",
-    "@types/leaflet.markercluster": "^1.5.6",
     "dayjs": "^1.11.13",
     "file-open": "^0.2.0",
     "file-saver": "^2.0.5",
