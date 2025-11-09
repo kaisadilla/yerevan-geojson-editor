@@ -4,7 +4,7 @@ import { Boxes, Eye, EyeOff, Folder, MapPin, Pentagon, Waypoints } from 'lucide-
 import { isPseudoContainer, isShape, type MapperElement } from "models/MapDocument";
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { MapperDocActions } from 'state/mapper/docSlice';
+import { getElement, MapperDocActions } from 'state/mapper/docSlice';
 import useMapperDoc from "state/mapper/useDoc";
 import { $cl } from 'utils';
 import MaterialSymbol from '../../../components/MaterialSymbol';
@@ -49,6 +49,16 @@ function Element ({
       document.removeEventListener('keydown', handleDocumentKeyDown);
     }
   }, [handleDocumentKeyDown]);
+
+  // When an element is selected, if that element is somewhere in this group's
+  // branch, expand it automatically.
+  useEffect(() => {
+    if (active.id === null) return;
+    if (active.id === element.id) return;
+
+    const child = getElement(element, active.id, true);
+    if (child) setExpanded(true);
+  }, [active.id]);
 
   const isPseudo = !!parent && isPseudoContainer(parent);
   

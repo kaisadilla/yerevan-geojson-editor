@@ -1,13 +1,28 @@
 import type { MapperElement } from "models/MapDocument";
 import { useSelector } from "react-redux";
-import type { RootState } from "../store";
-import { getAllElements, getElement, getElementIndex, getElementParent, idExists, isElementHidden } from "./docSlice";
+import { store, type RootState } from "../store";
+import { getAllElements, getElement, getElementIndex, getElementParent, idExists, isElementHidden, type MapperDocState } from "./docSlice";
 
 export default function useMapperDoc () {
   const doc = useSelector((state: RootState) => state.mapEditorDoc);
+  
+  return getMapperDocInterface(doc);
+}
+
+function getMapperDocInterface (doc: MapperDocState) {
 
   return {
     ...doc,
+
+    /**
+     * Returns the latest version of this store. 
+     * @returns 
+     */
+    latest () {
+      const state = store.getState();
+
+      return getMapperDocInterface(state.mapEditorDoc);
+    },
 
     getAllElements: (includePseudo: boolean, container?: MapperElement) =>
       getAllElements(container ?? doc.content, includePseudo),

@@ -1,13 +1,14 @@
 import type { Position } from "geojson";
-import { type MapperElement, type MapperPoint, type MapperPolygon } from "models/MapDocument";
+import { ElementFactory, type MapperElement, type MapperPoint, type MapperPolygon } from "models/MapDocument";
 import Ops from "Ops";
 import { MapperActions, MapperHistory, type MapperAction } from "pages/map-editor/MapperHistory";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { MapperDocActions } from "state/mapper/docSlice";
 import Mapper from "state/mapper/events";
 import { MapperUiActions } from "state/mapper/uiSlice";
 import useMapperDoc from "state/mapper/useDoc";
+import useMapperUi from "state/mapper/useUi";
 import { getStateSetterValue, type StateSetter } from "types";
 
 export type DeleteMode = 'individual' | 'section';
@@ -42,6 +43,7 @@ interface ActiveElementValue extends InternalState {
   union: (targetId: string, deleteTarget: boolean) => void;
   difference: (targetId: string, deleteTarget: boolean) => void;
   intersection: (targetId: string, deleteTarget: boolean) => void;
+  cut: (shape:  Position[]) => void;
 }
 
 const ActiveElementContext = createContext(undefined as ActiveElementValue | undefined);
@@ -50,7 +52,17 @@ export const ActiveElementProvider = ({ children }: any) => {
   const [state, setState] = useState<InternalState>(initState);
 
   const doc = useMapperDoc();
+  const ui = useMapperUi();
   const dispatch = useDispatch();
+
+  // When the user abruptly changes tools mid-stroke, prevent the stroke from
+  // hanging around.
+  useEffect(() => {
+    setState(prev => ({
+      ...prev,
+      stroke: [],
+    }))
+  }, [ui.tool]);
 
   function getElement () {
     if (state.id === null) return null;
@@ -195,6 +207,32 @@ export const ActiveElementProvider = ({ children }: any) => {
     polygonOp(targetId, deleteTarget, (a, b) => Ops.polygonIntersection(a, b));
   }
 
+  function cut (shape: Position[]) {
+    const el = getPolygon();
+    if (!el) return;
+
+    const hole = ElementFactory.polygon();
+    hole.vertices = shape;
+
+    const oldElement = { ...el };
+
+    const result = Ops.polygonDifference(el, hole);
+
+    const update = {
+      vertices: result.vertices,
+      holes: result.holes,
+    };
+
+    dispatch(MapperDocActions.updatePolygon({
+      elementId: el.id,
+      update,
+    }));
+
+    MapperHistory.push(MapperActions.changeElement(
+      oldElement.id, oldElement, { ...oldElement, ...update }
+    ));
+  }
+
   return (
     <ActiveElementContext.Provider value={{
       ...state,
@@ -212,6 +250,7 @@ export const ActiveElementProvider = ({ children }: any) => {
       union,
       difference,
       intersection,
+      cut,
     }}>
       {children}
     </ActiveElementContext.Provider>

@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import MapEventHandler from '../MapEventHandler';
 import { MapEventEmitters } from '../MapEvents';
 import LeafletElementMap from './LeafletElementMap';
+import StatusBar from './StatusBar';
 
 export const DEFAULT_ZOOM = 2;
 export const DEFAULT_MAP_CENTER = [18, 40];
@@ -134,6 +135,7 @@ function _MapContent (props: _MapContentProps) {
         </LayersControl.BaseLayer>
       </LayersControl>
       <LeafletElementMap />
+      <StatusBar />
     </>
   );
 }

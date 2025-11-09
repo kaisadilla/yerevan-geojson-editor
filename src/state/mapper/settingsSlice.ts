@@ -11,6 +11,14 @@ interface MapperSettingsSlice {
   };
   lineWidth: number;
   showLabels: boolean;
+  optimization: {
+    /**
+     * The maximum zoom level at which vertices may be ommited for performance
+     * reasons. After this zoom level, all vertices within the viewport will be
+     * shown.
+     */
+    maxZoomForVertexSkip: number;
+  }
 };
 
 const initialState: MapperSettingsSlice = {
@@ -24,6 +32,9 @@ const initialState: MapperSettingsSlice = {
   },
   lineWidth: 2,
   showLabels: true,
+  optimization: {
+    maxZoomForVertexSkip: 18,
+  },
 };
 
 const mapperSettingsSlice = createSlice({

@@ -3,6 +3,12 @@ import type { Immutable } from "types";
 
 export type MapperDocumentChangeEvent = {}
 
+export type MapperAddElementEvent = {
+  element: Immutable<MapperElement>;
+  groupId: string;
+  index: number;
+}
+
 export type MapperDeleteElementEvent = {
   elementId: string;
 }
@@ -24,6 +30,7 @@ export type MapperHideEvent = {
 
 type MapperEventSignature = {
   documentChange: MapperDocumentChangeEvent;
+  addElement: MapperAddElementEvent;
   deleteElement: MapperDeleteElementEvent;
   updateElement: MapperUpdateElementEvent;
   activeElementChange: MapperActiveElementChangeEvent;
@@ -37,6 +44,7 @@ export type MapperEventHandler<K extends MapperEvent>
 class MapperEvents {
   private listeners: { [K in MapperEvent]: Set<MapperEventHandler<K>> } = {
     documentChange: new Set(),
+    addElement: new Set(),
     deleteElement: new Set(),
     updateElement: new Set(),
     activeElementChange: new Set(),

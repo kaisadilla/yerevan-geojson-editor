@@ -4,7 +4,7 @@ import Logger from "Logger";
 import { ContainerType, isContainer, isPseudoContainer, isShape, type MapperDocument, type MapperElement, type MapperGroup, type MapperPolygon } from "models/MapDocument";
 import { v4 as uuid } from 'uuid';
 
-interface MapperDocState {
+export interface MapperDocState {
   content: MapperDocument;
 }
 

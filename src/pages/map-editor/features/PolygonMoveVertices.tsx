@@ -1,6 +1,6 @@
 import type { Position } from 'geojson';
 import GLT from 'GLT';
-import { Marker as LMarker, Polygon as LPolygon } from 'leaflet';
+import { LatLng, Marker as LMarker, Polygon as LPolygon, type LeafletDragEndEvent } from 'leaflet';
 import { useRef } from 'react';
 import { Marker, Polygon, useMap } from 'react-leaflet';
 import useMapperSettings from 'state/mapper/useSettings';
@@ -10,11 +10,13 @@ import useMarkers from './useMarkers';
 
 export interface PolygonMoveVerticesProps {
   vertices: Position[];
+  onMoveVertex?: (index: number, pos: Position) => void;
   onAddVertex?: (index: number, pos: Position) => void;
 }
 
 function PolygonMoveVertices ({
   vertices,
+  onMoveVertex,
   onAddVertex,
 }: PolygonMoveVerticesProps) {
   const ui = useMapperUi();
@@ -29,8 +31,6 @@ function PolygonMoveVertices ({
   const { vertex, possibleVertex } = useMarkers();
   const map = useMap();
 
-  const bounds = map.getBounds();
-
   return (<>
     <Polygon
       ref={polygonRef}
@@ -44,7 +44,8 @@ function PolygonMoveVertices ({
       icon={vertex}
       draggable
       eventHandlers={{
-        drag: (evt: any) => handleDragVertex(evt, i)
+        drag: (evt: any) => handleDragVertex(evt, i),
+        dragend: (evt: LeafletDragEndEvent) => handleVertexDragEnd(evt, i),
       }}
     />)}
     {vertices.map((v, i) => {
@@ -91,6 +92,11 @@ function PolygonMoveVertices ({
     }
 
     //midpointRefs.current[index].setLatLng(latlng[0][index]);
+  }
+
+  function handleVertexDragEnd (evt: LeafletDragEndEvent, index: number) {
+    const latlng = evt.target.getLatLng() as LatLng;
+    onMoveVertex?.(index, [latlng.lng, latlng.lat]);
   }
 }
 

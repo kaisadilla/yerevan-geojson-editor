@@ -219,6 +219,24 @@ export function isShape (element: Immutable<MapperElement>) : element is MapperS
     ;
 }
 
+/**
+ * Returns all children elements of the given element, or `null` if the element
+ * cannot have children.
+ * @param element 
+ * @returns 
+ */
+export function getChildren (element: MapperElement) : MapperElement[] | null {
+  if (element.type === 'Group') return element.elements;
+  if (element.type === 'Collection') return element.elements;
+  if (
+    element.type === 'Polygon'
+    || element.type === 'Rectangle'
+    || element.type === 'Circle'
+  ) return element.holes;
+
+  return null;
+}
+
 export const ElementFactory = {
   group (name: string = "") : MapperGroup {
     return {

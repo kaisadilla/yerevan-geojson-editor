@@ -6,6 +6,7 @@ import NewPointTool from '../tools/NewPointTool';
 import NewPolygonTool from '../tools/NewPolygonTool';
 import NoTool from '../tools/NoTool';
 import PointMoveShapeTool from '../tools/PointMoveShapeTool';
+import PolygonCutTool from '../tools/PolygonCutTool';
 import PolygonDeleteVerticesTool from '../tools/PolygonDeleteVerticesTool';
 import PolygonDrawVerticesTool from '../tools/PolygonDrawVerticesTool';
 import PolygonMoveShapeTool from '../tools/PolygonMoveShapeTool';
@@ -59,6 +60,9 @@ function ActiveFeature ({
     );
     if (ui.tool === 'move_vertices') return (
       <PolygonMoveVerticesTool />
+    );
+    if (ui.tool === 'cut') return (
+      <PolygonCutTool />
     );
     if (ui.tool === 'delete_vertices') return (
       <PolygonDeleteVerticesTool />

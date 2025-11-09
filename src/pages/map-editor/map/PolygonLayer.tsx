@@ -1,14 +1,14 @@
 import { useActiveElement } from "context/useActiveElement";
 import type { LeafletMouseEvent } from "leaflet";
-import { isShape, type MapperGroup } from "models/MapDocument";
+import { isShape, type MapperElement } from "models/MapDocument";
 import { useEffect, useState } from "react";
-import Mapper, { type MapperActiveElementChangeEvent, type MapperDeleteElementEvent, type MapperHideEvent, type MapperUpdateElementEvent } from "state/mapper/events";
+import Mapper, { type MapperActiveElementChangeEvent, type MapperAddElementEvent, type MapperDeleteElementEvent, type MapperHideEvent, type MapperUpdateElementEvent } from "state/mapper/events";
 import useMapperDoc from "state/mapper/useDoc";
 import useMapperUi from "state/mapper/useUi";
 import usePolygonLayer from "./usePolygonLayer";
 
 export interface PolygonLayerProps {
-  group: MapperGroup;
+  group: MapperElement;
 }
 
 function PolygonLayer ({
@@ -28,17 +28,26 @@ function PolygonLayer ({
   // Listeners for Mapper events.
   useEffect(() => {
     Mapper.on('activeElementChange', handleActiveElementChange);
+    Mapper.on('addElement', handleAddElement);
     Mapper.on('deleteElement', handleDeleteElement);
     Mapper.on('updateElement', handleUpdateElement);
     Mapper.on('hide', handleHideElement);
 
     return () => {
       Mapper.off('activeElementChange', handleActiveElementChange);
+      Mapper.off('addElement', handleAddElement);
       Mapper.off('deleteElement', handleDeleteElement);
       Mapper.off('updateElement', handleUpdateElement);
       Mapper.off('hide', handleHideElement);
     }
-  }, []);
+  }, [
+    doc,
+    handleActiveElementChange,
+    handleAddElement,
+    handleUpdateElement,
+    handleUpdateElement,
+    handleHideElement,
+  ]);
 
   // When this group is shown or hidden, add or remove leaflet polygons to the
   // map.
@@ -51,9 +60,22 @@ function PolygonLayer ({
     }
   }, [isHidden]);
 
+  useEffect(() => {
+    let activeParent: string | null = null;
+
+    if (active.id !== null) {
+      const parent = doc.getParent(active.id);
+      if (parent && isShape(parent)) {
+        activeParent = parent.id;
+      }
+    }
+
+    layer.setActive(activeParent);
+  }, [active.id]);
+
   return isHidden
-    ? <div>null {group.name}</div>
-    : layer.groups.map(g => <PolygonLayer key={g.id} group={g} />);
+    ? null
+    : layer.innerGroups.map(g => <PolygonLayer key={g.id} group={g} />);
   
   function handlePolygonClick (evt: LeafletMouseEvent, id: string) {
     if (evt.originalEvent.ctrlKey) {
@@ -81,6 +103,13 @@ function PolygonLayer ({
     if (evt.newElementId) layer.hidePolygon(evt.newElementId);
   }
 
+  function handleAddElement (evt: MapperAddElementEvent) {
+    if (isShape(evt.element) === false) return;
+    if (evt.groupId !== group.id) return;
+
+    layer.addPolygon(evt.element);
+  }
+
   function handleDeleteElement (evt: MapperDeleteElementEvent) {
     layer.deletePolygon(evt.elementId);
   }
@@ -88,7 +117,14 @@ function PolygonLayer ({
   function handleUpdateElement (evt: MapperUpdateElementEvent) {
     if (isShape(evt.update) === false) return;
 
-    layer.updatePolygon(evt.update);
+    const parent = doc.latest().getParent(evt.elementId);
+
+    if (parent && isShape(parent)) {
+      layer.updatePolygon(parent);
+    }
+    else {
+      layer.updatePolygon(evt.update);
+    }
   }
 
   function handleHideElement (evt: MapperHideEvent) {

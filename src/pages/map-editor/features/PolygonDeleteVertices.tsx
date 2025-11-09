@@ -5,6 +5,7 @@ import useMapperSettings from 'state/mapper/useSettings';
 import useMapperUi from 'state/mapper/useUi';
 import styles from './PolygonDeleteVertices.module.scss';
 import useMarkers from './useMarkers';
+import useVertexFilter from './useVertexFilter';
 
 export interface PolygonDeleteVerticesProps {
   vertices: Position[];
@@ -25,12 +26,13 @@ function PolygonDeleteVertices ({
 
   const highlightSet = deletePath ? new Set(deletePath) : null;
 
+  const { visibleIndices } = useVertexFilter(latlngVertices);
   const { deleteVertex, selectedDeleteVertex } = useMarkers();
 
   return (<>
-    {true && latlngVertices.map((v, i) => <Marker
+    {visibleIndices.map(i => i >= latlngVertices.length ? null : <Marker
       key={i}
-      position={v}
+      position={latlngVertices[i]}
       icon={highlightSet?.has(i) ? selectedDeleteVertex : deleteVertex}
       eventHandlers={{
         click: () => onDeleteVertex?.(i),

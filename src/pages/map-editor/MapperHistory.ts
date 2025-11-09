@@ -163,12 +163,21 @@ export interface ChangeVerticesMapperAction {
   after: Position[];
 }
 
+export interface MoveVertexMapperAction {
+  type: 'move_vertex';
+  elementId: string;
+  index: number;
+  before: Position;
+  after: Position;
+}
+
 export type MapperAction = MultipleMapperAction
   | DeleteElementMapperAction
   | ChangeElementMapperAction
   | AddVerticesMapperAction
   | DeleteVerticesMapperAction
   | ChangeVerticesMapperAction
+  | MoveVertexMapperAction
   ;
 
 export const MapperActions = {
@@ -223,5 +232,15 @@ export const MapperActions = {
       after,
     } satisfies ChangeVerticesMapperAction;
   },
+
+  moveVertex (id: string, index: number, before: Position, after: Position) {
+    return {
+      type: 'move_vertex',
+      elementId: id,
+      index,
+      before,
+      after,
+    } satisfies MoveVertexMapperAction;
+  }
 }
 export const MapperHistory = new MapperHistoryState();

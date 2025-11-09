@@ -2,7 +2,7 @@ import { useActiveElement } from "context/useActiveElement";
 import GLT from "GLT";
 import type { LeafletMouseEvent } from "leaflet";
 import Logger from "Logger";
-import { shapeToPolygon, type MapperGroup, type MapperShape } from "models/MapDocument";
+import { getChildren, shapeToPolygon, type MapperElement, type MapperShape } from "models/MapDocument";
 import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import useMapperDoc from "state/mapper/useDoc";
@@ -10,7 +10,7 @@ import useMapperSettings from "state/mapper/useSettings";
 import type { Collection } from "types";
 
 export default function usePolygonLayer (
-  group: MapperGroup,
+  group: MapperElement,
   onClick?: (evt: LeafletMouseEvent, elementId: string) => void,
 ) {
   const doc = useMapperDoc();
@@ -20,13 +20,14 @@ export default function usePolygonLayer (
 
   const lPolygons = useRef<Collection<L.Polygon>>({});
 
-  const groups = group.elements.filter(el => el.type === 'Group');
-  const polygons = group.elements.filter(el => el.type === 'Polygon');
+  const children = getChildren(group) ?? [];
+  const innerGroups = children.filter(el => el.type === 'Group'
+    || el.type === 'Collection'
+  );
+  const polygons = children.filter(el => el.type === 'Polygon');
 
   // On mount, build the leaflet polygons. On dismount, delete them from the map.
   useEffect(() => {
-    Logger.info("Polygon layer rebuilt.");
-
     buildPolygons();
 
     return () => {
@@ -42,7 +43,10 @@ export default function usePolygonLayer (
   }, [onClick]);
 
   return {
-    groups,
+    /**
+     * The groups that are inside this one. This includes pseudo-groups.
+     */
+    innerGroups,
     /**
      * Builds all polygons currently in the document, adding to the map those that
      * should be currently visible.
@@ -50,6 +54,10 @@ export default function usePolygonLayer (
     buildPolygons,
     hidePolygon,
     showPolygon,
+    /**
+     * Adds a polygon to the layer, showing it in the map if it's not hidden.
+     */
+    addPolygon,
     /**
      * Removes the polygon with the id given, if it exists.
      */
@@ -63,23 +71,19 @@ export default function usePolygonLayer (
      * Shows all existing leaflet polygons that are not hidden themselves.
      */
     showAll,
+    /**
+     * Colors the polygon with the given id as active, and the rest as inactive.
+     */
+    setActive,
   }
 
   function buildPolygons () {
+    Logger.info("Polygon layer rebuilt.");
+
     clearPolygons();
 
     for (const p of polygons) {
-      const regularP = shapeToPolygon(p);
-
-      const verts = GLT.gj.coords.leaflet(regularP.vertices);
-      const holes = regularP.holes.map(h => GLT.gj.coords.leaflet(h.vertices));
-
-      const lPol = L.polygon([verts, ...holes] as any, {
-        color: settings.colors.default,
-        weight: settings.lineWidth,
-      }); // ts - wrong typing
-
-      lPol.on('click', (evt: LeafletMouseEvent) => onClick?.(evt, p.id));
+      const lPol = _createPolygon(p);
 
       lPolygons.current[p.id] = lPol;
 
@@ -98,6 +102,17 @@ export default function usePolygonLayer (
     }
 
     lPolygons.current = {};
+  }
+
+  function addPolygon (el: MapperShape) {
+    if (lPolygons.current[el.id]) return;
+
+    const lPol = _createPolygon(el);
+    lPolygons.current[el.id] = lPol;
+
+    if (el.isHidden === false && el.id !== active.id) {
+      lPol.addTo(map);
+    }
   }
 
   function deletePolygon (id: string) {
@@ -144,5 +159,34 @@ export default function usePolygonLayer (
         map.addLayer(lPolygons.current[p.id]);
       }
     }
+  }
+
+  function setActive (id: string | null) {
+    for (const [k, v] of Object.entries(lPolygons.current)) {
+      v.setStyle({
+        color: k === id ? settings.colors.activeParent : settings.colors.default,
+      });
+    }
+  }
+
+  /**
+   * Creates a leaflet polygon and returns it. This polygon is not added to the
+   * collection nor the map.
+   * @param el The shape for the polygon.
+   */
+  function _createPolygon (el: MapperShape) : L.Polygon {
+    const regular = shapeToPolygon(el);
+
+    const verts = GLT.gj.coords.leaflet(regular.vertices);
+    const holes = regular.holes.map(h => GLT.gj.coords.leaflet(h.vertices));
+
+    const lPol = L.polygon([verts, ...holes] as any, {
+      color: settings.colors.default,
+      weight: settings.lineWidth,
+    }); // ts - wrong typing
+
+    lPol.on('click', (evt: LeafletMouseEvent) => onClick?.(evt, el.id));
+
+    return lPol;
   }
 }
