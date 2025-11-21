@@ -1,32 +1,64 @@
 .modal {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 
   height: 80vh;
+  overflow: hidden;
 
-  .listContainer {
+  .content {
+    display: flex;
+    flex-direction: row;
     flex: 1;
-
-    height: 100%;
-    overflow-y: scroll;
-    overflow-x: hidden;
-  }
-
-  .mapContainer {
-    flex: 2;
-
-    width: 600px;
-    height: 100%;
     overflow: hidden;
 
-    padding: 12px;
+    .listContainer {
+      flex: 1;
 
-    .map {
-      width: 100%;
+      display: flex;
+      flex-direction: column;
+
       height: 100%;
+      overflow: hidden;
 
-      border: 1px solid var(--color-primary);
+      .list {
+        flex: 1;
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+
+      .listOptions {
+        display: flex;
+        flex-direction: row;
+        padding: 8px;
+        gap: 8px;
+      }
     }
+
+    .mapContainer {
+      flex: 2;
+
+      width: 600px;
+      height: 100%;
+      overflow: hidden;
+
+      padding: 12px;
+
+      .map {
+        width: 100%;
+        height: 100%;
+
+        border: 1px solid var(--color-primary);
+      }
+    }
+  }
+
+  .ribbon {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    padding: 8px;
+    padding-top: 0;
+    gap: 8px;
   }
 }
 

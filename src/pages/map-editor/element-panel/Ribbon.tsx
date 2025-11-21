@@ -105,8 +105,8 @@ function Ribbon () {
   function handleNewGroup () {
     const element = ElementFactory.group("New group");
 
-    dispatch(MapperDocActions.addElement({
-      element,
+    dispatch(MapperDocActions.addElements({
+      elements: [element],
     }));
 
     active.setElement(element.id);

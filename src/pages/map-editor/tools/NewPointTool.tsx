@@ -34,8 +34,8 @@ function NewPointTool (props: NewPointToolProps) {
   function handleAdd (position: Position, ctrl: boolean) {
     const element = ElementFactory.point(position, "New point");
 
-    dispatch(MapperDocActions.addElement({
-      element,
+    dispatch(MapperDocActions.addElements({
+      elements: [element],
       groupId: ui.targetContainerId,
     }));
     

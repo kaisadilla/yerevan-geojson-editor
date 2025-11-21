@@ -33,8 +33,8 @@ function NewPolygonTool (props: NewPolygonToolProps) {
     const element = ElementFactory.polygon("New polygon");
     element.vertices.push(position);
 
-    dispatch(MapperDocActions.addElement({
-      element,
+    dispatch(MapperDocActions.addElements({
+      elements: [element],
       groupId: ui.targetContainerId,
     }));
 

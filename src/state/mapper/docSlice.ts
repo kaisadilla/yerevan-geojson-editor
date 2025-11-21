@@ -5,6 +5,9 @@ import { ContainerType, isContainer, isPseudoContainer, isShape, type MapperDocu
 import { v4 as uuid } from 'uuid';
 
 export interface MapperDocState {
+  /**
+   * The root group.
+   */
   content: MapperDocument;
 }
 
@@ -282,38 +285,41 @@ const mapperDocSlice = createSlice({
       state.content = doc;
     },
 
-    addElement (state, action: PayloadAction<{
-      element: MapperElement,
+    addElements (state, action: PayloadAction<{
+      elements: MapperElement[],
       groupId?: string | null,
       index?: number | null,
     }>) {
-      const { element } = action.payload;
+      const { elements } = action.payload;
       let { groupId, index } = action.payload;
+      
       groupId ??= null;
       index ??= null;
 
-      const existingEl = getElement(state.content, element.id, true);
-      if (existingEl) {
-        Logger.error(
-          `An element with id '${element.id}' already exists, so it won't be ` +
-          `added.`
-        );
-        return;
-      }
-
-      if (groupId === null || groupId === state.content.id) {
-        insertElement(state.content, element, index);
-      }
-      else {
-        const group = getElement(state.content, groupId, true);
-
-        if (!group || ContainerType.has(group.type) === false) {
+      for (const el of elements) {
+        const existingEl = getElement(state.content, el.id, true);
+        if (existingEl) {
           Logger.error(
-            `Element with id '${groupId}' either doesn't exist, or isn't a group.`
-          )
+            `An element with id '${el.id}' already exists, so it won't be ` +
+            `added.`
+          );
+          return;
+        }
+
+        if (groupId === null || groupId === state.content.id) {
+          insertElement(state.content, el, index);
         }
         else {
-          insertElement(group, element, index);
+          const group = getElement(state.content, groupId, true);
+
+          if (!group || ContainerType.has(group.type) === false) {
+            Logger.error(
+              `Element with id '${groupId}' either doesn't exist, or isn't a group.`
+            )
+          }
+          else {
+            insertElement(group, el, index);
+          }
         }
       }
     },

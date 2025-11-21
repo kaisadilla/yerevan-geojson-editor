@@ -1,4 +1,5 @@
 import type { Middleware } from "@reduxjs/toolkit";
+import type { MapperElement } from "models/MapDocument";
 import type { RootState } from "state/store";
 import { getElement, getElementIndex, getElementParent, MapperDocActions } from "./docSlice";
 import Mapper from "./events";
@@ -9,24 +10,33 @@ export const mapperDocMiddleware: Middleware<{}, RootState> = store => next => a
   if (MapperDocActions.setDocument.match(action)) {
     Mapper.emit('documentChange', {});
   }
-  else if (MapperDocActions.addElement.match(action)) {
+  else if (MapperDocActions.addElements.match(action)) {
     const data = action.payload;
 
     const state = store.getState();
-    const createdEl = getElement(state.mapEditorDoc.content, data.element.id, true);
-    if (!createdEl) return res;
 
-    const parent = getElementParent(state.mapEditorDoc.content, createdEl.id);
-    if (!parent) return res;
+    const elements: MapperElement[] = [];
 
-    const index = getElementIndex(state.mapEditorDoc.content, createdEl.id);
-    if (!index) return res;
+    for (const el of data.elements) {
+      const createdEl = getElement(state.mapEditorDoc.content, el.id, true);
+      if (!createdEl) continue;
 
-    Mapper.emit('addElement', {
-      element: createdEl,
-      groupId: parent.id,
-      index,
+      const parent = getElementParent(state.mapEditorDoc.content, createdEl.id);
+      if (!parent) return res;
+
+      const index = getElementIndex(state.mapEditorDoc.content, createdEl.id);
+      if (!index) return res;
+
+      elements.push(createdEl);
+    }
+
+    Mapper.emit('addElements', {
+      elements,
+      groupId: data.groupId ?? state.mapEditorDoc.content.id,
+      index: data.index ?? null,
     });
+
+    return res;
   }
   else if (MapperDocActions.deleteElement.match(action)) {
     const elementId = action.payload;

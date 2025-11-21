@@ -2,7 +2,7 @@ import { useActiveElement } from "context/useActiveElement";
 import type { LeafletMouseEvent } from "leaflet";
 import { isShape, type MapperElement } from "models/MapDocument";
 import { useEffect, useState } from "react";
-import Mapper, { type MapperActiveElementChangeEvent, type MapperAddElementEvent, type MapperDeleteElementEvent, type MapperHideEvent, type MapperUpdateElementEvent } from "state/mapper/events";
+import Mapper, { type MapperActiveElementChangeEvent, type MapperAddElementsEvent, type MapperDeleteElementEvent, type MapperHideEvent, type MapperUpdateElementEvent } from "state/mapper/events";
 import useMapperDoc from "state/mapper/useDoc";
 import useMapperUi from "state/mapper/useUi";
 import usePolygonLayer from "./usePolygonLayer";
@@ -28,14 +28,14 @@ function PolygonLayer ({
   // Listeners for Mapper events.
   useEffect(() => {
     Mapper.on('activeElementChange', handleActiveElementChange);
-    Mapper.on('addElement', handleAddElement);
+    Mapper.on('addElements', handleAddElements);
     Mapper.on('deleteElement', handleDeleteElement);
     Mapper.on('updateElement', handleUpdateElement);
     Mapper.on('hide', handleHideElement);
 
     return () => {
       Mapper.off('activeElementChange', handleActiveElementChange);
-      Mapper.off('addElement', handleAddElement);
+      Mapper.off('addElements', handleAddElements);
       Mapper.off('deleteElement', handleDeleteElement);
       Mapper.off('updateElement', handleUpdateElement);
       Mapper.off('hide', handleHideElement);
@@ -43,7 +43,7 @@ function PolygonLayer ({
   }, [
     doc,
     handleActiveElementChange,
-    handleAddElement,
+    handleAddElements,
     handleUpdateElement,
     handleUpdateElement,
     handleHideElement,
@@ -103,11 +103,13 @@ function PolygonLayer ({
     if (evt.newElementId) layer.hidePolygon(evt.newElementId);
   }
 
-  function handleAddElement (evt: MapperAddElementEvent) {
-    if (isShape(evt.element) === false) return;
-    if (evt.groupId !== group.id) return;
+  function handleAddElements (evt: MapperAddElementsEvent) {
+    for (const el of evt.elements) {
+      if (isShape(el) === false) continue;
+      if (evt.groupId !== group.id) continue;
 
-    layer.addPolygon(evt.element);
+      layer.addPolygon(el);
+    }
   }
 
   function handleDeleteElement (evt: MapperDeleteElementEvent) {

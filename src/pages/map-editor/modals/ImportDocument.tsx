@@ -1,4 +1,4 @@
-import { Checkbox } from "@mantine/core";
+import { Button, Checkbox } from "@mantine/core";
 import { modals, type ContextModalProps } from "@mantine/modals";
 import PreviewMap from "components/PreviewMap";
 import GLT from "GLT";
@@ -6,8 +6,11 @@ import i18n from "i18n";
 import { Boxes, MapPin, Pentagon, Waypoints } from "lucide-react";
 import { isShape, shapeToPolygon, type MapperElement } from "models/MapDocument";
 import { useState } from "react";
-import { Marker, Polygon } from "react-leaflet";
+import { Marker, Polygon, Polyline } from "react-leaflet";
+import { useDispatch } from "react-redux";
+import MapperDocThunks from "state/mapper/doc-slice-thunks";
 import useMapperSettings from "state/mapper/useSettings";
+import { type AppDispatch } from "state/store";
 import styles from './ImportDocument.module.scss';
 
 export interface ImportDocumentModalProps {
@@ -16,33 +19,69 @@ export interface ImportDocumentModalProps {
 
 function ImportDocumentModal ({
   innerProps,
+  context,
+  id: modalId,
 }: ContextModalProps<ImportDocumentModalProps>) {
   const { elements } = innerProps;
+  const dispatch = useDispatch<AppDispatch>();
 
   const [active, setActive] = useState<string[]>([]);
 
-  console.log(elements);
-
   return (
     <div className={styles.modal}>
-      <div className={styles.listContainer}>
-        {elements.map(el => <_ListItem
-          key={el.id}
-          element={el}
-          active={active.includes(el.id)}
-          onSelect={() => handleSelect(el.id)}
-        />)}
+      <div className={styles.content}>
+        <div className={styles.listContainer}>
+          <div className={styles.listOptions}>
+            <Button
+              size='compact-sm'
+              onClick={() => setActive(elements.map(el => el.id))}
+            >
+              Select all
+            </Button>
+            <Button
+              size='compact-sm'
+              variant='outline'
+              onClick={() => setActive([])}
+            >
+              Clear selection
+            </Button>
+          </div>
+          <div className={styles.list}>
+            {elements.map(el => <_ListItem
+              key={el.id}
+              element={el}
+              active={active.includes(el.id)}
+              onSelect={() => handleSelect(el.id)}
+            />)}
+          </div>
+        </div>
+        <div className={styles.mapContainer}>
+          <PreviewMap
+            className={styles.map}
+          >
+            {elements.map(el => <_LeafletElement
+              key={el.id}
+              element={el}
+              active={active.includes(el.id)}
+              onClick={() => handleSelect(el.id)}
+            />)}
+          </PreviewMap>
+        </div>
       </div>
-      <div className={styles.mapContainer}>
-        <PreviewMap
-          className={styles.map}
+      <div className={styles.ribbon}>
+        <Button
+          size='compact-sm'
+          variant='outline'
+          onClick={() => context.closeModal(modalId)}
         >
-          {elements.map(el => <_LeafletElement
-            key={el.id}
-            element={el}
-            active={active.includes(el.id)}
-          />)}
-        </PreviewMap>
+          Cancel
+        </Button>
+        <Button
+          size='compact-sm'
+          onClick={handleImport}
+        >
+          Import
+        </Button>
       </div>
     </div>
   );
@@ -54,6 +93,13 @@ function ImportDocumentModal ({
     else {
       setActive(prev => [...prev, id]);
     }
+  }
+
+  function handleImport () {
+    dispatch(MapperDocThunks.addElements(
+      elements.filter(el => active.includes(el.id))
+    ));
+    context.closeModal(modalId);
   }
 }
 
@@ -122,6 +168,19 @@ function _LeafletElement ({
       <Marker
         position={GLT.gj.coord.leaflet(element.position)}
         icon={active ? activePoint : point}
+        eventHandlers={{ click: onClick }}
+      />
+    )
+  }
+  if (element.type === 'LineString') {
+    return (
+      <Polyline
+        positions={GLT.gj.coords.leaflet(element.positions)}
+        eventHandlers={{ click: onClick }}
+        pathOptions={{
+          color: active ? "#0b5f00" : "#999",
+          weight: active ? 2 : 1,
+        }}
       />
     )
   }
@@ -144,10 +203,19 @@ function _LeafletElement ({
       />
     )
   }
+  if (element.type === 'Collection') {
+    return (<>
+      {element.elements.map(e => <_LeafletElement
+        key={e.id}
+        element={e}
+        active={active}
+        onClick={onClick}
+      />)}
+    </>)
+  }
 
   return null;
 }
-
 
 export function openImportDocument (props: ImportDocumentModalProps) {
   modals.openContextModal({

@@ -1,4 +1,5 @@
 import type { Position } from "geojson";
+import type { MapperElement } from "models/MapDocument";
 import { MapperActions, MapperHistory } from "pages/map-editor/MapperHistory";
 import type { AppDispatch, RootState } from "state/store";
 import { getElement, MapperDocActions } from "./docSlice";
@@ -10,6 +11,29 @@ type Thunk = (dispatch: AppDispatch, getState: () => RootState) => void;
  * in the history so that they can be undone and redone.
  */
 const MapperDocThunks = {
+  addElement (
+    element: MapperElement,
+    groupId?: string | null,
+    index?: number | null,
+  ) : Thunk {
+    return (dispatch, getState) => {
+      dispatch(MapperDocActions.addElements({
+        elements: [element],
+        groupId,
+        index,
+      }));
+    };
+  },
+  addElements (
+    elements: MapperElement[],
+    groupId?: string | null,
+    index?: number | null,
+  ) : Thunk {
+    return (dispatch, getState) => {
+      dispatch(MapperDocActions.addElements({ elements, groupId, index }));
+    };
+  },
+
   updatePointPosition (
     id: string, position: Position
   ) : Thunk {

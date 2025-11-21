@@ -46,8 +46,8 @@ export default function useUndo () {
   }
 
   function undoDeleteElement (action: DeleteElementMapperAction) {
-    dispatch(MapperDocActions.addElement({
-      element: action.element,
+    dispatch(MapperDocActions.addElements({
+      elements: [action.element],
       groupId: action.groupId,
       index: action.index,
     }));
@@ -76,7 +76,7 @@ export default function useUndo () {
     verts.splice(action.index, action.vertices.length);
 
     dispatch(MapperDocActions.updatePolygonVertices({
-      elementId:  el.id,
+      elementId: el.id,
       vertices: verts,
     }));
   }
