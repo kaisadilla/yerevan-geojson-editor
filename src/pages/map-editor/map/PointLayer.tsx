@@ -1,5 +1,5 @@
+import { useActiveElement } from "context/useActiveElement";
 import { getChildren, isContainer, type MapperElement } from "models/MapDocument";
-import { useMap } from "react-leaflet";
 import MapPoint from "../features/MapPoint";
 
 export interface PointLayerProps {
@@ -9,7 +9,7 @@ export interface PointLayerProps {
 function PointLayer ({
   group,
 }: PointLayerProps) {
-  const map = useMap();
+  const active = useActiveElement();
 
   const children = getChildren(group);
 
@@ -19,7 +19,7 @@ function PointLayer ({
   const innerGroups = children.filter(e => isContainer(e));
 
   return (<>
-    {points.filter(p => p.isHidden === false).map(p => <MapPoint
+    {points.filter(p => p.isHidden === false && p.id !== active.id).map(p => <MapPoint
       key={p.id}
       point={p}
     />)}

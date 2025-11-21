@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { isEventTargetEditable } from 'utils';
 import { MapperHistory } from '../MapperHistory';
 import styles from './Ribbon.module.scss';
+import useImport from './buttons/useImport';
 import useOpen from './buttons/useOpen';
 import useRedo from './buttons/useRedo';
 import useSave from './buttons/useSave';
@@ -24,6 +25,7 @@ function DocumentRibbon (props: EditorRibbonProps) {
   const { handleRedo } = useRedo();
   const { handleOpen } = useOpen();
   const { handleSave } = useSave();
+  const { handleImport } = useImport();
 
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -94,7 +96,9 @@ function DocumentRibbon (props: EditorRibbonProps) {
           label={t("ribbon.import.name")}
           description={t("ribbon.import.desc")}
         >
-          <Button>
+          <Button
+            onClick={handleImport}
+          >
             <FileArrowDownIcon size={24} weight='thin' />
           </Button>
         </DescriptiveTooltip>

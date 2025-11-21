@@ -6,6 +6,7 @@ import DocumentRibbon from "./document-ribbon/Ribbon";
 import Ribbon from "./edit-ribbon/Ribbon";
 import SettingsPanel from "./edit-ribbon/SettingsPanel";
 import ElementPanel from "./element-panel/ElementPanel";
+import FileDragScreen from "./FileDragScreen";
 import HistoryListener from "./HistoryListener";
 import Map from "./map/Map";
 import styles from "./page.module.scss";
@@ -27,6 +28,8 @@ function MapEditorPage (props: MapEditorPageProps) {
   return (
     <div ref={ref} className={styles.page}>
       <HistoryListener />
+
+      <FileDragScreen />
       
       <PanelGroup
         className={styles.documentPanelGroup}

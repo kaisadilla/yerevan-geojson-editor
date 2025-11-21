@@ -164,3 +164,6 @@ area.name = "Area"
 area.value = "{{value}} km²"
 
 verts.name = "Vertices"
+
+[modal.import_document]
+title = "Import GeoJSON features"

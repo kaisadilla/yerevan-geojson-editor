@@ -1,0 +1,70 @@
+.modal {
+  display: flex;
+  flex-direction: row;
+
+  height: 80vh;
+
+  .listContainer {
+    flex: 1;
+
+    height: 100%;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  .mapContainer {
+    flex: 2;
+
+    width: 600px;
+    height: 100%;
+    overflow: hidden;
+
+    padding: 12px;
+
+    .map {
+      width: 100%;
+      height: 100%;
+
+      border: 1px solid var(--color-primary);
+    }
+  }
+}
+
+.listItem {
+  --col-icon: var(--color-secondary-l1);
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  padding: 6px 12px;
+  gap: 12px;
+
+  > .type {
+    width: 16px;
+    color: var(--col-icon);
+
+    :global(.lucide) {
+      stroke-width: 1.5px;
+    }
+  }
+
+  > .name {
+    font-size: 9pt;
+  }
+}
+
+.point,
+.activePoint {
+  border: 1px solid white;
+}
+
+.point {
+  background-color: #999;
+  box-shadow: 0 0 0 1px #666;
+}
+
+.activePoint {
+  background-color: #0b5f00;
+  box-shadow: 0 0 0 1px #0b5f00;
+}

@@ -5,6 +5,49 @@ import { LEAFLYS_DIR_SEPARATOR, LEAFLYS_PROP_GROUP, LEAFLYS_PROP_HIDDEN, LEAFLYS
 import { stripExtension } from "utils";
 import { v4 as uuid } from "uuid";
 
+export function loadGeojsonFile (content: string) : MapperElement[] | null {
+  let json;
+  try {
+    json = JSON.parse(content);
+  }
+  catch (err) {
+    Logger.info("Tried to load an invalid json document.", content);
+    return null;
+  }
+
+  const errors = gValidator.valid(json, true);
+  
+  if (errors.length > 0) {
+    Logger.info("Invalid GeoJSON", errors);
+    return null;
+  }
+
+  const geojson = json as GeoJSON;
+
+  const elements: MapperElement[] = [];
+  
+  if (
+    geojson.type === 'Point'
+    || geojson.type === 'MultiPoint'
+    || geojson.type === 'LineString'
+    || geojson.type === 'MultiLineString'
+    || geojson.type === 'Polygon'
+    || geojson.type === 'MultiPolygon'
+    || geojson.type === 'GeometryCollection'
+  ) {
+    elements.push(GToMapper.geometryAsFeature(geojson));
+  }
+  else if (geojson.type === 'Feature') {
+    elements.push(GToMapper.feature(geojson));
+  }
+  else {
+    const group = GToMapper.featureCollection(geojson, false);
+    elements.push(...group.elements);
+  }
+
+  return elements;
+}
+
 export function loadMapperFile (
   filename: string, content: string
 ) : MapperDocument | null {

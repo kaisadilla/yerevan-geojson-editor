@@ -115,6 +115,13 @@ export interface ChangeElementMapperAction {
   after: MapperElement;
 }
 
+export interface MovePointAction {
+  type: 'move_point';
+  elementId: string;
+  before: Position;
+  after: Position;
+}
+
 export interface AddVerticesMapperAction {
   type: 'add_vertices';
   /**
@@ -174,6 +181,7 @@ export interface MoveVertexMapperAction {
 export type MapperAction = MultipleMapperAction
   | DeleteElementMapperAction
   | ChangeElementMapperAction
+  | MovePointAction
   | AddVerticesMapperAction
   | DeleteVerticesMapperAction
   | ChangeVerticesMapperAction
@@ -204,6 +212,15 @@ export const MapperActions = {
       before,
       after,
     } satisfies ChangeElementMapperAction;
+  },
+
+  movePoint (id: string, before: Position, after: Position) {
+    return {
+      type: 'move_point',
+      elementId: id,
+      before,
+      after,
+    } satisfies MovePointAction;
   },
 
   addVertices (id: string, index: number, vertices: Position[]) {

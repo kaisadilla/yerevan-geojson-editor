@@ -1,5 +1,5 @@
 import { useActiveElement } from "context/useActiveElement";
-import { MapperHistory, type AddVerticesMapperAction, type ChangeElementMapperAction, type ChangeVerticesMapperAction, type DeleteElementMapperAction, type DeleteVerticesMapperAction, type MapperAction, type MoveVertexMapperAction } from "pages/map-editor/MapperHistory";
+import { MapperHistory, type AddVerticesMapperAction, type ChangeElementMapperAction, type ChangeVerticesMapperAction, type DeleteElementMapperAction, type DeleteVerticesMapperAction, type MapperAction, type MovePointAction, type MoveVertexMapperAction } from "pages/map-editor/MapperHistory";
 import { useDispatch } from "react-redux";
 import { MapperDocActions } from "state/mapper/docSlice";
 import useMapperDoc from "state/mapper/useDoc";
@@ -28,6 +28,9 @@ export default function useRedo () {
     else if (action.type === 'change_element') {
       redoChangeElement(action);
     }
+    else if (action.type === 'move_point') {
+      redoMovePoint(action);
+    }
     else if (action.type === 'add_vertices') {
       redoAddVertices(action);
     }
@@ -50,6 +53,13 @@ export default function useRedo () {
     dispatch(MapperDocActions.changeElement({
       elementId: action.elementId,
       update: action.after,
+    }));
+  }
+
+  function redoMovePoint (action: MovePointAction) {
+    dispatch(MapperDocActions.updatePointPosition({
+      elementId: action.elementId,
+      position: action.after,
     }));
   }
 

@@ -1,8 +1,10 @@
 import { useActiveElement } from "context/useActiveElement";
 import type { Position } from "geojson";
 import { useDispatch } from "react-redux";
+import MapperDocThunks from "state/mapper/doc-slice-thunks";
 import useMapperDoc from "state/mapper/useDoc";
 import useMapperSettings from "state/mapper/useSettings";
+import { type AppDispatch } from "state/store";
 import PolygonMoveVertices from "../features/PolygonMoveVertices";
 import { MapperActions, MapperHistory } from "../MapperHistory";
 
@@ -14,7 +16,7 @@ function PolygonMoveVerticesTool (props: PolygonMoveVerticesToolProps) {
   const doc = useMapperDoc();
   const active = useActiveElement();
   const settings = useMapperSettings();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const polygon = active.getPolygon();
   if (!polygon) return null;
@@ -31,15 +33,7 @@ function PolygonMoveVerticesTool (props: PolygonMoveVerticesToolProps) {
   function handleMoveVertex (index: number, position: Position) {
     if (!polygon) return;
 
-    const before = polygon.vertices[index];
-
-    const verts = [...polygon.vertices];
-    verts[index] = position;
-    active.setVertices(verts);
-
-    MapperHistory.push(
-      MapperActions.moveVertex(polygon.id, index, before, position),
-    );
+    dispatch(MapperDocThunks.movePolygonVertex(polygon.id, index, position));
   }
 
   function handleAddVertex (index: number, position: Position) {

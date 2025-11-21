@@ -62,3 +62,19 @@
     margin-bottom: 0.35em;
   }
 }
+
+.mantine-Modal-root {
+  .mantine-Modal-header {
+    border-bottom: 1px solid var(--color-primary);
+
+    h2 {
+      font-weight: 350;
+      font-size: 15pt;
+      color: var(--color-primary-d2);
+    }
+  }
+
+  .mantine-Modal-body {
+    padding: 0;
+  }
+}
