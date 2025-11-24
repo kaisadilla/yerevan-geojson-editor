@@ -1,6 +1,6 @@
 import * as turf from "@turf/turf";
 import type { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
-import { circleToPolygon, LEAFLYS_DIR_SEPARATOR, LEAFLYS_PROP_GROUP, LEAFLYS_PROP_HIDDEN, polygonToPolygon, rectangleToPolygon, type MapperCircle, type MapperCollection, type MapperDocument, type MapperElement, type MapperGroup, type MapperLine, type MapperPoint, type MapperPolygon, type MapperRectangle, type MapperRegularPolygon } from "models/MapDocument";
+import { circleToPolygon, LEAFLYS_DIR_SEPARATOR, LEAFLYS_PROP_EAST, LEAFLYS_PROP_GROUP, LEAFLYS_PROP_HIDDEN, LEAFLYS_PROP_NORTH, LEAFLYS_PROP_SOUTH, LEAFLYS_PROP_TYPE, LEAFLYS_PROP_WEST, polygonToPolygon, rectangleToPolygon, type MapperCircle, type MapperCollection, type MapperDocument, type MapperElement, type MapperGroup, type MapperLine, type MapperPoint, type MapperPolygon, type MapperRectangle, type MapperRegularPolygon } from "models/MapDocument";
 
 type GFeature = Feature<Geometry, GeoJsonProperties>;
 
@@ -79,7 +79,17 @@ function convertPolygon (
 function convertRectangle (
   rect: MapperRectangle, dir: string[]
 ) : GFeature[] {
-  return convertRegularPolygon(rectangleToPolygon(rect), dir);
+  const res = convertRegularPolygon(rectangleToPolygon(rect), dir);
+
+  if (res.length === 1 && res[0].properties) {
+    res[0].properties[LEAFLYS_PROP_TYPE] = 'Rectangle';
+    res[0].properties[LEAFLYS_PROP_NORTH] = rect.north;
+    res[0].properties[LEAFLYS_PROP_SOUTH] = rect.south;
+    res[0].properties[LEAFLYS_PROP_WEST] = rect.west;
+    res[0].properties[LEAFLYS_PROP_EAST] = rect.east;
+  }
+
+  return res;
 }
 
 function convertCircle (

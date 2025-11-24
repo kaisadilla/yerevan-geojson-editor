@@ -56,6 +56,8 @@ export const mapperDocMiddleware: Middleware<{}, RootState> = store => next => a
   else if (
     MapperDocActions.updatePolygon.match(action)
     || MapperDocActions.updatePolygonVertices.match(action)
+    || MapperDocActions.updateRectangle.match(action)
+    || MapperDocActions.updateRectangleCorner.match(action)
   ) {
     const { elementId } = action.payload;
 

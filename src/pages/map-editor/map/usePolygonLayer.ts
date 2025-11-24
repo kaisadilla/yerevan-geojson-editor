@@ -2,7 +2,7 @@ import { useActiveElement } from "context/useActiveElement";
 import GLT from "GLT";
 import type { LeafletMouseEvent } from "leaflet";
 import Logger from "Logger";
-import { getChildren, shapeToPolygon, type MapperElement, type MapperShape } from "models/MapDocument";
+import { getChildren, isShape, shapeToPolygon, type MapperElement, type MapperShape } from "models/MapDocument";
 import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import useMapperDoc from "state/mapper/useDoc";
@@ -24,7 +24,7 @@ export default function usePolygonLayer (
   const innerGroups = children.filter(el => el.type === 'Group'
     || el.type === 'Collection'
   );
-  const polygons = children.filter(el => el.type === 'Polygon');
+  const polygons = children.filter(el => isShape(el));
 
   // On mount, build the leaflet polygons. On dismount, delete them from the map.
   useEffect(() => {

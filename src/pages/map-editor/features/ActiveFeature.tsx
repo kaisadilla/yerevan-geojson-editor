@@ -12,6 +12,7 @@ import PolygonDrawVerticesTool from '../tools/PolygonDrawVerticesTool';
 import PolygonMoveShapeTool from '../tools/PolygonMoveShapeTool';
 import PolygonMoveVerticesTool from '../tools/PolygonMoveVerticesTool';
 import PolygonSetOriginTool from '../tools/PolygonSetOriginTool';
+import RectangleMoveVerticesTool from '../tools/RectangleMoveVerticesTool';
 
 export interface ActiveFeatureProps {
   
@@ -72,6 +73,12 @@ function ActiveFeature ({
     );
     if (ui.tool === 'move_shape') return (
       <PolygonMoveShapeTool />
+    );
+  }
+  
+  if (feature.type === 'Rectangle') {
+    if (ui.tool === 'move_vertices') return (
+      <RectangleMoveVerticesTool />
     );
   }
 

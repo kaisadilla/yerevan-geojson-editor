@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Position } from "geojson";
 import Logger from "Logger";
-import { ContainerType, isContainer, isPseudoContainer, isShape, type MapperDocument, type MapperElement, type MapperGroup, type MapperPolygon } from "models/MapDocument";
+import { ContainerType, isContainer, isPseudoContainer, isShape, type MapperDocument, type MapperElement, type MapperGroup, type MapperPolygon, type MapperRectangle } from "models/MapDocument";
 import { v4 as uuid } from 'uuid';
 
 export interface MapperDocState {
@@ -268,6 +268,19 @@ function getSampleDocument () : MapperDocument {
     holes: [],
   });
 
+  doc.elements.push({
+    type: 'Rectangle',
+    id: uuid(),
+    name: "Rectangle",
+    properties: [],
+    isHidden: false,
+    north: 75,
+    south: 65,
+    west: 20,
+    east: 35,
+    holes: [],
+  });
+
   return doc;
 }
 
@@ -529,6 +542,34 @@ const mapperDocSlice = createSlice({
 
       el.vertices = vertices;
     },
+
+    updateRectangleCorner (state, action: PayloadAction<{
+      elementId: string;
+      edge: 'north' | 'south' | 'west' | 'east';
+      value: number;
+    }>) {
+      const { elementId, edge, value } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+
+      if (el.type !== 'Rectangle') return;
+
+      el[edge] = value;
+    },
+
+    updateRectangle (state, action: PayloadAction<{
+      elementId: string;
+      update: Partial<Omit<MapperRectangle, 'id'>>;
+    }>) {
+      const { elementId, update } = action.payload;
+
+      const el = getElement(state.content, elementId, true);
+      if (!el) return;
+      if (el.type !== 'Rectangle') return;
+
+      Object.assign(el, update);
+    }
   },
 });
 

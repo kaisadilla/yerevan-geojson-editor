@@ -20,6 +20,11 @@ export const LEAFLYS_DIR_SEPARATOR = "\\";
 
 export const LEAFLYS_PROP_HIDDEN = LEAFLYS_PROP_PREFIX + "hidden";
 export const LEAFLYS_PROP_GROUP = LEAFLYS_PROP_PREFIX + "group";
+export const LEAFLYS_PROP_TYPE = LEAFLYS_PROP_PREFIX + "type";
+export const LEAFLYS_PROP_NORTH = LEAFLYS_PROP_PREFIX + "north";
+export const LEAFLYS_PROP_SOUTH = LEAFLYS_PROP_PREFIX + "south";
+export const LEAFLYS_PROP_WEST = LEAFLYS_PROP_PREFIX + "west";
+export const LEAFLYS_PROP_EAST = LEAFLYS_PROP_PREFIX + "east";
 
 export interface BaseMapperElement {
   /**
@@ -141,6 +146,11 @@ export type MapperShape = MapperPolygon
   | MapperCircle
   ;
 
+export type MapperShapeData = MapperPolygonData
+  | MapperRectangleData
+  | MapperCircleData
+  ;
+
 /**
  * A MapperElement is either a MapperFeature or a MapperGroup.
  */
@@ -161,6 +171,9 @@ export const PseudoContainerType = new Set<MapperElementType>([
   'Rectangle',
   'Circle',
 ] as MapperElementType[]);
+
+export type Edge = 'north' | 'south' | 'west' | 'east';
+export type Corner = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
 
 /**
  * The types of `MapperElement` that can contain children.
@@ -193,7 +206,21 @@ export function polygonToPolygon (poly: MapperPolygon) : MapperRegularPolygon {
 }
 
 export function rectangleToPolygon (rect: MapperRectangle) : MapperRegularPolygon {
-  throw "Not yet implemented";
+  return {
+    type: 'Polygon',
+    id: rect.id,
+    name: rect.name,
+    properties: rect.properties,
+    isHidden: rect.isHidden,
+    vertices: [
+      [rect.west, rect.north],
+      [rect.east, rect.north],
+      [rect.east, rect.south],
+      [rect.west, rect.south],
+      [rect.west, rect.north],
+    ],
+    holes: rect.holes.map(h => shapeToPolygon(h)),
+  };
 }
 
 export function circleToPolygon (circle: MapperCircle) : MapperRegularPolygon {

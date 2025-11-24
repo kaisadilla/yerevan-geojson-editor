@@ -1,5 +1,5 @@
 import type { Position } from "geojson";
-import { ElementFactory, type MapperElement, type MapperPoint, type MapperPolygon } from "models/MapDocument";
+import { ElementFactory, type MapperElement, type MapperPoint, type MapperPolygon, type MapperRectangle } from "models/MapDocument";
 import Ops from "Ops";
 import { MapperActions, MapperHistory, type MapperAction } from "pages/map-editor/MapperHistory";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -29,6 +29,7 @@ interface ActiveElementValue extends InternalState {
   getElement: () => MapperElement | null;
   getPoint: () => MapperPoint | null;
   getPolygon: () => MapperPolygon | null;
+  getRectangle: () => MapperRectangle | null;
   setElement: (elementId: string | null, resetTool?: boolean) => void;
   setVertices: (verts: StateSetter<Position[]>) => void;
   setStroke: (verts: StateSetter<Position[]>) => void;
@@ -81,6 +82,13 @@ export const ActiveElementProvider = ({ children }: any) => {
     const el = getElement();
 
     if (el?.type === 'Polygon') return el;
+    return null;
+  }
+
+  function getRectangle () : MapperRectangle | null {
+    const el = getElement();
+
+    if (el?.type === 'Rectangle') return el;
     return null;
   }
 
@@ -239,6 +247,7 @@ export const ActiveElementProvider = ({ children }: any) => {
       getElement,
       getPoint,
       getPolygon,
+      getRectangle,
       setElement,
       setVertices,
       setStroke,

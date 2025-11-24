@@ -1,6 +1,6 @@
 import DormantTextbox from 'components/DormantTextbox';
 import { useActiveElement } from "context/useActiveElement";
-import { Boxes, Eye, EyeOff, Folder, MapPin, Pentagon, Waypoints } from 'lucide-react';
+import { Boxes, Circle, Eye, EyeOff, Folder, MapPin, Pentagon, Square, Waypoints } from 'lucide-react';
 import { isPseudoContainer, isShape, type MapperElement } from "models/MapDocument";
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -161,6 +161,8 @@ function Element ({
         {type === 'Point' && <MapPin />}
         {type === 'LineString' && <Waypoints />}
         {type === 'Polygon' && <Pentagon />}
+        {type === 'Rectangle' && <Square />}
+        {type === 'Circle' && <Circle />}
         {type === 'Collection' && <Boxes />}
       </div>
 

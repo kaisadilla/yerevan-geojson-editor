@@ -1,10 +1,13 @@
 import type { Position } from "geojson";
-import type { MapperElement } from "models/MapDocument";
+import type { Corner, Edge, MapperElement, MapperRectangle } from "models/MapDocument";
 import { MapperActions, MapperHistory } from "pages/map-editor/MapperHistory";
 import type { AppDispatch, RootState } from "state/store";
 import { getElement, MapperDocActions } from "./docSlice";
 
 type Thunk = (dispatch: AppDispatch, getState: () => RootState) => void;
+
+type CornerAndPosition = [place: Corner, pos: Position];
+type EdgeAndNumber = [place: Edge, pos: number];
 
 /**
  * Contains functions that alter the current document and register said changes
@@ -75,6 +78,70 @@ const MapperDocThunks = {
         vertices: verts,
       }));
     };
+  },
+
+  updateRectangle (
+    id: string, ...args: CornerAndPosition | EdgeAndNumber
+  ) : Thunk {
+    return (dispatch, getState) => {
+      const el = getElement(getState().mapEditorDoc.content, id, true);
+      if (!el || el.type !== 'Rectangle') return;
+
+      const [place, pos] = args;
+
+      if (
+        place === 'north'
+        || place === 'south'
+        || place === 'west'
+        || place === 'east'
+      ) {
+        dispatch(MapperDocActions.updateRectangleCorner({
+          elementId: el.id,
+          edge: place,
+          value: pos,
+        }));
+      }
+      else {
+        let north = el.north;
+        let south = el.south;
+        let west = el.west;
+        let east = el.east;
+
+        if (place === 'topLeft') {
+          north = pos[1];
+          west = pos[0];
+        }
+        else if (place === 'topRight') {
+          north = pos[1];
+          east = pos[0];
+        }
+        else if (place === 'bottomLeft') {
+          south = pos[1];
+          west = pos[0];
+        }
+        else if (place === 'bottomRight') {
+          south = pos[1];
+          east = pos[0];
+        }
+
+        if (south > north) {
+          [north, south] = [south, north];
+        }
+        if (east > west) {
+          [west, east] = [east, west];
+        }
+
+        dispatch(MapperDocActions.updateRectangle({
+          elementId: el.id,
+          update: {
+            north,
+            south,
+            east,
+            west,
+          } satisfies Partial<Omit<MapperRectangle, 'id'>>
+        }));
+      }
+    }
   },
 }
 

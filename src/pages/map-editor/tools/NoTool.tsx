@@ -1,5 +1,5 @@
 import GLT from 'GLT';
-import { isPseudoContainer, type MapperFeature, type MapperPoint, type MapperPolygon } from 'models/MapDocument';
+import { isPseudoContainer, shapeToPolygon, type MapperFeature, type MapperPoint, type MapperPolygon } from 'models/MapDocument';
 import { Marker, Polygon } from 'react-leaflet';
 import useMapperDoc from 'state/mapper/useDoc';
 import useMapperSettings from 'state/mapper/useSettings';
@@ -18,6 +18,9 @@ function NoTool ({
   );
   if (feature.type === 'Polygon') return (
     <_Polygon polygon={feature} />
+  );
+  if (feature.type === 'Rectangle') return (
+    <_Polygon polygon={shapeToPolygon(feature)} />
   );
 }
 

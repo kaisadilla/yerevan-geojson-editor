@@ -2,6 +2,7 @@ import { useActiveElement } from "context/useActiveElement";
 import useMapperDoc from "state/mapper/useDoc";
 import Point from "./Point";
 import Polygon from "./Polygon";
+import Rectangle from "./Rectangle";
 import styles from './Ribbon.module.scss';
 import Ribbon_Toggle from "./Ribbon.Toggle";
 
@@ -20,6 +21,7 @@ function Ribbon (props: RibbonProps) {
     <div className={styles.ribbon}>
       {el.type === 'Point' && <Point />}
       {el.type === 'Polygon' && <Polygon />}
+      {el.type === 'Rectangle' && <Rectangle />}
     </div>
   );
 }
