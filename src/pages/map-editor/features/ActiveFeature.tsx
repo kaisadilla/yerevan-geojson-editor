@@ -4,6 +4,7 @@ import useMapperDoc from 'state/mapper/useDoc';
 import useMapperUi from 'state/mapper/useUi';
 import NewPointTool from '../tools/NewPointTool';
 import NewPolygonTool from '../tools/NewPolygonTool';
+import NewRectangleTool from '../tools/NewRectangleTool';
 import NoTool from '../tools/NoTool';
 import PointMoveShapeTool from '../tools/PointMoveShapeTool';
 import PolygonCutTool from '../tools/PolygonCutTool';
@@ -37,7 +38,7 @@ function ActiveFeature ({
     <NewPolygonTool />
   );
   if (ui.tool === 'new_rectangle') return (
-    null
+    <NewRectangleTool />
   );
   if (ui.tool === 'new_circle') return (
     null

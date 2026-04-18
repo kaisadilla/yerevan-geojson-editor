@@ -1,6 +1,6 @@
 import GLT from 'GLT';
-import { isPseudoContainer, shapeToPolygon, type MapperFeature, type MapperPoint, type MapperPolygon } from 'models/MapDocument';
-import { Marker, Polygon } from 'react-leaflet';
+import { isPseudoContainer, shapeToPolygon, type MapperFeature, type MapperPoint, type MapperPolygon, type MapperRectangle } from 'models/MapDocument';
+import { ImageOverlay, Marker, Polygon } from 'react-leaflet';
 import useMapperDoc from 'state/mapper/useDoc';
 import useMapperSettings from 'state/mapper/useSettings';
 import useMarkers from '../features/useMarkers';
@@ -20,7 +20,7 @@ function NoTool ({
     <_Polygon polygon={feature} />
   );
   if (feature.type === 'Rectangle') return (
-    <_Polygon polygon={shapeToPolygon(feature)} />
+    <_Rectangle rectangle={feature} />
   );
 }
 
@@ -67,6 +67,37 @@ function _Polygon ({
     />
   );
 }
+
+interface _RectangleProps {
+  rectangle: MapperRectangle;
+}
+
+function _Rectangle ({
+  rectangle,
+}: _RectangleProps) {
+  const settings = useMapperSettings();
+
+  if (rectangle.image) return (<>
+    <ImageOverlay
+      url={rectangle.image}
+      bounds={[
+        [rectangle.north, rectangle.east],
+        [rectangle.south, rectangle.west],
+      ]}
+      opacity={rectangle.opacity}
+    />
+    <Polygon
+      positions={[GLT.gj.coords.leaflet(shapeToPolygon(rectangle).vertices)]}
+      weight={2}
+      color={settings.colors.active}
+      fillColor={"transparent"}
+    />
+  </>);
+  else return (
+    <_Polygon polygon={shapeToPolygon(rectangle)} />
+  );
+}
+
 
 
 export default NoTool;

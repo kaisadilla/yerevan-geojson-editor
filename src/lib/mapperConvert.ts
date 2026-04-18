@@ -1,7 +1,7 @@
 import type { Feature, FeatureCollection, GeoJSON, GeoJsonProperties, Geometry, Position } from "geojson";
 import * as gValidator from 'geojson-validation';
 import Logger from "Logger";
-import { LEAFLYS_DIR_SEPARATOR, LEAFLYS_PROP_GROUP, LEAFLYS_PROP_HIDDEN, LEAFLYS_PROP_PREFIX, type MapperDocument, type MapperElement, type MapperFeature, type MapperGroup, type MapperLine, type MapperLineData, type MapperPoint, type MapperPointData, type MapperPolygon, type MapperPolygonData } from "models/MapDocument";
+import { YEREVAN_DIR_SEPARATOR, YEREVAN_PROP_GROUP, YEREVAN_PROP_HIDDEN, YEREVAN_PROP_PREFIX, type MapperDocument, type MapperElement, type MapperFeature, type MapperGroup, type MapperLine, type MapperLineData, type MapperPoint, type MapperPointData, type MapperPolygon, type MapperPolygonData } from "models/MapDocument";
 import { stripExtension } from "utils";
 import { v4 as uuid } from "uuid";
 
@@ -120,7 +120,7 @@ export const GToMapper = {
         continue;
       }
 
-      const dirPath = gFeat.properties?.[LEAFLYS_PROP_GROUP];
+      const dirPath = gFeat.properties?.[YEREVAN_PROP_GROUP];
 
       if (!dirPath) {
         group.elements.push(mFeat);
@@ -129,7 +129,7 @@ export const GToMapper = {
         groupCache[dirPath].elements.push(mFeat);
       }
       else {
-        const names = dirPath.split(LEAFLYS_DIR_SEPARATOR);
+        const names = dirPath.split(YEREVAN_DIR_SEPARATOR);
 
         let parent = group;
 
@@ -170,14 +170,14 @@ export const GToMapper = {
         else if (key === "name") {
           mFeat.name = gFeature.properties["name"];
         }
-        else if (key === LEAFLYS_PROP_HIDDEN) {
+        else if (key === YEREVAN_PROP_HIDDEN) {
           mFeat.isHidden = gFeature.properties[key] === true;
         }
-        else if (key === LEAFLYS_PROP_GROUP) {
+        else if (key === YEREVAN_PROP_GROUP) {
           // Ignore this property.
         }
-        else if (key.startsWith(LEAFLYS_PROP_PREFIX)) {
-          Logger.info(`Ignored unknown leaflys property '${key}'.`);
+        else if (key.startsWith(YEREVAN_PROP_PREFIX)) {
+          Logger.info(`Ignored unknown Yerevan property '${key}'.`);
         }
         else {
           mFeat.properties.push({

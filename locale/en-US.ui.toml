@@ -1,20 +1,31 @@
 mapper.name = "Map editor"
 
+[dropzone]
+invalid_file.title = "Invalid file"
+invalid_file.message = "Sorry, we couldn't recognize this file's format."
+
+[notification]
+action_cancelled = "Action cancelled"
+
+[actions]
+open.notification.error.title = "Failed to open document"
+open.notification.error.message = "Sorry, we couldn't parse this file."
+
 [ribbon]
 new.name = "New document"
 new.desc = "Create a new blank document."
 
 open.name = "Open document"
-open.desc = "Opens a different Leaflys document. For GeoJson documents from other origins, use 'Import' instead."
+open.desc = "Opens a different Yerevan document. For GeoJson documents from other origins, use 'Import' instead."
 
 save.name = "Save document"
-save.desc = "Saves this document as a GeoJson file, encoding all Leaflys-related metadata for future use inside this app. Use this option if you intend to open the document in this app in the future."
+save.desc = "Saves this document as a GeoJson file, encoding all Yerevan-related metadata for future use inside this app. Use this option if you intend to open the document in this app in the future."
 
 import.name = "Import GeoJSON"
 import.desc = "Add the contents of a GeoJson file (partially or completely) to this document."
 
 export.name = "Export GeoJSON"
-export.desc = "Save this document as a GeoJson file, without encoding any Leaflys-related metadata. Use this option if you don't intend to reopen it in this app."
+export.desc = "Save this document as a GeoJson file, without encoding any Yerevan-related metadata. Use this option if you don't intend to reopen it in this app."
 
 undo.name = "Undo"
 
@@ -25,7 +36,7 @@ settings.desc = "Edit settings and properties related to this document and the a
 
 [element_panel.ribbon]
 group.name = "Group"
-group.desc = "A folder to group features together. This is a Leaflys-only feature: the document will be saved as a valid (flat) GeoJson FeatureCollection, with metadata to reconstruct the groups later on."
+group.desc = "A folder to group features together. This is a Yerevan-only feature: the document will be saved as a valid (flat) GeoJson FeatureCollection, with metadata to reconstruct the groups later on."
 
 point.name = "Point"
 
@@ -38,7 +49,7 @@ rectangle.name = "Rectangle"
 circle.name = "Circle"
 
 collection.name = "Geometry collection"
-collection.desc = "A GeoJson collection of features. Leaflys will automatically pick the correct collection type on save. As per GeoJson standard, the contents of a GeoJson collection are not independent and will not retain their individual properties."
+collection.desc = "A GeoJson collection of features. Yerevan will automatically pick the correct collection type on save. As per the GeoJson standard, the contents of a GeoJson collection are not independent and will not retain their individual properties."
 
 [tool_ribbon]
 point.title = "Point"
@@ -167,3 +178,17 @@ verts.name = "Vertices"
 
 [modal.import_document]
 title = "Import GeoJSON features"
+
+[element_info]
+attributes.name = "Attributes"
+
+attributes.rect.image.name = "Image"
+attributes.rect.image.desc = "An image that will fill this rect."
+attributes.rect.opacity.name = "Opacity"
+attributes.rect.opacity.desc = "The opacity of the image contained by this rect. This attribute only affects rectangles with images."
+attributes.rect.interactive.name = "Interactive"
+attributes.rect.interactive.desc = "In this editor, whether this element responds to clicks or not. Disable interactivity to use images as references without interfering with your edition. This attribute only affects rectangles with images."
+attributes.rect.save_image.name = "Save image"
+attributes.rect.save_image.desc = "If true, the image is embedded (as a base-64 string) in the document."
+
+properties.name = "Properties"

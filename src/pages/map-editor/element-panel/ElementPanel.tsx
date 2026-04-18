@@ -20,7 +20,9 @@ function ElementPanel (props: ElementPanelProps) {
       <div className={styles.header}>
         <Text lineClamp={1}>{doc.content.name}</Text>
       </div>
+      
       <Ribbon />
+
       <ScrollArea
         classNames={{
           root: styles.treeContainer,

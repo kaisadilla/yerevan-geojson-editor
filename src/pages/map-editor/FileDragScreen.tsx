@@ -1,71 +1,178 @@
-import { useEffect, useRef, useState } from 'react';
+import { Text } from '@mantine/core';
+import { Dropzone, type FileWithPath } from '@mantine/dropzone';
+import { modals } from '@mantine/modals';
+import { notifications } from '@mantine/notifications';
+import { FileArrowDownIcon, FolderOpenIcon, UploadSimpleIcon, XIcon } from '@phosphor-icons/react';
+import Constants from 'Constants';
+import { loadGeojsonFile, loadMapperFile } from 'lib/mapperConvert';
+import Logger from 'Logger';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
+import { MapperDocActions } from 'state/mapper/docSlice';
 import styles from './FileDragScreen.module.scss';
+import { openImportDocument } from './modals/ImportDocument';
 
 export interface FileDragScreenProps {
   
 }
 
-function FileDragScreen (props: FileDragScreenProps) {
-  const [isDragging, setDragging] = useState(false);
-  let dragCounter = useRef(0);
+function FileDragScreen () {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
 
-  useEffect(() =>  {
-    window.addEventListener("dragenter", handleDragEnter);
-    window.addEventListener("dragleave", handleDragLeave);
-    window.addEventListener("dragover", handleDragOver);
-    window.addEventListener("drop", handleDrop);
+  const [visible, setVisible] = useState(false);
 
+  useEffect(() => {
+    let dragCounter = 0;
+
+    const onEnter = () => { dragCounter++; setVisible(true); };
+    const onLeave = () => { dragCounter--; if (dragCounter === 0) setVisible(false); };
+    const onDrop  = () => { dragCounter = 0; setVisible(false); };
+
+    window.addEventListener('dragenter', onEnter);
+    window.addEventListener('dragleave', onLeave);
+    window.addEventListener('drop', onDrop);
     return () => {
-      window.removeEventListener("dragenter", handleDragEnter);
-      window.removeEventListener("dragleave", handleDragLeave);
-      window.removeEventListener("dragover", handleDragOver);
-      window.removeEventListener("drop", handleDrop);
+      window.removeEventListener('dragenter', onEnter);
+      window.removeEventListener('dragleave', onLeave);
+      window.removeEventListener('drop', onDrop);
     };
   }, []);
 
-  if (isDragging === false) return null;
+  if (!visible) return null;
 
-  return (
-    <div className={styles.overlay}>
-      <div className={styles.dropArea}>
-        Drop here to open 
-      </div>
-    </div>
+  return createPortal(
+    <div
+      className={styles.overlay}
+    >
+      <Dropzone
+        classNames={{
+          root: styles.dropzoneRoot,
+          inner: styles.dropzoneInner,
+        }}
+        onDrop={handleDropOpen}
+        onReject={handleReject}
+        accept={[Constants.geojsonAccept]}
+      >
+        <Dropzone.Accept>
+          <UploadSimpleIcon size={52} />
+        </Dropzone.Accept>
+
+        <Dropzone.Reject>
+          <XIcon size={52} />
+        </Dropzone.Reject>
+
+        <Dropzone.Idle>
+          <FolderOpenIcon size={52} color="var(--color-secondary-l1)" />
+        </Dropzone.Idle>
+
+        <div className={styles.title}>
+          <Text size="xl" inline>
+            Open
+          </Text>
+          <Text size="sm" c="dimmed" inline mt={7}>
+            Drag here to open the file as a new document.
+          </Text>
+        </div>
+      </Dropzone>
+
+      <Dropzone
+        classNames={{
+          root: styles.dropzoneRoot,
+          inner: styles.dropzoneInner,
+        }}
+        onDrop={handleDropImport}
+        onReject={handleReject}
+        accept={[Constants.geojsonAccept]}
+      >
+        <Dropzone.Accept>
+          <UploadSimpleIcon size={52} />
+        </Dropzone.Accept>
+
+        <Dropzone.Reject>
+          <XIcon size={52} />
+        </Dropzone.Reject>
+
+        <Dropzone.Idle>
+          <FileArrowDownIcon size={52} color="var(--color-secondary-l1)" />
+        </Dropzone.Idle>
+
+        <div className={styles.title}>
+          <Text size="xl" inline>
+            Import
+          </Text>
+          <Text size="sm" c="dimmed" inline mt={7}>
+            Drag here to import the elements of a GeoJSON file into the current document.
+          </Text>
+        </div>
+      </Dropzone>
+    </div>,
+    document.body
   );
 
-  function handleDragEnter (evt: DragEvent) {
-    evt.preventDefault();
-    evt.stopPropagation();
-
-    if (evt.dataTransfer?.types.includes('Files') === false) return;
-
-    dragCounter.current++;
-    setDragging(true);
+  function handleDropOpen (evt: FileWithPath[]) {
+    modals.openConfirmModal({
+      title: "Open document",
+      children: (
+        <Text size="sm">
+          Do you want to discard the current document to open this one?
+        </Text>
+      ),
+      labels: {
+        confirm: "Ok",
+        cancel: "Cancel"
+      },
+      onConfirm: () => handleConfirmOpen(evt[0]),
+      onCancel: handleCancelOpen,
+    });
   }
 
-  function handleDragLeave (evt: DragEvent) {
-    evt.preventDefault();
-    evt.stopPropagation();
+  async function handleDropImport (evt: FileWithPath[]) {
+    const txt = await evt[0].text();
+    const elements = loadGeojsonFile(txt);
+    if (elements === null) return;
 
-    dragCounter.current--;
+    openImportDocument({
+      elements,
+    });
+  }
 
-    if (dragCounter.current <= 0) {
-      setDragging(false);
+  function handleReject () {
+    notifications.show({
+      color: 'red',
+      title: t("dropzone.invalid_file.title"),
+      message: t("dropzone.invalid_file.message"),
+    });
+  }
+
+  async function handleConfirmOpen (evt: FileWithPath) {
+    const txt = await evt.text();
+    
+    const doc = loadMapperFile(evt.name, txt);
+
+    if (!doc) {
+      Logger.info("Failed to load document.");
+
+      notifications.show({
+        color: 'red',
+        title: t("actions.open.notification.error.title"),
+        message: t("actions.open.notification.error.message"),
+      });
+
+      return;
     }
+
+    dispatch(MapperDocActions.setDocument(doc));
   }
 
-  function handleDragOver (evt: DragEvent) {
-    evt.preventDefault();
-    evt.stopPropagation();
-
-  }
-
-  function handleDrop (evt: DragEvent) {
-    evt.preventDefault();
-    evt.stopPropagation();
-
-    setDragging(false);
-    console.log("dropped", evt.dataTransfer?.files);
+  function handleCancelOpen () {
+    notifications.show({
+      color: 'blue',
+      title: t("notification.action_cancelled"),
+      message: "",
+    });
   }
 }
 

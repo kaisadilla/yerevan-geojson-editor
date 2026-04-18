@@ -80,7 +80,19 @@ const MapperDocThunks = {
     };
   },
 
-  updateRectangle (
+  updateRectangle (id: string, update: Partial<MapperRectangle>) : Thunk {
+    return (dispatch, getState) => {
+      const el = getElement(getState().mapEditorDoc.content, id, true);
+      if (!el || el.type !== 'Rectangle') return;
+
+      dispatch(MapperDocActions.updateRectangle({
+        elementId: el.id,
+        update,
+      }));
+    }
+  },
+
+  updateRectanglePosition (
     id: string, ...args: CornerAndPosition | EdgeAndNumber
   ) : Thunk {
     return (dispatch, getState) => {

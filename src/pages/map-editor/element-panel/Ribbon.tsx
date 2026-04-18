@@ -24,7 +24,10 @@ function Ribbon () {
 
   alt['1'] = handleNewGroup;
   alt['2'] = () => handleTool('new_point');
+  alt['3'] = () => handleTool('new_line');
   alt['4'] = () => handleTool('new_polygon');
+  alt['5'] = () => handleTool('new_rectangle');
+  alt['6'] = () => handleTool('new_circle');
   standalone['Escape'] = () => dispatch(MapperUiActions.setTool(null));
 
   return (
@@ -55,9 +58,12 @@ function Ribbon () {
         label={t("element_panel.ribbon.line.name")}
         shortcut="Alt + 3"
       >
-        <Button>
+        <ToggleButton
+          active={ui.tool === 'new_line'}
+          onChange={() => handleTool('new_line')}
+        >
           <Waypoints />
-        </Button>
+        </ToggleButton>
       </DescriptiveTooltip>
 
       <DescriptiveTooltip
@@ -76,18 +82,24 @@ function Ribbon () {
         label={t("element_panel.ribbon.rectangle.name")}
         shortcut="Alt + 5"
       >
-        <Button>
+        <ToggleButton
+          active={ui.tool === 'new_rectangle'}
+          onChange={() => handleTool('new_rectangle')}
+        >
           <Square />
-        </Button>
+        </ToggleButton>
       </DescriptiveTooltip>
 
       <DescriptiveTooltip
         label={t("element_panel.ribbon.circle.name")}
         shortcut="Alt + 6"
       >
-        <Button>
+        <ToggleButton
+          active={ui.tool === 'new_circle'}
+          onChange={() => handleTool('new_circle')}
+        >
           <Circle />
-        </Button>
+        </ToggleButton>
       </DescriptiveTooltip>
 
       <DescriptiveTooltip

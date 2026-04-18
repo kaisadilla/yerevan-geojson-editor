@@ -13,18 +13,18 @@ export interface MapperProperty {
 }
 
 /**
- * The prefix used for Leaflys-defined GeoJson properties.
+ * The prefix used for Yerevan-defined GeoJson properties.
  */
-export const LEAFLYS_PROP_PREFIX = "_leaflys_";
-export const LEAFLYS_DIR_SEPARATOR = "\\";
+export const YEREVAN_PROP_PREFIX = "_yerevan_";
+export const YEREVAN_DIR_SEPARATOR = "\\";
 
-export const LEAFLYS_PROP_HIDDEN = LEAFLYS_PROP_PREFIX + "hidden";
-export const LEAFLYS_PROP_GROUP = LEAFLYS_PROP_PREFIX + "group";
-export const LEAFLYS_PROP_TYPE = LEAFLYS_PROP_PREFIX + "type";
-export const LEAFLYS_PROP_NORTH = LEAFLYS_PROP_PREFIX + "north";
-export const LEAFLYS_PROP_SOUTH = LEAFLYS_PROP_PREFIX + "south";
-export const LEAFLYS_PROP_WEST = LEAFLYS_PROP_PREFIX + "west";
-export const LEAFLYS_PROP_EAST = LEAFLYS_PROP_PREFIX + "east";
+export const YEREVAN_PROP_HIDDEN = YEREVAN_PROP_PREFIX + "hidden";
+export const YEREVAN_PROP_GROUP = YEREVAN_PROP_PREFIX + "group";
+export const YEREVAN_PROP_TYPE = YEREVAN_PROP_PREFIX + "type";
+export const YEREVAN_PROP_NORTH = YEREVAN_PROP_PREFIX + "north";
+export const YEREVAN_PROP_SOUTH = YEREVAN_PROP_PREFIX + "south";
+export const YEREVAN_PROP_WEST = YEREVAN_PROP_PREFIX + "west";
+export const YEREVAN_PROP_EAST = YEREVAN_PROP_PREFIX + "east";
 
 export interface BaseMapperElement {
   /**
@@ -93,6 +93,10 @@ export interface MapperRectangleData {
   west: number;
   east: number;
   holes: MapperShape[];
+  image: string | null;
+  opacity: number;
+  interactive: boolean;
+  saveImage: boolean;
 }
 
 export interface MapperRectangle extends BaseMapperElement, MapperRectangleData {
@@ -106,19 +110,6 @@ export interface MapperCircleData {
 }
 
 export interface MapperCircle extends BaseMapperElement, MapperCircleData {
-}
-
-export interface MapperImageData {
-  type: 'Image';
-  north: number;
-  south: number;
-  west: number;
-  east: number;
-  image: string;
-  isBackgroundImage: boolean;
-}
-
-export interface MapperImage extends BaseMapperElement, MapperImageData {
 }
 
 /**
@@ -284,6 +275,31 @@ export const ElementFactory = {
       properties: [],
       isHidden: false,
       position,
+    };
+  },
+
+  rectangle (
+    north: number,
+    south: number,
+    west: number,
+    east: number,
+    name: string = ""
+  ) : MapperRectangle {
+    return {
+      type: 'Rectangle',
+      id: uuid(),
+      name,
+      properties: [],
+      isHidden: false,
+      north,
+      south,
+      west,
+      east,
+      holes: [],
+      image: null,
+      interactive: false,
+      opacity: 1,
+      saveImage: true,
     };
   },
 

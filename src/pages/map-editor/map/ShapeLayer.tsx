@@ -1,19 +1,22 @@
 import { useActiveElement } from "context/useActiveElement";
-import type { LeafletMouseEvent } from "leaflet";
-import { isShape, type MapperElement } from "models/MapDocument";
+import GLT from "GLT";
+import { type LeafletMouseEvent } from "leaflet";
+import { isShape, shapeToPolygon, type MapperElement, type MapperRectangle } from "models/MapDocument";
 import { useEffect, useState } from "react";
+import { ImageOverlay, Polygon } from "react-leaflet";
 import Mapper, { type MapperActiveElementChangeEvent, type MapperAddElementsEvent, type MapperDeleteElementEvent, type MapperHideEvent, type MapperUpdateElementEvent } from "state/mapper/events";
 import useMapperDoc from "state/mapper/useDoc";
+import useMapperSettings from "state/mapper/useSettings";
 import useMapperUi from "state/mapper/useUi";
 import usePolygonLayer from "./usePolygonLayer";
 
-export interface PolygonLayerProps {
+export interface ShapeLayerProps {
   group: MapperElement;
 }
 
-function PolygonLayer ({
+function ShapeLayer ({
   group,
-}: PolygonLayerProps) {
+}: ShapeLayerProps) {
   const [isHidden, setHidden] = useState(group.isHidden);
 
   const doc = useMapperDoc();
@@ -22,7 +25,7 @@ function PolygonLayer ({
 
   const layer = usePolygonLayer(
     group,
-    handlePolygonClick,
+    handleShapeClick,
   );
 
   // Listeners for Mapper events.
@@ -73,11 +76,19 @@ function PolygonLayer ({
     layer.setActive(activeParent);
   }, [active.id]);
 
-  return isHidden
-    ? null
-    : layer.innerGroups.map(g => <PolygonLayer key={g.id} group={g} />);
+  const rects = layer.children.filter(p => p.type === 'Rectangle');
+
+  return (<>
+    {isHidden
+      ? null
+      : layer.innerGroups.map(g => <ShapeLayer key={g.id} group={g} />)}
+    <_RectangleLayer
+      rectangles={rects}
+      onClick={handleShapeClick}
+    />
+  </>)
   
-  function handlePolygonClick (evt: LeafletMouseEvent, id: string) {
+  function handleShapeClick (evt: LeafletMouseEvent, id: string) {
     if (evt.originalEvent.ctrlKey) {
       if (ui.tool === 'union') {
         active.union(id, ui.toolSettings.deleteFeaturesUsedByCombine);
@@ -105,7 +116,7 @@ function PolygonLayer ({
 
   function handleAddElements (evt: MapperAddElementsEvent) {
     for (const el of evt.elements) {
-      if (isShape(el) === false) continue;
+      if (el.type !== 'Polygon') continue;
       if (evt.groupId !== group.id) continue;
 
       layer.addPolygon(el);
@@ -117,11 +128,11 @@ function PolygonLayer ({
   }
 
   function handleUpdateElement (evt: MapperUpdateElementEvent) {
-    if (isShape(evt.update) === false) return;
+    if (evt.update.type !== 'Polygon') return;
 
     const parent = doc.latest().getParent(evt.elementId);
 
-    if (parent && isShape(parent)) {
+    if (parent && parent.type === 'Polygon') {
       layer.updatePolygon(parent);
     }
     else {
@@ -144,4 +155,61 @@ function PolygonLayer ({
   }
 }
 
-export default PolygonLayer;
+interface _RectangleLayerProps {
+  rectangles: MapperRectangle[];
+  onClick: (evt: LeafletMouseEvent, elementId: string) => void;
+}
+
+function _RectangleLayer ({
+  rectangles,
+  onClick,
+}: _RectangleLayerProps) {
+  const active = useActiveElement();
+  const settings = useMapperSettings();
+
+  return (<>
+    {rectangles.map(rect => {
+      if (rect.id === active.id) return null;
+      if (rect.isHidden) return null;
+
+      if (rect.image) return (
+        <ImageOverlay
+          key={rect.id}
+          url={rect.image!}
+          bounds={[
+            [rect.north, rect.east],
+            [rect.south, rect.west],
+          ]}
+          opacity={rect.opacity}
+          // @ts-ignore this property exists.
+          interactive={rect.interactive}
+          eventHandlers={{
+            click: (evt: LeafletMouseEvent) => onClick?.(evt, rect.id)
+          }}
+          zIndex={-1000}
+        />
+      )
+      else {
+        const p = shapeToPolygon(rect);
+
+        return (
+          <Polygon
+            key={rect.id}
+            positions={[
+              GLT.gj.coords.leaflet(p.vertices),
+              ...p.holes.map(h => GLT.gj.coords.leaflet(h.vertices))
+            ]}
+            weight={2}
+            color={settings.colors.default}
+            eventHandlers={{
+              click: (evt: LeafletMouseEvent) => onClick?.(evt, rect.id)
+            }}
+          />
+        )
+      }
+    })}
+  </>);
+}
+
+
+export default ShapeLayer;

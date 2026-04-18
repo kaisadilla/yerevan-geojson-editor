@@ -4,7 +4,7 @@ import useMapperDoc from 'state/mapper/useDoc';
 import ActiveFeature from '../features/ActiveFeature';
 import MapPolygon from '../features/MapPolygon';
 import PointLayer from './PointLayer';
-import PolygonLayer from './PolygonLayer';
+import ShapeLayer from './ShapeLayer';
 
 export interface LeafletElementMapProps {
   
@@ -35,7 +35,7 @@ function LeafletElementMap (props: LeafletElementMapProps) {
 
   return (
     <>
-      <PolygonLayer group={doc.content} />
+      <ShapeLayer group={doc.content} />
       <PointLayer group={doc.content} />
       {siblings && siblings.map(s => <MapPolygon
         key={s.id + "_" + active.id}

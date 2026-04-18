@@ -6,6 +6,10 @@ import 'material-symbols';
 // eslint-disable-next-line import/order
 import '@mantine/core/styles.css';
 // eslint-disable-next-line import/order
+import '@mantine/dropzone/styles.css';
+// eslint-disable-next-line import/order
+import '@mantine/notifications/styles.css';
+// eslint-disable-next-line import/order
 import './styles/root.scss';
 
 function App () {

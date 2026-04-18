@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from 'react-router';
 
 import { ModalsProvider } from '@mantine/modals';
+import { Notifications } from '@mantine/notifications';
 import { ActiveElementProvider } from 'context/useActiveElement.tsx';
 import { KeyboardProvider } from 'context/useKeyboard.tsx';
 import 'i18n';
@@ -78,7 +79,10 @@ createRoot(document.getElementById('root')!).render(
             }}
             modals={{
               importDocument: ImportDocumentModal,
-            }}>
+            }}
+          >
+
+            <Notifications />
 
             <App />
 

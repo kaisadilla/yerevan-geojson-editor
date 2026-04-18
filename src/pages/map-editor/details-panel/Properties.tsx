@@ -1,20 +1,21 @@
 import { Table, TextInput, Tooltip } from '@mantine/core';
 import { LockSimpleIcon, XCircleIcon } from '@phosphor-icons/react';
 import useUuid from 'hook/useUuid';
-import { LEAFLYS_PROP_PREFIX, type MapperElement, type MapperProperty } from 'models/MapDocument';
+import { YEREVAN_PROP_PREFIX, type MapperElement, type MapperProperty } from 'models/MapDocument';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { MapperDocActions } from 'state/mapper/docSlice';
-import styles from './PropertiesTable.module.scss';
+import { type AppDispatch } from 'state/store';
+import styles from './Properties.module.scss';
 
-export interface PropertiesTableProps {
+export interface PropertiesProps {
   element: MapperElement;
 }
 
-function PropertiesTable ({
+function Properties ({
   element,
-}: PropertiesTableProps) {
-  const dispatch = useDispatch();
+}: PropertiesProps) {
+  const dispatch = useDispatch<AppDispatch>();
   const uuid = useUuid();
 
   const { t } = useTranslation();
@@ -75,7 +76,7 @@ function PropertiesTable ({
         />
       </Table.Tbody>
     </Table>
-  )
+  );
 
   function handleChangeName (name: string) {
     dispatch(MapperDocActions.setElementName({
@@ -132,9 +133,9 @@ function PropertiesTable ({
       errors.push("Duplicate name.");
     }
 
-    if (prop.name.startsWith(LEAFLYS_PROP_PREFIX)) {
+    if (prop.name.startsWith(YEREVAN_PROP_PREFIX)) {
       errors.push(
-        "'_leaflys_' is a prefix reserved for this app. Using it for " +
+        "'_yerevan_' is a prefix reserved for this app. Using it for " +
         " user-defined properties will result in undefined behavior."
       );
     }
@@ -142,6 +143,8 @@ function PropertiesTable ({
     return errors.length === 0 ? undefined : errors.join("\n");
   }
 }
+
+
 
 interface _PropRowProps {
   name: string;
@@ -214,5 +217,4 @@ function _PropRow ({
   );
 }
 
-
-export default PropertiesTable;
+export default Properties;

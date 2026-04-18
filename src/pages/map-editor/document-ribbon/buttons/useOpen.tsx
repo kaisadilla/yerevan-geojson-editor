@@ -1,3 +1,4 @@
+import Constants from 'Constants';
 import fileOpen from 'file-open';
 import { loadMapperFile } from 'lib/mapperConvert';
 import Logger from 'Logger';
@@ -10,7 +11,7 @@ export default function useOpen () {
   async function handleOpen () {
     const files = await fileOpen({
       multiple: false,
-      accept: ".geojson,application/geo+json,.json,application/json",
+      accept: Constants.geojsonAccept,
     });
 
     if (files.length < 1) {

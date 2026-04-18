@@ -1,3 +1,3 @@
-# Project: Leaflys 2
+# Yerevan GeoJSON Editor
 
-Follow the progress at [leaflys2.azariadev.dev](https://leaflys2.azariadev.dev/).
+Follow the progress at [yerevan.azariadev.dev](https://yerevan.azariadev.dev/).

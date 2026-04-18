@@ -10,7 +10,7 @@ export default function useSave () {
     const txt = JSON.stringify(obj);
 
     const blob = new Blob([txt], {
-        type: "text/plain;charset=utf-8"
+      type: "text/plain;charset=utf-8"
     });
     
     saveAs(blob, "unnamed.geojson");

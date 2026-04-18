@@ -1,6 +1,6 @@
 import * as turf from "@turf/turf";
 import type { Feature, FeatureCollection, GeoJsonProperties, Geometry } from "geojson";
-import { circleToPolygon, LEAFLYS_DIR_SEPARATOR, LEAFLYS_PROP_EAST, LEAFLYS_PROP_GROUP, LEAFLYS_PROP_HIDDEN, LEAFLYS_PROP_NORTH, LEAFLYS_PROP_SOUTH, LEAFLYS_PROP_TYPE, LEAFLYS_PROP_WEST, polygonToPolygon, rectangleToPolygon, type MapperCircle, type MapperCollection, type MapperDocument, type MapperElement, type MapperGroup, type MapperLine, type MapperPoint, type MapperPolygon, type MapperRectangle, type MapperRegularPolygon } from "models/MapDocument";
+import { circleToPolygon, polygonToPolygon, rectangleToPolygon, YEREVAN_DIR_SEPARATOR, YEREVAN_PROP_EAST, YEREVAN_PROP_GROUP, YEREVAN_PROP_HIDDEN, YEREVAN_PROP_NORTH, YEREVAN_PROP_SOUTH, YEREVAN_PROP_TYPE, YEREVAN_PROP_WEST, type MapperCircle, type MapperCollection, type MapperDocument, type MapperElement, type MapperGroup, type MapperLine, type MapperPoint, type MapperPolygon, type MapperRectangle, type MapperRegularPolygon } from "models/MapDocument";
 
 type GFeature = Feature<Geometry, GeoJsonProperties>;
 
@@ -82,11 +82,11 @@ function convertRectangle (
   const res = convertRegularPolygon(rectangleToPolygon(rect), dir);
 
   if (res.length === 1 && res[0].properties) {
-    res[0].properties[LEAFLYS_PROP_TYPE] = 'Rectangle';
-    res[0].properties[LEAFLYS_PROP_NORTH] = rect.north;
-    res[0].properties[LEAFLYS_PROP_SOUTH] = rect.south;
-    res[0].properties[LEAFLYS_PROP_WEST] = rect.west;
-    res[0].properties[LEAFLYS_PROP_EAST] = rect.east;
+    res[0].properties[YEREVAN_PROP_TYPE] = 'Rectangle';
+    res[0].properties[YEREVAN_PROP_NORTH] = rect.north;
+    res[0].properties[YEREVAN_PROP_SOUTH] = rect.south;
+    res[0].properties[YEREVAN_PROP_WEST] = rect.west;
+    res[0].properties[YEREVAN_PROP_EAST] = rect.east;
   }
 
   return res;
@@ -125,10 +125,10 @@ function generateProps (
   }
 
   if (el.isHidden) {
-    props[LEAFLYS_PROP_HIDDEN] = true;
+    props[YEREVAN_PROP_HIDDEN] = true;
   }
   if (dir.length > 0) {
-    props[LEAFLYS_PROP_GROUP] = dir.join(LEAFLYS_DIR_SEPARATOR);
+    props[YEREVAN_PROP_GROUP] = dir.join(YEREVAN_DIR_SEPARATOR);
   }
 
   return props;

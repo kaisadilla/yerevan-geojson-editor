@@ -2,7 +2,7 @@ import { useActiveElement } from "context/useActiveElement";
 import GLT from "GLT";
 import type { LeafletMouseEvent } from "leaflet";
 import Logger from "Logger";
-import { getChildren, isShape, shapeToPolygon, type MapperElement, type MapperShape } from "models/MapDocument";
+import { getChildren, shapeToPolygon, type MapperElement, type MapperPolygon } from "models/MapDocument";
 import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import useMapperDoc from "state/mapper/useDoc";
@@ -24,7 +24,7 @@ export default function usePolygonLayer (
   const innerGroups = children.filter(el => el.type === 'Group'
     || el.type === 'Collection'
   );
-  const polygons = children.filter(el => isShape(el));
+  const polygons = children.filter(el => el.type === 'Polygon');
 
   // On mount, build the leaflet polygons. On dismount, delete them from the map.
   useEffect(() => {
@@ -43,6 +43,10 @@ export default function usePolygonLayer (
   }, [onClick]);
 
   return {
+    /**
+     * The children contained by this element.
+     */
+    children,
     /**
      * The groups that are inside this one. This includes pseudo-groups.
      */
@@ -104,7 +108,7 @@ export default function usePolygonLayer (
     lPolygons.current = {};
   }
 
-  function addPolygon (el: MapperShape) {
+  function addPolygon (el: MapperPolygon) {
     if (lPolygons.current[el.id]) return;
 
     const lPol = _createPolygon(el);
@@ -123,7 +127,7 @@ export default function usePolygonLayer (
     delete lPolygons.current[id];
   }
 
-  function updatePolygon (el: MapperShape) {
+  function updatePolygon (el: MapperPolygon) {
     const p = lPolygons.current[el.id];
     if (!p) return;
 
@@ -174,7 +178,7 @@ export default function usePolygonLayer (
    * collection nor the map.
    * @param el The shape for the polygon.
    */
-  function _createPolygon (el: MapperShape) : L.Polygon {
+  function _createPolygon (el: MapperPolygon) : L.Polygon {
     const regular = shapeToPolygon(el);
 
     const verts = GLT.gj.coords.leaflet(regular.vertices);

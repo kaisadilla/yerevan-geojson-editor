@@ -2,9 +2,9 @@ import { Tabs } from '@mantine/core';
 import { useActiveElement } from 'context/useActiveElement';
 import { useState } from 'react';
 import useMapperDoc from 'state/mapper/useDoc';
+import Attributes from './Attributes';
 import styles from './Details.module.scss';
 import Metadata from './Metadata';
-import PropertiesTable from './PropertiesTable';
 import Source from './Source';
 
 type TabId = 'properties' | 'source' | 'actions';
@@ -46,7 +46,7 @@ function Details (props: DetailsProps) {
           classNames={{panel: styles.propsPanel}}
           value='properties'
         >
-          <PropertiesTable element={element} />
+          <Attributes element={element} />
         </Tabs.Panel>
 
         <Tabs.Panel value='source'>

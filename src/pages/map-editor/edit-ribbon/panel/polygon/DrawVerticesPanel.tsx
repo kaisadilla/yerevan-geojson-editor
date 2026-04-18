@@ -1,8 +1,9 @@
 import styles from './DrawVerticesPanel.module.scss';
 
+import { Slider } from '@mantine/core';
 import { MagnetIcon, MapPinIcon } from '@phosphor-icons/react';
 import DescriptiveTooltip from 'components/DescriptiveTooltip';
-import Slider from 'components/Slider';
+import LabeledControl from 'components/LabeledControl';
 import ToggleButton from 'components/ToggleButton';
 import Constants from 'Constants';
 import MathExt from 'MathExt';
@@ -57,35 +58,44 @@ function DrawVerticesPanel (props: DrawVerticesPanelProps) {
         </DescriptiveTooltip>
       </BasePanel.Ribbon>
       
-      <Slider
+      <LabeledControl
         label={t("tool.polygon.draw_vertices.settings.snap_distance.name")}
         labelWidth={120}
         description={t("tool.polygon.draw_vertices.settings.snap_distance.desc")}
-        min={Constants.minSnapDistance}
-        max={Constants.maxSnapDistance}
-        value={ui.toolSettings.snapDistance}
-        onChange={handleChangeSnapDistance}
-      />
-
-      <Slider
+      >
+        <Slider
+          min={Constants.minSnapDistance}
+          max={Constants.maxSnapDistance}
+          value={ui.toolSettings.snapDistance}
+          onChange={handleChangeSnapDistance}
+        />
+      </LabeledControl>
+      
+      <LabeledControl
         label={t("tool.polygon.draw_vertices.settings.pencil_step.name")}
         labelWidth={120}
         description={t("tool.polygon.draw_vertices.settings.pencil_step.desc")}
-        min={Constants.minPencilStep}
-        max={Constants.maxPencilStep}
-        value={ui.toolSettings.pencilStep}
-        onChange={handleChangePencilStep}
-      />
-
-      <Slider
+      >
+        <Slider
+          min={Constants.minPencilStep}
+          max={Constants.maxPencilStep}
+          value={ui.toolSettings.pencilStep}
+          onChange={handleChangePencilStep}
+        />
+      </LabeledControl>
+      
+      <LabeledControl
         label={t("tool.polygon.draw_vertices.settings.vertex_size.name")}
         labelWidth={120}
         description={t("tool.polygon.draw_vertices.settings.vertex_size.desc")}
-        min={Constants.minVertexSize}
-        max={Constants.maxVertexSize}
-        value={ui.toolSettings.vertexSize}
-        onChange={handleChangeVertexSize}
-      />
+      >
+        <Slider
+          min={Constants.minVertexSize}
+          max={Constants.maxVertexSize}
+          value={ui.toolSettings.vertexSize}
+          onChange={handleChangeVertexSize}
+        />
+      </LabeledControl>
     </BasePanel>
   );
 

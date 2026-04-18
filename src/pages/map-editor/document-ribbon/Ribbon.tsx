@@ -37,7 +37,7 @@ function DocumentRibbon (props: EditorRibbonProps) {
 
     return () => {
       MapperHistory.offHistoryChange(handleHistoryChange);
-      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('keydown', handleKeyDown);
     }
   }, []);
 

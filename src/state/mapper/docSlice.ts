@@ -279,6 +279,10 @@ function getSampleDocument () : MapperDocument {
     west: 20,
     east: 35,
     holes: [],
+    image: null,
+    opacity: 1,
+    interactive: false,
+    saveImage: false,
   });
 
   return doc;

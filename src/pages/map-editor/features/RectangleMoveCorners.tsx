@@ -1,13 +1,15 @@
 import type { Position } from "geojson";
 import GLT from "GLT";
-import { type LatLng, type LeafletDragEndEvent, type Marker as LMarker, type Polygon as LPolygon } from "leaflet";
+import { type LatLng, type LeafletDragEndEvent, type ImageOverlay as LImageOverlay, type Marker as LMarker, type Polygon as LPolygon } from "leaflet";
 import type { Corner, Edge } from "models/MapDocument";
 import { useRef, type RefObject } from "react";
-import { Marker, Polygon } from "react-leaflet";
+import { ImageOverlay, Marker, Polygon } from "react-leaflet";
 import useMapperSettings from "state/mapper/useSettings";
 import useMarkers from "./useMarkers";
 
 export interface RectangleMoveCornersProps {
+  image: string | null;
+  imgOpacity: number;
   north: number;
   south: number;
   west: number;
@@ -17,6 +19,8 @@ export interface RectangleMoveCornersProps {
 }
 
 function RectangleMoveCorners ({
+  image,
+  imgOpacity,
   north,
   south,
   west,
@@ -25,6 +29,7 @@ function RectangleMoveCorners ({
   onMoveEdge,
 }: RectangleMoveCornersProps) {
   const polygonRef = useRef<LPolygon>(null);
+  const imgRef = useRef<LImageOverlay>(null);
   const tlRef = useRef<LMarker>(null);
   const trRef = useRef<LMarker>(null);
   const blRef = useRef<LMarker>(null);
@@ -43,12 +48,22 @@ function RectangleMoveCorners ({
   const { vertex, possibleVertex } = useMarkers();
 
   return (<>
-    <Polygon
+    {image === null && <Polygon
       ref={polygonRef}
       positions={latlngVerts}
       weight={settings.lineWidth}
       color={settings.colors.active}
-    />
+    />}
+    {image && 
+    <ImageOverlay
+      ref={imgRef}
+      url={image}
+      bounds={[
+        [north, east],
+        [south, west],
+      ]}
+      opacity={imgOpacity}
+    />}
     
     {([
       [tlRef, [north, west], 'topLeft'],
@@ -99,6 +114,11 @@ function RectangleMoveCorners ({
       [newWest, newSouth],
       [newWest, newNorth],
     ]));
+    // @ts-ignore 'setBounds' exists.
+    imgRef.current?.setBounds([
+        [newNorth, newEast],
+        [newSouth, newWest],
+    ]);
     tlRef.current?.setLatLng(GLT.gj.coord.leaflet([newWest, newNorth]));
     trRef.current?.setLatLng(GLT.gj.coord.leaflet([newEast, newNorth]));
     blRef.current?.setLatLng(GLT.gj.coord.leaflet([newWest, newSouth]));

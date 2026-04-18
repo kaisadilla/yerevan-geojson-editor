@@ -23,6 +23,8 @@ function RectangleMoveVerticesTool (props: RectangleMoveVerticesToolProps) {
 
   return (
     <RectangleMoveCorners
+      image={rect.image}
+      imgOpacity={rect.opacity}
       north={rect.north}
       south={rect.south}
       west={rect.west}
@@ -34,7 +36,7 @@ function RectangleMoveVerticesTool (props: RectangleMoveVerticesToolProps) {
   function handleMoveCorner (corner: Corner, pos: Position) {
     if (!rect) return;
 
-    dispatch(MapperDocThunks.updateRectangle(rect.id, corner, pos));
+    dispatch(MapperDocThunks.updateRectanglePosition(rect.id, corner, pos));
   }
 }
 

@@ -1,20 +1,21 @@
-import { Input, Slider as MSlider, type SliderProps as MSliderProps } from '@mantine/core';
+import { Input } from '@mantine/core';
 import { QuestionIcon } from '@phosphor-icons/react';
 import DescriptiveTooltip from './DescriptiveTooltip';
-import styles from './Slider.module.scss';
+import styles from './LabeledControl.module.scss';
 
-export interface SliderProps extends MSliderProps {
+export interface LabeledControlProps {
   label: string;
   labelWidth?: number;
   description?: string;
+  children: React.ReactNode;
 }
 
-function Slider ({
+function LabeledControl ({
   label,
   labelWidth,
   description,
-  ...sliderProps
-}: SliderProps) {
+  children,
+}: LabeledControlProps) {
 
   return (
     <Input.Wrapper
@@ -36,11 +37,9 @@ function Slider ({
         }
       }}
     >
-      <MSlider
-        {...sliderProps}
-      />
+      {children}
     </Input.Wrapper>
   );
 }
 
-export default Slider;
+export default LabeledControl;

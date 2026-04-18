@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-1, .cls-2 {
+        stroke-width: 0px;
+      }
+
+      .cls-2 {
+        fill: #633395;
+      }
+
+      .cls-3, .cls-4 {
+        fill: none;
+        stroke: #fff;
+        stroke-miterlimit: 10;
+        stroke-width: 48px;
+      }
+
+      .cls-4 {
+        stroke-dasharray: 0 0 82.51 82.51;
+      }
+    </style>
+  </defs>
+  <rect id="Background" class="cls-2" width="1024" height="1024" rx="128" ry="128"/>
+  <path id="Big_path" data-name="Big path" class="cls-3" d="M752.39,946.03c-8.33-67.66-32.42-166.72-111-233-24.02-20.26-51.84-36.37-168-71-245.14-73.08-333.33-64.57-356-123-21.29-54.88,46.75-87.53,30-178-15.53-83.88-86.55-123.47-70-151,10.32-17.17,39.26-3.98,121-12,69.2-6.79,79.62-23.14,129-24,29.69-.51,73.84,4.13,128.61,30.97"/>
+  <g id="Big_new_path" data-name="Big new path">
+    <g>
+      <path class="cls-3" d="M771,480c-15.34-14.83-30.68-29.65-46.02-44.48"/>
+      <path class="cls-4" d="M665.66,378.17c-29.66-28.67-59.32-57.35-88.98-86.02"/>
+      <path class="cls-3" d="M547.02,263.48c-15.34-14.83-30.68-29.65-46.02-44.48"/>
+    </g>
+  </g>
+  <circle id="Big_cursor_pos" data-name="Big cursor pos" class="cls-1" cx="875" cy="591" r="98"/>
+</svg>

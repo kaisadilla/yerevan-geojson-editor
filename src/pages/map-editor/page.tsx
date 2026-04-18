@@ -1,3 +1,4 @@
+import { APP_FULL_NAME, APP_URL, APP_VER } from "Constants";
 import { useEffect, useRef } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import useMapperSettings from "state/mapper/useSettings";
@@ -60,6 +61,9 @@ function MapEditorPage (props: MapEditorPageProps) {
       </PanelGroup>
       <div className={styles.appToolbar}>
         <DocumentRibbon />
+        <div className={styles.appName}>
+          {APP_FULL_NAME} — {APP_VER} (BETA)&nbsp;&nbsp;·&nbsp;&nbsp;{APP_URL}
+        </div>
       </div>
     </div>
   );

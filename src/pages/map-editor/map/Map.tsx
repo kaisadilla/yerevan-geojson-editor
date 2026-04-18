@@ -85,7 +85,7 @@ function _MapContent (props: _MapContentProps) {
         </LayersControl.BaseLayer>
         <LayersControl.BaseLayer name="OSM CyclOSM">
           <TileLayer
-            url="https://{s}.tile.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png"
+            url="https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, CyclOSM'
             maxZoom={MAX_ZOOM}
           />

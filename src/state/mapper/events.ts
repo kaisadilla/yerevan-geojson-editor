@@ -1,10 +1,9 @@
 import type { MapperElement } from "models/MapDocument";
-import type { Immutable } from "types";
 
 export type MapperDocumentChangeEvent = {}
 
 export type MapperAddElementsEvent = {
-  elements: Immutable<MapperElement>[];
+  elements: MapperElement[];
   groupId: string;
   index: number | null;
 }
@@ -15,7 +14,7 @@ export type MapperDeleteElementEvent = {
 
 export type MapperUpdateElementEvent = {
   elementId: string;
-  update: Immutable<MapperElement>;
+  update: MapperElement;
 }
 
 export type MapperActiveElementChangeEvent = {
