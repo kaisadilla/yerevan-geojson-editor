@@ -1,0 +1,198 @@
+mapper.name = "Editor de mapas"
+
+[dropzone]
+invalid_file.title = "Archivo inválido"
+invalid_file.message = "Lo sentimos, pero no reconocemos el formato del archivo."
+
+[notification]
+action_cancelled = "Acción cancelada"
+
+[actions]
+open.notification.error.title = "No se ha podido abrir el documento"
+open.notification.error.message = "Lo sentimos, pero el programa no reconoce el contenido de este archivo."
+
+[ribbon]
+new.name = "Nuevo documento"
+new.desc = "Crea un nuevo documento en blanco."
+
+open.name = "Abrir documento"
+open.desc = "Abre otro documento de Yerevan. Para usar un documento GeoJSON de otro origen, usa la función de 'Importar'."
+
+save.name = "Guardar documento"
+save.desc = "Guarda este documento como un archivo GeoJSON, almacenando los metadatos de Yerevan para que pueda volverse a usar dentro de esta aplicación. Usa esta opción si deseas volver a editar este archivo en esta aplicacion en un futuro."
+
+import.name = "Importar GeoJSON"
+import.desc = "Añade parcial o totalmente el contenido de otro documento GeoJSON a éste."
+
+export.name = "Exportar GeoJSON"
+export.desc = "Guarda este documento como un archivo GeoJSON genérico, sin guardar metadatos de Yerevan. Usa esta opción si no tienes intención de volver a abrir esa copia en esta aplicación."
+
+language.name = "Idioma"
+language.desc = "Cambia el idioma de la interfaz."
+
+undo.name = "Deshacer"
+
+redo.name = "Rehacer"
+
+settings.name = "Opciones"
+settings.desc = "Configura las opciones y propiedades del documento y de Yerevan."
+
+[element_panel.ribbon]
+group.name = "Grupo"
+group.desc = "Una carpeta para agrupar objetos. Esta es una función exclusiva de Yerevan: el archivo se guardará como un 'FeatureCollection' de GeoJSON válido (plano). Yerevan podrá reconstruir la carpeta de nuevo al reabrir el archivo."
+
+point.name = "Punto"
+
+line.name = "Línea"
+
+polygon.name = "Polígono"
+
+rectangle.name = "Rectángulo"
+
+circle.name = "Círculo"
+
+collection.name = "Colección de geometrías"
+collection.desc = "Una colección de objetos GeoJSON. Yerevan escogerá el tipo de 'GeometryCollection' correcto al guardar el archivo. De acuerdo al estándar GeoJSON, los objetos pertenecientes a un 'GeometryCollection' no son independientes y no almacenan propiedades individuales."
+
+[tool_ribbon]
+point.title = "Punto"
+polygon.title = "Polígono"
+
+[tool.new.point.settings]
+name = "Nuevo punto"
+desc = "Añade nuevos puntos al documento."
+
+mode.name = "Forma de añadir"
+mode.desc = "Elige qué pasa cuando añades un nuevo punto."
+
+mode.single.name = "Seleccionar el punto añadido."
+mode.multi.name = "Seguir añadiendo puntos."
+mode.named.name = "Preguntar por un nombre y seguir añadiendo puntos."
+
+[tool.point.move_shape]
+name = "Mover punto"
+desc = "Mueve el punto a otro lugar en el mapa."
+
+[tool.polygon.draw_vertices]
+name = "Dibujar vértices"
+desc = "Añade nuevos vértices al polígono."
+
+[tool.polygon.draw_vertices.settings]
+desc = "Pulsa en algún lugar del mapa para añadir el próximo vértice del polígono. Cuando acabes, pulsa en el primer vértice para cerrarlo, o deja de utilizar la herramienta y se cerrará de forma automática. Puedes pulsar 'z' para dibujar líneas rectas."
+section.options = "Opciones"
+snap.name = "Pegarse a objetos cercanos"
+snap.desc = "Mientras esté activo, el cursor se pegará automáticamente a objetos cercanos (como vértices o puntos), evitando tener que calcar a dedo una frontera compartida."
+show_verts.name = "Mostrar vértices"
+show_verts.desc = "Mientras esté activo, mostrará un icono en cada vértice del polígono."
+snap_distance.name = "Snap distance"
+snap_distance.desc = "The distance, in pixels, under which the cursor will snap to nearby features."
+pencil_step.name = "Pencil step"
+pencil_step.desc = "The distance, in pixels, between vertices laid out while right-clicking."
+vertex_size.name = "Vertex size"
+vertex_size.desc = "The size of the vertices on the map (visual only)."
+
+[tool.polygon.move_vertices]
+name = "Move vertices"
+desc = "Move the vertices that make up this polygon, and add new vertices between them."
+
+[tool.polygon.cut]
+name = "Cut shape"
+desc = "Draw a new shape that will be cut from this one."
+
+[tool.polygon.delete_vertices]
+name = "Delete vertices"
+desc = "Remove individual vertices, or entire sections of the shape."
+
+[tool.polygon.delete_vertices.settings]
+desc = "Select one of the two delete modes to choose how to delete vertices."
+section.mode = "Mode"
+section.delete_section = "Delete section"
+mode.individual.name = "Individual"
+mode.individual.desc = "Click on individual vertices to remove them."
+mode.section.name = "Section"
+mode.section.desc = "Select two vertices. This will form a path between the two. Then, use the 'Delete vertices' button to delete all vertices in the path, excluding both ends."
+delete_section.reverse = "Reverse path"
+delete_section.delete = "Delete vertices"
+
+[tool.polygon.union]
+name = "Polygon union"
+desc = "Choose other polygons to add their area to this one."
+
+[tool.polygon.union.settings]
+desc = "Select a polygon from the list below and click on 'Join'. Alternatively, just hold down Ctrl and click on other polygons on the map to add them to this one."
+section.options = "Options"
+menu_placeholder = "Select a feature..."
+join = "Join"
+delete_target.label = "Delete polygons added to this one."
+
+[tool.polygon.difference]
+name = "Polygon difference"
+desc = "Choose other polygons to remove their area from this one."
+
+[tool.polygon.difference.settings]
+name = "Difference tool"
+desc = "Select a polygon from the list below and click on 'Carve'. Alternatively, just hold down Ctrl and click on other polygons on the map to remove them from this one."
+section.options = "Options"
+menu_placeholder = "Select a feature..."
+carve = "Carve"
+delete_target.label = "Delete polygons used to carve this one."
+
+[tool.polygon.intersection]
+name = "Polygon intersection"
+desc = "Choose another polygon to remove all area in this polygon that isn't shared with the one chosen."
+
+[tool.polygon.intersection.settings]
+name = "Intersection tool"
+desc = "Select a polygon from the list below and click on 'Clip'. Alternatively, just hold down Ctrl and click on other polygons on the map to preserve the intersection between the two."
+section.options = "Options"
+menu_placeholder = "Select a feature..."
+carve = "Clip"
+delete_target.label = "Delete polygons used to intersect with this one."
+
+[tool.polygon.set_origin]
+name = "Set first vertex"
+desc = "Choose which vertex becomes the first vertex of the shape."
+settings.name = "Set first vertex tool"
+settings.desc = "Click on a vertex to make it the first vertex of the polygon. This will make it easier to further edit the polygon from whichever part is more convenient."
+
+[tool.polygon.move_shape]
+name = "Move polygon"
+desc = "Move the polygon itself around the map."
+
+[tool.settings]
+expand.name = "Expand settings for {{name}}."
+expand.desc = "🛈 You can hold 'shift' to temporarily expand the panel or press 'ctrl + shift' to leave it expanded."
+
+collapse.name = "Collapse"
+
+[details]
+section.properties.name = "Properties"
+section.source.name = "Source"
+section.actions.name = "Actions"
+
+[properties]
+field.key.name = "Key"
+field.value.name = "Value"
+
+[metadata]
+area.name = "Area"
+area.value = "{{value}} km²"
+
+verts.name = "Vertices"
+
+[modal.import_document]
+title = "Import GeoJSON features"
+
+[element_info]
+attributes.name = "Attributes"
+
+attributes.rect.image.name = "Image"
+attributes.rect.image.desc = "An image that will fill this rect."
+attributes.rect.opacity.name = "Opacity"
+attributes.rect.opacity.desc = "The opacity of the image contained by this rect. This attribute only affects rectangles with images."
+attributes.rect.interactive.name = "Interactive"
+attributes.rect.interactive.desc = "In this editor, whether this element responds to clicks or not. Disable interactivity to use images as references without interfering with your edition. This attribute only affects rectangles with images."
+attributes.rect.save_image.name = "Save image"
+attributes.rect.save_image.desc = "If true, the image is embedded (as a base-64 string) in the document."
+
+properties.name = "Properties"

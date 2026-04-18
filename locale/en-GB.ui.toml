@@ -16,27 +16,30 @@ new.name = "New document"
 new.desc = "Create a new blank document."
 
 open.name = "Open document"
-open.desc = "Opens a different Yerevan document. For GeoJson documents from other origins, use 'Import' instead."
+open.desc = "Opens a different Yerevan document. For GeoJSON documents from other origins, use 'Import' instead."
 
 save.name = "Save document"
-save.desc = "Saves this document as a GeoJson file, encoding all Yerevan-related metadata for future use inside this app. Use this option if you intend to open the document in this app in the future."
+save.desc = "Saves this document as a GeoJSON file, encoding all Yerevan-related metadata for future use inside this app. Use this option if you intend to open the document in this app in the future."
 
 import.name = "Import GeoJSON"
-import.desc = "Add the contents of a GeoJson file (partially or completely) to this document."
+import.desc = "Add the contents of a GeoJSON file (partially or completely) to this document."
 
 export.name = "Export GeoJSON"
-export.desc = "Save this document as a GeoJson file, without encoding any Yerevan-related metadata. Use this option if you don't intend to reopen it in this app."
+export.desc = "Save this document as a GeoJSON file, without encoding any Yerevan-related metadata. Use this option if you don't intend to reopen that file in this app."
+
+language.name = "Language"
+language.desc = "Change the interface's language."
 
 undo.name = "Undo"
 
 redo.name = "Redo"
 
 settings.name = "Settings"
-settings.desc = "Edit settings and properties related to this document and the app."
+settings.desc = "Edit settings and properties related to this document and Yerevan."
 
 [element_panel.ribbon]
 group.name = "Group"
-group.desc = "A folder to group features together. This is a Yerevan-only feature: the document will be saved as a valid (flat) GeoJson FeatureCollection, with metadata to reconstruct the groups later on."
+group.desc = "A folder to group features together. This is a Yerevan-only feature: the document will be saved as a valid (flat) GeoJSON FeatureCollection, with metadata to reconstruct the groups later on."
 
 point.name = "Point"
 
@@ -49,7 +52,7 @@ rectangle.name = "Rectangle"
 circle.name = "Circle"
 
 collection.name = "Geometry collection"
-collection.desc = "A GeoJson collection of features. Yerevan will automatically pick the correct collection type on save. As per the GeoJson standard, the contents of a GeoJson collection are not independent and will not retain their individual properties."
+collection.desc = "A GeoJSON collection of features. Yerevan will automatically pick the correct collection type on save. As per the GeoJSON standard, the contents of a GeoJSON collection are not independent and will not retain their individual properties."
 
 [tool_ribbon]
 point.title = "Point"
@@ -73,6 +76,7 @@ desc = "Move the point around the map."
 [tool.polygon.draw_vertices]
 name = "Draw vertices"
 desc = "Add new vertices to this polygon."
+
 [tool.polygon.draw_vertices.settings]
 desc = "Click anywhere on the map to add the next vertex of your polygon. When you are done, click on the first vertex to close it, or simply deselect the draw tool and it will close automatically. Hold 'z' to force your lines to be straight."
 section.options = "Options"

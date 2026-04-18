@@ -1,7 +1,9 @@
 import { Button as MButton, Menu } from '@mantine/core';
 import { FileArrowDownIcon, FileArrowUpIcon, FilePlusIcon, FloppyDiskIcon, FolderOpenIcon, GearIcon } from '@phosphor-icons/react';
+import Local from 'Local';
 import Button from 'components/Button';
 import DescriptiveTooltip from 'components/DescriptiveTooltip';
+import { getLocaleIcon, getLocaleName, LOCALE_NAMES } from 'i18n';
 import { Redo, Undo } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,7 +21,7 @@ export interface EditorRibbonProps {
 }
 
 function DocumentRibbon (props: EditorRibbonProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { handleUndo } = useUndo();
   const { handleRedo } = useRedo();
@@ -145,6 +147,45 @@ function DocumentRibbon (props: EditorRibbonProps) {
           </Button>
         </DescriptiveTooltip>
       </div>
+
+      <div className={styles.appRibbon}>
+        <Menu
+          classNames={{
+            dropdown: styles.languageMenu,
+            item: styles.languageMenuItem,
+          }}
+        >
+          <Menu.Target>
+            <DescriptiveTooltip
+              label={t("ribbon.language.name")}
+              description={t("ribbon.language.desc")}
+            > 
+              <Button className={styles.langButton}>
+                <img
+                  className={styles.langIcon}
+                  src={getLocaleIcon(i18n.language)}
+                />
+              </Button>
+            </DescriptiveTooltip>
+          </Menu.Target>
+
+          <Menu.Dropdown>
+              <Menu.Label>{t("ribbon.language.name")}</Menu.Label>
+            {Object.keys(LOCALE_NAMES).map(k => (
+              <Menu.Item
+                key={k}
+                onClick={() => handleChangeLanguage(k)}
+                data-active={k === i18n.language}
+              >
+                <div className={styles.container}>
+                  <img className={styles.langIcon} src={getLocaleIcon(k)} />
+                  <div className={styles.name}>{getLocaleName(k)}</div>
+                </div>
+              </Menu.Item>
+            ))}
+          </Menu.Dropdown>
+        </Menu>
+      </div>
     </div>
   );
 
@@ -162,6 +203,11 @@ function DocumentRibbon (props: EditorRibbonProps) {
     else if (evt.code === 'KeyY') {
       handleRedo();
     }
+  }
+
+  function handleChangeLanguage (key: string) {
+    i18n.changeLanguage(key);
+    Local.setLocale(key);
   }
 }
 
