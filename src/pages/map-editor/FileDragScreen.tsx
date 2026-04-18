@@ -27,17 +27,28 @@ function FileDragScreen () {
   useEffect(() => {
     let dragCounter = 0;
 
-    const onEnter = () => { dragCounter++; setVisible(true); };
-    const onLeave = () => { dragCounter--; if (dragCounter === 0) setVisible(false); };
-    const onDrop  = () => { dragCounter = 0; setVisible(false); };
+    function handleWindowDragEnter (evt: DragEvent) {
+      if (!evt.dataTransfer?.types.includes('Files')) return;
 
-    window.addEventListener('dragenter', onEnter);
-    window.addEventListener('dragleave', onLeave);
-    window.addEventListener('drop', onDrop);
+      dragCounter++;
+      setVisible(true);
+    };
+    function handleWindowDragLeave () {
+      dragCounter--;
+      if (dragCounter === 0) setVisible(false);
+    };
+    function handleWindowDrop () {
+      dragCounter = 0;
+      setVisible(false);
+    };
+
+    window.addEventListener('dragenter', handleWindowDragEnter, true);
+    window.addEventListener('dragleave', handleWindowDragLeave, true);
+    window.addEventListener('drop', handleWindowDrop, true);
     return () => {
-      window.removeEventListener('dragenter', onEnter);
-      window.removeEventListener('dragleave', onLeave);
-      window.removeEventListener('drop', onDrop);
+      window.removeEventListener('dragenter', handleWindowDragEnter);
+      window.removeEventListener('dragleave', handleWindowDragLeave);
+      window.removeEventListener('drop', handleWindowDrop);
     };
   }, []);
 
